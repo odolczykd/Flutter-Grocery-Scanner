@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "28054380766",
+    "project_id": "wmii-umk-grocery-scanner",
+    "storage_bucket": "wmii-umk-grocery-scanner.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:28054380766:android:a72217437a03ea6cbce24f",
+        "android_client_info": {
+          "package_name": "pl.umk.mat.odolczykd.grocery_scanner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "28054380766-4na5l83g0gk8m4e3hnd5fdhr9smf71qe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDO9kSMHJFulR1l19sJlFuOoNv_w_AzHLI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "28054380766-4na5l83g0gk8m4e3hnd5fdhr9smf71qe.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
