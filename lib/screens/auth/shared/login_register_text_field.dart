@@ -1,28 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:grocery_scanner/shared/colors.dart';
 
 class LoginRegisterTextField extends StatelessWidget {
   final String labelText;
   final Color color;
   final bool obscureText;
+  final String? Function(String?) validator;
+  Function? callback;
 
-  const LoginRegisterTextField(
-      {super.key,
-      required this.labelText,
-      required this.color,
-      required this.obscureText});
+  LoginRegisterTextField({
+    super.key,
+    this.callback,
+    required this.labelText,
+    required this.color,
+    required this.obscureText,
+    required this.validator,
+  });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      cursorColor: Colors.black,
+      validator: validator,
+      cursorColor: black,
       obscureText: obscureText,
       decoration: InputDecoration(
-        fillColor: Colors.grey,
+        fillColor: grey,
         labelText: labelText,
         contentPadding: const EdgeInsets.all(15.0),
-        labelStyle: const TextStyle(color: Colors.grey),
+        labelStyle: const TextStyle(color: grey),
         border: OutlineInputBorder(
-          borderSide: const BorderSide(color: Colors.grey, width: 2.0),
+          borderSide: const BorderSide(color: grey, width: 2.0),
           borderRadius: BorderRadius.circular(10.0),
         ),
         focusedBorder: OutlineInputBorder(
@@ -30,7 +37,7 @@ class LoginRegisterTextField extends StatelessWidget {
             borderRadius: BorderRadius.circular(10.0)),
         focusColor: color,
       ),
-      onChanged: (value) {},
+      onChanged: (val) => callback != null ? callback!(val) : null,
     );
   }
 }
