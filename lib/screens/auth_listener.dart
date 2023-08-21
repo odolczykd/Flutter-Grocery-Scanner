@@ -14,7 +14,7 @@ class AuthListener extends StatelessWidget {
     if (user == null) {
       return const Auth();
     } else {
-      return Home();
+      return const Home();
     }
   }
 }

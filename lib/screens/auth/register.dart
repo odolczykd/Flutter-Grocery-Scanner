@@ -95,7 +95,7 @@ class _RegisterState extends State<Register> {
               onPressed: () async {
                 // Form Validation
                 if (_formKey.currentState!.validate()) {
-                  dynamic result = _auth.register(email, password);
+                  dynamic result = _auth.register(username, email, password);
                   if (result == null) {
                     setState(() => formErrorMessage =
                         "Rejestracja nie powiodła się! Spróbuj ponownie później.");
