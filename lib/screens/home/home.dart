@@ -4,11 +4,11 @@ import 'package:grocery_scanner/models/user.dart';
 import 'package:grocery_scanner/screens/home/main_page/main_page.dart';
 import 'package:grocery_scanner/screens/home/profile/profile.dart';
 import 'package:grocery_scanner/screens/home/scanner/scanner.dart';
+import 'package:grocery_scanner/screens/product/product.dart';
 import 'package:grocery_scanner/services/auth.dart';
 import 'package:grocery_scanner/services/database.dart';
-import 'package:grocery_scanner/shared/loading.dart';
+import 'package:grocery_scanner/shared/colors.dart';
 import 'package:provider/provider.dart';
-import '../../shared/colors.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -41,30 +41,9 @@ class _HomeState extends State<Home> {
         if (snapshot.hasData && !snapshot.data!.exists) {
           return const Text("Dokument nie istnieje");
         }
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Loading();
-        }
 
-        Map<String, dynamic> data =
-            snapshot.data!.data() as Map<String, dynamic>;
-        UserData loggedUser = UserData.fromJson(data);
-
-        // return Text("${loggedUser.username}\n${loggedUser.rank}");
         return Scaffold(
             backgroundColor: greyBg,
-            // appBar: AppBar(
-            //   title: const Text("Strona główna"),
-            //   backgroundColor: green,
-            //   actions: [
-            //     IconButton(
-            //         onPressed: () async => await _auth.signOut(),
-            //         icon: const Icon(Icons.logout))
-            //   ],
-            // ),
-            // body: Center(
-            //     child: Column(
-            //   children: [Text(loggedUser.username), Text(loggedUser.rank)],
-            // ))
             bottomNavigationBar: BottomNavigationBar(
               selectedItemColor: green,
               selectedIconTheme: const IconThemeData(size: 28),
@@ -73,67 +52,20 @@ class _HomeState extends State<Home> {
                 BottomNavigationBarItem(
                     icon: Icon(Icons.home), label: "Strona główna"),
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.scanner), label: "Skanuj"),
+                    icon: Icon(Icons.qr_code_scanner), label: "Skanuj produkt"),
                 BottomNavigationBarItem(
                     icon: Icon(Icons.person), label: "Twój profil")
               ],
               currentIndex: _selectedIndex,
-              onTap: (value) => setState(() {
-                _selectedIndex = value;
-              }),
+              onTap: (value) => setState(() => _selectedIndex = value),
             ),
-            // body: _pages.elementAt(_selectedIndex),
-            body: SafeArea(
-              child: Center(
-                  child: Column(
-                children: [
-                  const Text("ZALOGOWANO"),
-                  Text("Login: ${loggedUser.username}"),
-                  Text("Ranga: ${loggedUser.rank}"),
-                  Row(
-                    children: [
-                      IconButton(
-                          onPressed: () async => await _auth.signOut(),
-                          icon: const Icon(Icons.logout)),
-                      const Text("Wyloguj się")
-                    ],
-                  )
-                ],
-              )),
-            ));
+            body: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: _pages.elementAt(_selectedIndex),
+            )
+            // body: Product(),
+            );
       },
     );
-
-    // return StreamBuilder<UserData>(
-    //     stream: DatabaseService(user.uid).userData,
-    //     builder: (context, snapshot) {
-    //       print(DatabaseService(user.uid).userData);
-    //       return Text("a");
-
-    //       // if (snapshot.connectionState == ConnectionState.waiting) {
-    //       //   return const Loading();
-    //       // }
-    //       // if (snapshot.hasData) {
-    //       //   UserData userData = snapshot.data!;
-    //       //   return Scaffold(
-    //       //     backgroundColor: greyBg,
-    //       //     appBar: AppBar(
-    //       //       title: const Text("Strona główna"),
-    //       //       backgroundColor: green,
-    //       //       actions: [
-    //       //         IconButton(
-    //       //             onPressed: () async => await _auth.signOut(),
-    //       //             icon: const Icon(Icons.logout))
-    //       //       ],
-    //       //     ),
-    //       //     body: Center(
-    //       //         child: Column(
-    //       //       children: [Text(userData.username), Text(userData.rank)],
-    //       //     )),
-    //       //   );
-    //       // } else {
-    //       //   return const Text("cos sie zjebalo");
-    //       // }
-    //     });
   }
 }

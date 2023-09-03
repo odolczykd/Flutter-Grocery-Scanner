@@ -25,7 +25,7 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    return isLoading
+    return (isLoading)
         ? const Loading()
         : Form(
             key: _formKey,

@@ -15,12 +15,13 @@ class DatabaseService {
     // TODO: Fix situation: uid = null
     return await userCollection.doc(uid).set({
       "username": username,
-      "rank": Rank.NEW_USER,
+      "rank": Rank.newUser.desc,
       "yourProducts": [],
       "recentlyScannedProducts": [],
       "pinnedProducts": [],
       "preferences": [],
-      "restrictions": []
+      "restrictions": [],
+      "createdAt": DateTime.now()
     });
   }
 
@@ -34,7 +35,8 @@ class DatabaseService {
         recentlyScannedProducts: snapshot.get("recentlyScannedProducts"),
         pinnedProducts: snapshot.get("pinnedProducts"),
         preferences: snapshot.get("preferences"),
-        restrictions: snapshot.get("restrictions"));
+        restrictions: snapshot.get("restrictions"),
+        createdAt: snapshot.get("createdAt"));
   }
 
   Stream<UserData> get userData {

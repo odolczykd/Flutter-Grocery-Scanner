@@ -1,5 +1,3 @@
-import 'package:grocery_scanner/models/product.dart';
-
 class User {
   final String uid;
   User({required this.uid});
@@ -15,6 +13,7 @@ class UserData {
   final List<dynamic> pinnedProducts;
   final List<dynamic> preferences;
   final List<dynamic> restrictions;
+  final DateTime createdAt;
 
   UserData(
       {
@@ -26,7 +25,8 @@ class UserData {
       required this.recentlyScannedProducts,
       required this.pinnedProducts,
       required this.preferences,
-      required this.restrictions});
+      required this.restrictions,
+      required this.createdAt});
 
   factory UserData.fromJson(Map<String, dynamic> json) {
     return UserData(
@@ -38,6 +38,7 @@ class UserData {
         recentlyScannedProducts: json["recentlyScannedProducts"],
         pinnedProducts: json["pinnedProducts"],
         preferences: json["preferences"],
-        restrictions: json["restrictions"]);
+        restrictions: json["restrictions"],
+        createdAt: json["createdAt"] ?? DateTime.now());
   }
 }
