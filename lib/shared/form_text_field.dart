@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:grocery_scanner/shared/colors.dart';
 
-class LoginRegisterTextField extends StatelessWidget {
+class FormTextField extends StatelessWidget {
   final String labelText;
   final Color color;
   final bool obscureText;
   final String? Function(String?) validator;
-  Function? callback;
+  final Function? callback;
+  String value;
 
-  LoginRegisterTextField({
-    super.key,
-    this.callback,
-    required this.labelText,
-    required this.color,
-    required this.obscureText,
-    required this.validator,
-  });
+  FormTextField(
+      {super.key,
+      this.callback,
+      required this.labelText,
+      required this.color,
+      required this.obscureText,
+      required this.validator,
+      this.value = ""});
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      // controller: TextEditingController(text: value),
       validator: validator,
       cursorColor: black,
       obscureText: obscureText,

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:grocery_scanner/models/product.dart';
 import 'package:grocery_scanner/models/user.dart';
 import 'package:grocery_scanner/shared/rank.dart';
 
@@ -23,6 +24,16 @@ class DatabaseService {
       "restrictions": [],
       "createdAt": DateTime.now()
     });
+  }
+
+  Future pinProduct(Product product) async {
+    var documentSnapshot = await userCollection.doc(uid).get();
+    List<dynamic> pinnedProducts = documentSnapshot.get("pinnedProducts");
+    pinnedProducts.add(product);
+    return await userCollection
+        .doc(uid)
+        .update({"pinnedProducts": pinnedProducts});
+    // .set({"pinnedProducts": pinnedProducts});
   }
 
   UserData _userDataFromSnapshot(DocumentSnapshot snapshot) {

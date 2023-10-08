@@ -54,8 +54,14 @@ class ProductNutriments {
       value_100: (json["proteins_100g"] as num).toPrecision(3),
     ), salt: (
       name: "sól",
-      value: (json["salt"] as num).toPrecision(3),
-      value_100: (json["salt_100g"] as num).toPrecision(3),
+      // value: "N/A",
+      // value_100: "N/A",
+      value: _isPresent(json["salt"])
+          ? (json["salt"] as num).toPrecision(3)
+          : "N/A",
+      value_100: _isPresent(json["salt_100g"])
+          ? (json["salt_100g"] as num).toPrecision(3)
+          : "N/A"
     ));
   }
 
@@ -74,7 +80,8 @@ class ProductNutriments {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Tabela może zawierać wartości przybliżone."),
+        const Text("Tabela może zawierać wartości przybliżone.",
+            style: TextStyle(fontStyle: FontStyle.italic)),
         const SizedBox(height: 5.0),
         Table(
           columnWidths: const {
@@ -155,3 +162,5 @@ extension Precision on num {
     return ((this * mod).round() / mod).toString();
   }
 }
+
+bool _isPresent(var value) => !(value == null && value == "");

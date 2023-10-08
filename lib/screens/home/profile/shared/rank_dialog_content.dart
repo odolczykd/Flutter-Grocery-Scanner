@@ -73,21 +73,21 @@ class RankDialogContent extends StatelessWidget {
           SizedBox(height: 10.0),
 
           // ADMINISTRATOR
-          Row(
-            children: [
-              Icon(
-                Icons.star,
-                color: Color(0xFFEFAF00),
-              ),
-              SizedBox(width: 5.0),
-              Text("Administrator",
-                  style: TextStyle(fontWeight: FontWeight.bold))
-            ],
-          ),
-          Text(
-              "Profil oznaczony taką rangą należy do osoby, która bezpośrednio odpowiada za rozwój aplikacji.",
-              style: TextStyle(fontSize: 14.0)),
-          SizedBox(height: 10.0),
+          // Row(
+          //   children: [
+          //     Icon(
+          //       Icons.star,
+          //       color: Color(0xFFEFAF00),
+          //     ),
+          //     SizedBox(width: 5.0),
+          //     Text("Administrator",
+          //         style: TextStyle(fontWeight: FontWeight.bold))
+          //   ],
+          // ),
+          // Text(
+          //     "Profil oznaczony taką rangą należy do osoby, która bezpośrednio odpowiada za rozwój aplikacji.",
+          //     style: TextStyle(fontSize: 14.0)),
+          // SizedBox(height: 10.0),
 
           // SUSPENDED
           Row(

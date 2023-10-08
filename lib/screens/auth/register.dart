@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:grocery_scanner/screens/auth/shared/login_register_text_field.dart';
+import 'package:grocery_scanner/shared/form_text_field.dart';
 import 'package:grocery_scanner/services/auth.dart';
 import 'package:grocery_scanner/shared/colors.dart';
 import 'package:email_validator/email_validator.dart';
@@ -34,7 +34,7 @@ class _RegisterState extends State<Register> {
               style: const TextStyle(color: red, fontSize: 16.0),
             ),
             const SizedBox(height: 20.0),
-            LoginRegisterTextField(
+            FormTextField(
                 callback: (val) => setState(() => username = val),
                 labelText: "Nazwa użytkownika",
                 color: orange,
@@ -54,7 +54,7 @@ class _RegisterState extends State<Register> {
                   }
                 }),
             const SizedBox(height: 10.0),
-            LoginRegisterTextField(
+            FormTextField(
               callback: (val) => setState(() => email = val),
               labelText: "Adres e-mail",
               color: orange,
@@ -64,7 +64,7 @@ class _RegisterState extends State<Register> {
                   : null,
             ),
             const SizedBox(height: 10.0),
-            LoginRegisterTextField(
+            FormTextField(
                 callback: (val) => setState(() => password = val),
                 labelText: "Hasło",
                 color: orange,
@@ -84,7 +84,7 @@ class _RegisterState extends State<Register> {
                   }
                 }),
             const SizedBox(height: 10.0),
-            LoginRegisterTextField(
+            FormTextField(
                 labelText: "Powtórz hasło",
                 color: orange,
                 obscureText: true,

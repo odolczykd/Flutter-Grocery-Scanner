@@ -5,7 +5,7 @@ enum Rank {
   user("USER", Icons.person, Color(0xFFEF6C00)),
   editor("EDITOR", Icons.edit, Color(0xFF0083EF)),
   moderator("MODERATOR", Icons.verified_user, Color(0xFF8000E9)),
-  administrator("ADMINISTRATOR", Icons.star, Color(0xFFEFAF00)),
+  // administrator("ADMINISTRATOR", Icons.star, Color(0xFFEFAF00)),
   suspended("SUSPENDED", Icons.running_with_errors, Color(0xFFEF0000)),
   banned("BANNED", Icons.person_off, Color(0xFF4B4B4B));
 
@@ -22,7 +22,7 @@ Rank findRankByDesc(String desc) {
     "USER": Rank.user,
     "EDITOR": Rank.editor,
     "MODERATOR": Rank.moderator,
-    "ADMINISTRATOR": Rank.administrator,
+    // "ADMINISTRATOR": Rank.administrator,
     "SUSPENDED": Rank.suspended,
     "BANNED": Rank.banned
   };
@@ -36,12 +36,12 @@ String convertRank(String rank) {
     Rank.user.desc: "Użytkownik",
     Rank.editor.desc: "Edytor",
     Rank.moderator.desc: "Moderator",
-    Rank.administrator.desc: "Administrator",
+    // Rank.administrator.desc: "Administrator",
     Rank.suspended.desc: "Tymczasowo zablokowano",
     Rank.banned.desc: "Zablokowano na stałe",
   };
 
-  return ranks[rank] ?? "";
+  return ranks[rank] ?? "N/A";
 }
 
 Icon rankIcon(String desc) {

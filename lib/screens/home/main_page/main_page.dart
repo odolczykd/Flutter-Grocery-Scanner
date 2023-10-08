@@ -40,71 +40,74 @@ class _MainPageState extends State<MainPage> {
             snapshot.data!.data() as Map<String, dynamic>;
         UserData loggedUser = UserData.fromJson(data);
 
-        return SafeArea(
-            child: SingleChildScrollView(
-          child: Center(
-              child: Column(
-            children: [
-              Row(
-                children: [
-                  const CircleAvatar(
-                    backgroundImage: AssetImage("assets/kolczyk.png"),
-                    radius: 25.0,
-                  ),
-                  const SizedBox(width: 15.0),
-                  Text("Cześć, ${loggedUser.username}!",
-                      style: const TextStyle(
-                          color: black,
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold)),
-                ],
-              ),
-              const SizedBox(height: 30.0),
-              const Row(
-                children: [
-                  Icon(Icons.update, color: green),
-                  SizedBox(width: 5.0),
-                  Text(
-                    "Ostatnio skanowane produkty",
-                    style:
-                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                  )
-                ],
-              ),
-              const SingleChildScrollView(
-                  // TODO: child: Lista kafelków
-                  ),
-              const Row(
-                children: [
-                  Icon(Icons.push_pin, color: green),
-                  SizedBox(width: 5.0),
-                  Text(
-                    "Przypięte produkty",
-                    style:
-                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                  )
-                ],
-              ),
-              const SingleChildScrollView(
-                  // TODO: child: Lista kafelków
-                  ),
-              const Row(
-                children: [
-                  Icon(Icons.person_add_alt_1, color: green),
-                  SizedBox(width: 5.0),
-                  Text(
-                    "Produkty dodane przez Ciebie",
-                    style:
-                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                  )
-                ],
-              ),
-              const SingleChildScrollView(
-                  // TODO: child: Lista kafelków
-                  ),
-            ],
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: SafeArea(
+              child: SingleChildScrollView(
+            child: Center(
+                child: Column(
+              children: [
+                Row(
+                  children: [
+                    const CircleAvatar(
+                      backgroundImage: AssetImage("assets/kolczyk.png"),
+                      radius: 25.0,
+                    ),
+                    const SizedBox(width: 15.0),
+                    Text("Cześć, ${loggedUser.username}!",
+                        style: const TextStyle(
+                            color: black,
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold)),
+                  ],
+                ),
+                const SizedBox(height: 30.0),
+                const Row(
+                  children: [
+                    Icon(Icons.update, color: green),
+                    SizedBox(width: 5.0),
+                    Text(
+                      "Ostatnio skanowane produkty",
+                      style: TextStyle(
+                          fontSize: 18.0, fontWeight: FontWeight.bold),
+                    )
+                  ],
+                ),
+                const SingleChildScrollView(
+                    // TODO: child: Lista kafelków
+                    ),
+                const Row(
+                  children: [
+                    Icon(Icons.push_pin, color: green),
+                    SizedBox(width: 5.0),
+                    Text(
+                      "Przypięte produkty",
+                      style: TextStyle(
+                          fontSize: 18.0, fontWeight: FontWeight.bold),
+                    )
+                  ],
+                ),
+                const SingleChildScrollView(
+                    // TODO: child: Lista kafelków
+                    ),
+                const Row(
+                  children: [
+                    Icon(Icons.person_add_alt_1, color: green),
+                    SizedBox(width: 5.0),
+                    Text(
+                      "Produkty dodane przez Ciebie",
+                      style: TextStyle(
+                          fontSize: 18.0, fontWeight: FontWeight.bold),
+                    )
+                  ],
+                ),
+                const SingleChildScrollView(
+                    // TODO: child: Lista kafelków
+                    ),
+              ],
+            )),
           )),
-        ));
+        );
 
         // return SafeArea(
         //   child: Center(

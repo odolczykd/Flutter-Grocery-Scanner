@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:grocery_scanner/models/product.dart' as product_model;
-import 'package:grocery_scanner/screens/product/full_screen_image.dart';
+import 'package:grocery_scanner/screens/product/shared/full_screen_image.dart';
 import 'package:grocery_scanner/screens/product/product_not_found.dart';
+import 'package:grocery_scanner/screens/product/shared/product_nutriscore_dialog_content.dart';
 import 'package:grocery_scanner/services/open_food_facts.dart';
 import 'package:grocery_scanner/shared/colors.dart';
 import 'package:grocery_scanner/shared/label_row.dart';
 import 'package:grocery_scanner/shared/loading.dart';
-// import 'package:translator/translator.dart';
 
 class Product extends StatefulWidget {
-  const Product({super.key});
+  final barcode;
+  const Product({super.key, this.barcode});
 
   @override
   State<Product> createState() => _ProductState();
@@ -17,14 +18,18 @@ class Product extends StatefulWidget {
 
 class _ProductState extends State<Product> {
   late Future<product_model.Product?> product;
+  // late TranslateResult? ingredients;
   String? alergens;
+  String? translatedIngredients;
 
   @override
   void initState() {
     super.initState();
+    product = OpenFoodFacts().fetchProductByBarcode(widget.barcode);
     // product = OpenFoodFacts().fetchProductByBarcode("5900820011529");
-    product = OpenFoodFacts().fetchProductByBarcode("8714100666920");
     // product = OpenFoodFacts().fetchProductByBarcode("5900820011528");
+    // product = OpenFoodFacts().fetchProductByBarcode("5900512990095");
+    // product = OpenFoodFacts().fetchProductByBarcode("5900385000815");
   }
 
   @override
@@ -46,6 +51,8 @@ class _ProductState extends State<Product> {
             // return Text(name);
             final product = snapshot.data!;
             String url = product.images.front;
+
+            const nutriscoreGrades = {"A", "B", "C", "D", "E"};
 
             return Scaffold(
               body: SingleChildScrollView(
@@ -82,32 +89,47 @@ class _ProductState extends State<Product> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Container(
-                                        decoration: const BoxDecoration(
-                                            color: blackOpacity,
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(30.0))),
-                                        child: const Padding(
-                                          padding: EdgeInsets.all(5.0),
-                                          child: Icon(
-                                            Icons.arrow_back,
-                                            size: 30.0,
-                                            color: white,
-                                          ),
-                                        )),
-                                    Container(
-                                        decoration: const BoxDecoration(
-                                            color: blackOpacity,
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(30.0))),
-                                        child: const Padding(
-                                          padding: EdgeInsets.all(7.0),
-                                          child: Icon(
-                                            Icons.edit,
-                                            size: 25.0,
-                                            color: white,
-                                          ),
-                                        )),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        Navigator.pushNamed(context, "/home");
+                                      },
+                                      style: TextButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                          alignment: Alignment.topLeft),
+                                      child: Container(
+                                          decoration: const BoxDecoration(
+                                              color: blackOpacity,
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(30.0))),
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(5.0),
+                                            child: Icon(
+                                              Icons.arrow_back,
+                                              size: 30.0,
+                                              color: white,
+                                            ),
+                                          )),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {},
+                                      style: TextButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                          alignment: Alignment.topRight),
+                                      child: Container(
+                                          decoration: const BoxDecoration(
+                                              color: blackOpacity,
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(30.0))),
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(7.0),
+                                            child: Icon(
+                                              Icons.edit,
+                                              size: 25.0,
+                                              color: white,
+                                            ),
+                                          )),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -116,63 +138,84 @@ class _ProductState extends State<Product> {
                                     MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Container(
-                                    decoration: const BoxDecoration(
-                                        color: blackOpacity,
-                                        borderRadius: BorderRadius.only(
-                                            topRight: Radius.circular(10.0))),
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(10.0),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.push_pin,
-                                            color: white,
-                                          ),
-                                          SizedBox(width: 5.0),
-                                          Text(
-                                            "Przypnij",
-                                            style: TextStyle(
-                                                fontSize: 16.0,
-                                                fontWeight: FontWeight.bold,
-                                                color: white),
-                                          )
-                                        ],
+                                  TextButton(
+                                    onPressed: () {},
+                                    style: TextButton.styleFrom(
+                                        padding: EdgeInsets.zero,
+                                        alignment: Alignment.bottomLeft),
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                          color: blackOpacity,
+                                          borderRadius: BorderRadius.only(
+                                              topRight: Radius.circular(10.0))),
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.push_pin,
+                                              color: white,
+                                            ),
+                                            SizedBox(width: 5.0),
+                                            Text(
+                                              "Przypnij",
+                                              style: TextStyle(
+                                                  fontSize: 16.0,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: white),
+                                            )
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        color:
-                                            nutriscoreColor(product.nutriscore),
-                                        borderRadius: const BorderRadius.only(
-                                            topLeft: Radius.circular(10.0))),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            product.nutriscore.length > 1
-                                                ? "?"
-                                                : product.nutriscore
-                                                    .toUpperCase(),
+                                  if (nutriscoreGrades.contains(
+                                      product.nutriscore.toUpperCase()))
+                                    TextButton(
+                                      onPressed: () => showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                                title: const Text(
+                                                    "Wskaźnik Nutri-Score",
+                                                    style: TextStyle(
+                                                        fontSize: 20.0,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                                content:
+                                                    const ProductNutriscoreDialogContent(),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.pop(context),
+                                                    style: TextButton.styleFrom(
+                                                        foregroundColor: black),
+                                                    child: const Text("OK"),
+                                                  )
+                                                ],
+                                              )),
+                                      style: TextButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                          alignment: Alignment.bottomRight),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: nutriscoreColor(
+                                                product.nutriscore),
+                                            borderRadius:
+                                                const BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(10.0))),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(15.0),
+                                          child: Text(
+                                            product.nutriscore.toUpperCase(),
                                             style: const TextStyle(
                                                 fontSize: 26.0,
                                                 fontWeight: FontWeight.bold,
                                                 color: white),
                                           ),
-                                          const SizedBox(height: 5.0),
-                                          const Text("Nutriscore",
-                                              style: TextStyle(
-                                                  fontSize: 14.0,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: white)),
-                                        ],
+                                        ),
                                       ),
-                                    ),
-                                  )
+                                    )
                                 ],
                               ),
                             ],
@@ -213,7 +256,9 @@ class _ProductState extends State<Product> {
                                         product.images.ingredients));
                               },
                             ),
-                            Text(product.ingredients),
+                            // Text(product.translateIngredients()),
+                            product.translateIngredients(),
+                            // Text(translatedIngredients!),
                             const SizedBox(height: 15.0),
                             const LabelRow(
                               icon: Icons.egg_outlined,
@@ -221,7 +266,8 @@ class _ProductState extends State<Product> {
                               color: green,
                               isSecondaryIconEnabled: false,
                             ),
-                            Text(product.allergens),
+                            // Text(product.allergens),
+                            product.translateAllergens(),
                             const SizedBox(height: 15.0),
                             LabelRow(
                               icon: Icons.fastfood_outlined,

@@ -5,6 +5,7 @@ import 'package:grocery_scanner/screens/home/main_page/main_page.dart';
 import 'package:grocery_scanner/screens/home/profile/profile.dart';
 import 'package:grocery_scanner/screens/home/scanner/scanner.dart';
 import 'package:grocery_scanner/screens/product/product.dart';
+import 'package:grocery_scanner/screens/product/product_creator/product_creator.dart';
 import 'package:grocery_scanner/services/auth.dart';
 import 'package:grocery_scanner/services/database.dart';
 import 'package:grocery_scanner/shared/colors.dart';
@@ -59,11 +60,13 @@ class _HomeState extends State<Home> {
               currentIndex: _selectedIndex,
               onTap: (value) => setState(() => _selectedIndex = value),
             ),
-            body: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: _pages.elementAt(_selectedIndex),
-            )
+            // body: Padding(
+            //   padding: const EdgeInsets.all(20.0),
+            //   child: _pages.elementAt(_selectedIndex),
+            // )
+            body: _pages.elementAt(_selectedIndex)
             // body: Product(),
+            // body: ProductCreator(),
             );
       },
     );
