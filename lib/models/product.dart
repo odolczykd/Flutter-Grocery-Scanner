@@ -3,10 +3,8 @@ import 'package:grocery_scanner/models/product_images.dart';
 import 'package:grocery_scanner/models/product_nutriments.dart';
 import 'package:grocery_scanner/services/translator.dart';
 import 'package:grocery_scanner/shared/colors.dart';
-import 'package:translator/translator.dart';
 
 class Product {
-  final String id;
   final String barcode;
   final String productName;
   final String brand;
@@ -18,8 +16,7 @@ class Product {
   final String nutriscore;
 
   Product(
-      {required this.id,
-      required this.barcode,
+      {required this.barcode,
       required this.productName,
       required this.brand,
       required this.country,
@@ -31,7 +28,6 @@ class Product {
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-        id: "1",
         barcode: json["code"],
         productName: json["product_name"] ?? json["product_name_pl"] ?? "N/A",
         brand: json["brand"] ?? json["brands"] ?? "N/A",
@@ -48,25 +44,73 @@ class Product {
         nutriscore: json["nutriscore_grade"] ?? "unknown");
   }
 
+  Map<String, dynamic> toJson() => {
+        "barcode": barcode,
+        "product_name": productName,
+        "brand": brand,
+        "country": country,
+        "images": {
+          "front": images.front,
+          "ingredients": images.ingredients,
+          "nutrition": images.nutrition
+        },
+        "ingredients": ingredients,
+        "allergens": allergens,
+        "nutriments": {
+          "energy_KJ": {
+            "value": nutriments.energyKJ["value"],
+            "value_100g": nutriments.energyKJ["value_100g"],
+          },
+          "energy_kcal": {
+            "value": nutriments.energyKcal["value"],
+            "value_100g": nutriments.energyKcal["value_100g"],
+          },
+          "fat": {
+            "value": nutriments.fat["value"],
+            "value_100g": nutriments.fat["value_100g"],
+          },
+          "saturated_fat": {
+            "value": nutriments.saturatedFat["value"],
+            "value_100g": nutriments.saturatedFat["value_100g"],
+          },
+          "carbohydrates": {
+            "value": nutriments.carbohydrates["value"],
+            "value_100g": nutriments.carbohydrates["value_100g"],
+          },
+          "sugars": {
+            "value": nutriments.sugars["value"],
+            "value_100g": nutriments.sugars["value_100g"],
+          },
+          "proteins": {
+            "value": nutriments.proteins["value"],
+            "value_100g": nutriments.proteins["value_100g"],
+          },
+          "salt": {
+            "value": nutriments.salt["value"],
+            "value_100g": nutriments.salt["value_100g"],
+          },
+        },
+        "nutriscore": nutriscore,
+      };
+
   Widget translateIngredients() {
     return FutureBuilder(
         future: Translator.translate(ingredients),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            final translation = snapshot.data!;
-            if (translation.detectedSourceLang == "pl") {
-              return Text(ingredients);
-            } else {
-              return Text(snapshot.data!.text);
-            }
+            return Text(snapshot.data!.text,
+                style: const TextStyle(fontSize: 15.0));
           } else if (snapshot.connectionState == ConnectionState.waiting) {
             return const Text("Wczytywanie...");
           } else {
             return Column(
               children: [
                 const Text(
-                    "Błąd tłumaczenia! Skład może zawierać oryginalną pisownię!",
-                    style: TextStyle(color: red)),
+                    "Brak tłumaczenia! Skład może zawierać oryginalną pisownię",
+                    style: TextStyle(
+                        fontSize: 15.0,
+                        color: red,
+                        fontStyle: FontStyle.italic)),
                 Text(ingredients)
               ],
             );
@@ -77,7 +121,7 @@ class Product {
   Widget translateAllergens() {
     if (allergens.isEmpty) {
       return const Text("Ten produkt nie zawiera alergenów.",
-          style: TextStyle(fontStyle: FontStyle.italic));
+          style: TextStyle(fontSize: 15.0, fontStyle: FontStyle.italic));
     }
 
     final String allergensExtracted =

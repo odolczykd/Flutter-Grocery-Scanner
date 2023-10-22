@@ -3,9 +3,9 @@ import 'package:grocery_scanner/models/product.dart';
 import 'package:grocery_scanner/models/user.dart';
 import 'package:grocery_scanner/shared/rank.dart';
 
-class DatabaseService {
+class UserDatabaseService {
   String uid;
-  DatabaseService(this.uid);
+  UserDatabaseService(this.uid);
 
   // Users Collection
 

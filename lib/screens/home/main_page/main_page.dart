@@ -4,7 +4,7 @@ import 'package:grocery_scanner/shared/colors.dart';
 import 'package:provider/provider.dart';
 
 import 'package:grocery_scanner/models/user.dart';
-import 'package:grocery_scanner/services/database.dart';
+import 'package:grocery_scanner/services/user_database.dart';
 // import 'package:grocery_scanner/services/auth.dart';
 import 'package:grocery_scanner/shared/loading.dart';
 
@@ -21,7 +21,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User?>(context)!;
-    CollectionReference users = DatabaseService(user.uid).userCollection;
+    CollectionReference users = UserDatabaseService(user.uid).userCollection;
 
     return FutureBuilder(
       future: users.doc(user.uid).get(),
@@ -108,28 +108,7 @@ class _MainPageState extends State<MainPage> {
             )),
           )),
         );
-
-        // return SafeArea(
-        //   child: Center(
-        //       child: Column(
-        //     children: [
-        //       const Text("ZALOGOWANOU"),
-        //       Text("Login: ${loggedUser.username}"),
-        //       Text("Ranga: ${loggedUser.rank}"),
-        //       Row(
-        //         children: [
-        //           IconButton(
-        //               onPressed: () async => await _auth.signOut(),
-        //               icon: const Icon(Icons.logout)),
-        //           const Text("Wyloguj się")
-        //         ],
-        //       )
-        //     ],
-        //   )),
-        // );
       },
     );
-
-    // return const Center(child: Text("Strona główna"));
   }
 }

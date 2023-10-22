@@ -5,7 +5,7 @@ import 'package:grocery_scanner/screens/home/profile/shared/horizontal_button.da
 import 'package:grocery_scanner/screens/home/profile/shared/preferences_list.dart';
 import 'package:grocery_scanner/screens/home/profile/shared/rank_dialog_content.dart';
 import 'package:grocery_scanner/services/auth.dart';
-import 'package:grocery_scanner/services/database.dart';
+import 'package:grocery_scanner/services/user_database.dart';
 import 'package:grocery_scanner/shared/colors.dart';
 import 'package:grocery_scanner/shared/label_row.dart';
 import 'package:grocery_scanner/shared/loading.dart';
@@ -30,7 +30,7 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User?>(context)!;
-    CollectionReference users = DatabaseService(user.uid).userCollection;
+    CollectionReference users = UserDatabaseService(user.uid).userCollection;
 
     return FutureBuilder(
       future: users.doc(user.uid).get(),

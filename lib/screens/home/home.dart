@@ -4,10 +4,10 @@ import 'package:grocery_scanner/models/user.dart';
 import 'package:grocery_scanner/screens/home/main_page/main_page.dart';
 import 'package:grocery_scanner/screens/home/profile/profile.dart';
 import 'package:grocery_scanner/screens/home/scanner/scanner.dart';
-import 'package:grocery_scanner/screens/product/product.dart';
+import 'package:grocery_scanner/screens/product/product_page.dart';
 import 'package:grocery_scanner/screens/product/product_creator/product_creator.dart';
 import 'package:grocery_scanner/services/auth.dart';
-import 'package:grocery_scanner/services/database.dart';
+import 'package:grocery_scanner/services/user_database.dart';
 import 'package:grocery_scanner/shared/colors.dart';
 import 'package:provider/provider.dart';
 
@@ -31,7 +31,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User?>(context)!;
-    CollectionReference users = DatabaseService(user.uid).userCollection;
+    CollectionReference users = UserDatabaseService(user.uid).userCollection;
 
     return FutureBuilder(
       future: users.doc(user.uid).get(),

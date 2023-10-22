@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:grocery_scanner/models/user.dart';
-import 'package:grocery_scanner/services/database.dart';
+import 'package:grocery_scanner/services/user_database.dart';
 
 class AuthService {
   final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;
@@ -50,7 +50,8 @@ class AuthService {
       firebase_auth.UserCredential result = await _auth
           .createUserWithEmailAndPassword(email: email, password: password);
       firebase_auth.User? user = result.user;
-      await DatabaseService(user!.uid).initializeUserData(username: username);
+      await UserDatabaseService(user!.uid)
+          .initializeUserData(username: username);
       return _convertFirebaseUserToCustomUser(user);
     } catch (e) {
       print(e.toString());

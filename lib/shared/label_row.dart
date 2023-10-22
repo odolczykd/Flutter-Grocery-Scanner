@@ -19,19 +19,22 @@ class LabelRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, color: color),
-        const SizedBox(width: 5.0),
-        Text(
-          labelText,
-          style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-        ),
-        if (isSecondaryIconEnabled) const Spacer(),
-        if (isSecondaryIconEnabled)
-          GestureDetector(
-              onTap: onTap, child: Icon(secondaryIcon, color: color))
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 5.0),
+      child: Row(
+        children: [
+          Icon(icon, color: color),
+          const SizedBox(width: 5.0),
+          Text(
+            labelText,
+            style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+          ),
+          if (isSecondaryIconEnabled) const Spacer(),
+          if (isSecondaryIconEnabled)
+            GestureDetector(
+                onTap: onTap, child: Icon(secondaryIcon, color: color))
+        ],
+      ),
     );
   }
 }

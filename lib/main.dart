@@ -6,7 +6,8 @@ import 'package:grocery_scanner/screens/home/home.dart';
 import 'package:grocery_scanner/screens/home/main_page/main_page.dart';
 import 'package:grocery_scanner/screens/home/profile/profile.dart';
 import 'package:grocery_scanner/screens/home/scanner/scanner.dart';
-import 'package:grocery_scanner/screens/product/product.dart';
+import 'package:grocery_scanner/screens/product/product_page.dart';
+import 'package:grocery_scanner/screens/product/product_fetcher_local.dart';
 import 'package:grocery_scanner/services/auth.dart';
 import 'package:provider/provider.dart';
 
@@ -38,6 +39,10 @@ class App extends StatelessWidget {
         },
         // home: AuthListener(),
         // home: Product(),
+        // home: ProductController("5900385000815")
+        // home: ProductFetcherLocal("5900512990095")
+        // home: ProductFetcherLocal("5900385000815")
+        // home: ProductController(null)
       ),
     );
   }
