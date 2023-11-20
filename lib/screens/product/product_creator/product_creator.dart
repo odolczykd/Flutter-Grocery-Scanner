@@ -5,7 +5,8 @@ import 'package:grocery_scanner/shared/colors.dart';
 import 'package:grocery_scanner/shared/form_text_field.dart';
 
 class ProductCreator extends StatefulWidget {
-  const ProductCreator({super.key});
+  final String? productBarcode;
+  const ProductCreator({super.key, this.productBarcode});
 
   @override
   State<ProductCreator> createState() => _ProductCreatorState();

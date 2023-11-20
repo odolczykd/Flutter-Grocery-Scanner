@@ -29,7 +29,7 @@ class _LoginRegisterState extends State<LoginRegister> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     const SizedBox(height: 50.0),
-                    // LOGO
+                    // TODO: LOGO
                     const Text(
                       "Grocery\nScanner",
                       style: TextStyle(

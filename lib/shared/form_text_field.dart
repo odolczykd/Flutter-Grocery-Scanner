@@ -21,7 +21,7 @@ class FormTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      // controller: TextEditingController(text: value),
+      // controller: controller,
       validator: validator,
       cursorColor: black,
       obscureText: obscureText,

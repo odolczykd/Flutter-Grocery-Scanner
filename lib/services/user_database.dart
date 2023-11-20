@@ -26,10 +26,16 @@ class UserDatabaseService {
     });
   }
 
-  Future pinProduct(Product product) async {
+  Future pinProduct(Product product, [String mode = "pin"]) async {
     var documentSnapshot = await userCollection.doc(uid).get();
     List<dynamic> pinnedProducts = documentSnapshot.get("pinnedProducts");
-    pinnedProducts.add(product);
+    if (mode == "pin") {
+      pinnedProducts.add(product);
+    } else if (mode == "unpin") {
+      pinnedProducts.remove(product);
+    } else {
+      return;
+    }
     return await userCollection
         .doc(uid)
         .update({"pinnedProducts": pinnedProducts});

@@ -52,7 +52,10 @@ class ProductNotFound extends StatelessWidget {
                     icon: Icons.home,
                     label: "Wróć na stronę główną",
                     color: orange,
-                    onPressed: () {})
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, "/home");
+                    })
               ],
             ),
           ),

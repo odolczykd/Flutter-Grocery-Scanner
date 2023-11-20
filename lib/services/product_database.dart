@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:grocery_scanner/models/product_images.dart';
 import 'package:grocery_scanner/models/product_nutriments.dart';
@@ -57,7 +55,7 @@ class ProductDatabaseService {
           "value": product.get("nutriments")["salt"]["value"],
           "value_100g": product.get("nutriments")["salt"]["value_100g"]
         }),
-        allergens: product.get("allergens"),
+        allergens: (product.get("allergens") as List).toSet(),
         nutriscore: product.get("nutriscore"));
   }
 }

@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 const DEEPL_API_URL = "https://api-free.deepl.com/v2/translate";
 
-class Translator {
+class TranslatorService {
   // static Future<TranslationResult> translate(String sourceText) async {
   //   final translation =
   //       await GoogleTranslator().translate(sourceText, to: "pl");

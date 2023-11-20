@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_scanner/models/product.dart';
 import 'package:grocery_scanner/screens/product/product_page.dart';
 import 'package:grocery_scanner/screens/product/product_fetcher_api.dart';
 import 'package:grocery_scanner/services/product_database.dart';
 import 'package:grocery_scanner/shared/loading.dart';
+import 'package:provider/provider.dart';
 
 class ProductFetcherLocal extends StatefulWidget {
   final String? barcode;
@@ -28,6 +30,8 @@ class _ProductFetcherLocalState extends State<ProductFetcherLocal> {
 
   @override
   Widget build(BuildContext context) {
+    // final user = Provider.of<User?>(context)!;
+
     return FutureBuilder(
       future: productFuture,
       builder: (context, snapshot) {
@@ -42,12 +46,5 @@ class _ProductFetcherLocalState extends State<ProductFetcherLocal> {
         }
       },
     );
-
-    // Firstly, check if product is in local database
-
-    // Secondly,
-    // * get the API request
-    // * transform request to Product class
-    // * save it in local database
   }
 }

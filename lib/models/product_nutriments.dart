@@ -201,12 +201,12 @@ class ProductNutriments {
   }
 }
 
+bool _areBothPresent(Map<String, dynamic> nutriment) =>
+    nutriment["value"] != "N/A" || nutriment["value_100g"] != "N/A";
+
 extension Precision on num {
   String toPrecision(int n) {
     num mod = pow(10, n);
     return ((this * mod).round() / mod).toString();
   }
 }
-
-bool _areBothPresent(Map<String, dynamic> nutriment) =>
-    nutriment["value"] != "N/A" || nutriment["value_100g"] != "N/A";

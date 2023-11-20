@@ -76,6 +76,7 @@ flutter:
   assets:
   - assets/kolczyk.png
   - assets/nutriscore.png
+  - assets/data/allergens.json
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
