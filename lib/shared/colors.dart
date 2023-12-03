@@ -33,3 +33,26 @@ Color nutriscoreColor(String nutriscoreGrade) {
       return nutriscoreUnknown;
   }
 }
+
+Widget nutriscoreTile(String nutriscoreGrade) {
+  return Container(
+    decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: nutriscoreColor(nutriscoreGrade)),
+    width: 50,
+    height: 50,
+    child: Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            nutriscoreGrade.toUpperCase(),
+            style: const TextStyle(
+                fontSize: 25, fontWeight: FontWeight.bold, color: white),
+          ),
+        ],
+      ),
+    ),
+  );
+}

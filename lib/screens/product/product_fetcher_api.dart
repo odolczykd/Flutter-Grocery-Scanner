@@ -6,6 +6,7 @@ import 'package:grocery_scanner/models/product.dart';
 import 'package:grocery_scanner/models/user.dart';
 import 'package:grocery_scanner/screens/product/product_page.dart';
 import 'package:grocery_scanner/screens/product/product_not_found.dart';
+import 'package:grocery_scanner/screens/product/shared/allergens_functions.dart';
 import 'package:grocery_scanner/services/open_food_facts.dart';
 import 'package:grocery_scanner/services/product_database.dart';
 import 'package:grocery_scanner/services/translator.dart';
@@ -56,13 +57,13 @@ class _ProductFetcherApiState extends State<ProductFetcherApi> {
         });
 
         // Extract Allergens from Ingredients
-        final json = await _readJsonFile("assets/data/allergens.json");
+        final json = await readJsonFile("assets/data/allergens.json");
         var separatedAllergens = productAllergensTranslation!
             .split(", ")
             .map((e) => e.trim())
             .toSet();
         final extractedFromIngredients =
-            _separateWords(productIngredientsTranslation);
+            separateWords(productIngredientsTranslation);
         separatedAllergens.addAll(extractedFromIngredients);
 
         for (String allergen in separatedAllergens) {
@@ -111,21 +112,21 @@ class _ProductFetcherApiState extends State<ProductFetcherApi> {
   }
 }
 
-Future<Map<String, dynamic>> _readJsonFile(String filePath) async {
-  final file = await rootBundle.loadString(filePath);
-  return jsonDecode(file);
-}
+// Future<Map<String, dynamic>> _readJsonFile(String filePath) async {
+//   final file = await rootBundle.loadString(filePath);
+//   return jsonDecode(file);
+// }
 
-List<String> _separateWords(String? text) {
-  const separateRuleRegex =
-      r"[^\p{Alphabetic}\p{Mark}\p{Connector_Punctuation}\p{Join_Control}\s]+";
-  return text == null
-      ? []
-      : text
-          .replaceAll(RegExp(separateRuleRegex, unicode: true), "")
-          .split(" ")
-          .where((e) => e.isNotEmpty)
-          .map((e) => e.trim())
-          .map((e) => e.toLowerCase())
-          .toList();
-}
+// List<String> _separateWords(String? text) {
+//   const separateRuleRegex =
+//       r"[^\p{Alphabetic}\p{Mark}\p{Connector_Punctuation}\p{Join_Control}\s]+";
+//   return text == null
+//       ? []
+//       : text
+//           .replaceAll(RegExp(separateRuleRegex, unicode: true), "")
+//           .split(" ")
+//           .where((e) => e.isNotEmpty)
+//           .map((e) => e.trim())
+//           .map((e) => e.toLowerCase())
+//           .toList();
+// }

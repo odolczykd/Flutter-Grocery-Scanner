@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_scanner/models/product.dart';
+import 'package:grocery_scanner/screens/product/shared/allergens_functions.dart';
 import 'package:grocery_scanner/screens/product/shared/full_screen_image.dart';
 import 'package:grocery_scanner/screens/product/shared/product_nutriscore_dialog_content.dart';
 import 'package:grocery_scanner/shared/colors.dart';

@@ -31,25 +31,27 @@ class App extends StatelessWidget {
       value: AuthService().user,
       initialData: null,
       child: MaterialApp(
-          title: "Grocery Scanner",
-          initialRoute: "/",
-          routes: {
-            "/": (context) => const AuthListener(),
-            "/home": (context) => const Home(),
-            "/main": (context) => const MainPage(),
-            "/scanner": (context) => const Scanner(),
-            "/profile": (context) => const Profile()
-          },
-          // home: AuthListener(),
-          // home: Product(),
-          // home: ProductCreator(),
-          // home: ProductController("5900385000815")
-          // home: ProductFetcherLocal("5900512990095")
-          // home: ProductFetcherLocal("8714100666920")
-          // home: ProductFetcherLocal("5900385000815")
-          // home: ProductFetcherLocal("5900820011529")
-          // home: ProductController(null)
-          ),
+        title: "Grocery Scanner",
+        initialRoute: "/product/rip",
+        routes: {
+          "/": (context) => const AuthListener(),
+          "/home": (context) => const Home(),
+          "/main": (context) => const MainPage(),
+          "/scanner": (context) => const Scanner(),
+          "/profile": (context) => const Profile(),
+          "/product/rip": (context) => const ProductNotFound(),
+          "/product/creator": (context) => const ProductCreator()
+        },
+        // home: AuthListener(),
+        // home: Product(),
+        // home: ProductCreator(),
+        // home: ProductController("5900385000815")
+        // home: ProductFetcherLocal("5900512990095")
+        // home: ProductFetcherLocal("8714100666920")
+        // home: ProductFetcherLocal("5900385000815")
+        // home: ProductFetcherLocal("5900820011529")
+        // home: ProductController(null)
+      ),
     );
   }
 }
