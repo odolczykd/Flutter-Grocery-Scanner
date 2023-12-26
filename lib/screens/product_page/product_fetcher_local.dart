@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_scanner/models/product.dart';
-import 'package:grocery_scanner/screens/product/product_page.dart';
-import 'package:grocery_scanner/screens/product/product_fetcher_api.dart';
+import 'package:grocery_scanner/screens/product_page/product_page.dart';
+import 'package:grocery_scanner/screens/product_page/product_fetcher_api.dart';
 import 'package:grocery_scanner/services/product_database.dart';
 import 'package:grocery_scanner/shared/loading.dart';
 import 'package:provider/provider.dart';

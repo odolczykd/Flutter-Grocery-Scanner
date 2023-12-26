@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:grocery_scanner/screens/product/product_fetcher_local.dart';
+import 'package:grocery_scanner/screens/product_page/product_fetcher_local.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 
@@ -17,7 +17,7 @@ class _ScannerState extends State<Scanner> {
     // final user = Provider.of<User?>(context)!;
     
     return MobileScanner(
-      fit: BoxFit.fill,
+      fit: BoxFit.cover,
       controller: MobileScannerController(
           facing: CameraFacing.back,
           torchEnabled: false,

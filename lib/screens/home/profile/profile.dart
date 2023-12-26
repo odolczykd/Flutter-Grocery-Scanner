@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:grocery_scanner/models/user.dart';
 import 'package:grocery_scanner/screens/home/profile/shared/horizontal_button.dart';
 import 'package:grocery_scanner/screens/home/profile/shared/preferences_list.dart';
-import 'package:grocery_scanner/screens/home/profile/shared/rank_dialog_content.dart';
 import 'package:grocery_scanner/services/auth.dart';
 import 'package:grocery_scanner/services/user_database.dart';
 import 'package:grocery_scanner/shared/colors.dart';
 import 'package:grocery_scanner/shared/label_row.dart';
 import 'package:grocery_scanner/shared/loading.dart';
-import 'package:grocery_scanner/shared/rank.dart';
 import 'package:provider/provider.dart';
 
 class Profile extends StatefulWidget {
@@ -52,65 +50,66 @@ class _ProfileState extends State<Profile> {
         return SingleChildScrollView(
           child: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(20),
               child: Center(
                   child: Column(
                 children: [
                   Row(children: [
-                    const CircleAvatar(
-                      backgroundImage: AssetImage("assets/kolczyk.png"),
-                      radius: 40.0,
+                    const Icon(
+                      Icons.account_circle,
+                      color: green,
+                      size: 50,
                     ),
-                    const SizedBox(width: 15.0),
+                    const SizedBox(width: 15),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(loggedUser.username,
                             style: const TextStyle(
                                 color: black,
-                                fontSize: 22.0,
+                                fontSize: 24,
                                 fontWeight: FontWeight.bold)),
                         // Rank Row
-                        TextButton(
-                          onPressed: () => showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text("Rangi",
-                                  style: TextStyle(
-                                      fontSize: 20.0,
-                                      fontWeight: FontWeight.bold)),
-                              content: const RankDialogContent(),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  style: TextButton.styleFrom(
-                                      foregroundColor: black),
-                                  child: const Text("OK"),
-                                )
-                              ],
-                            ),
-                          ),
-                          style: TextButton.styleFrom(foregroundColor: black),
-                          child: Row(
-                            children: [
-                              rankIcon(loggedUser.rank),
-                              const SizedBox(width: 5.0),
-                              Text(convertRank(loggedUser.rank),
-                                  style: const TextStyle(
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.bold)),
-                              const SizedBox(width: 5.0),
-                              const Icon(
-                                Icons.info_outline,
-                                color: grey,
-                              )
-                            ],
-                          ),
-                        )
+                        // TextButton(
+                        //   onPressed: () => showDialog(
+                        //     context: context,
+                        //     builder: (context) => AlertDialog(
+                        //       title: const Text("Rangi",
+                        //           style: TextStyle(
+                        //               fontSize: 20.0,
+                        //               fontWeight: FontWeight.bold)),
+                        //       content: const RankDialogContent(),
+                        //       actions: [
+                        //         TextButton(
+                        //           onPressed: () => Navigator.pop(context),
+                        //           style: TextButton.styleFrom(
+                        //               foregroundColor: black),
+                        //           child: const Text("OK"),
+                        //         )
+                        //       ],
+                        //     ),
+                        //   ),
+                        //   style: TextButton.styleFrom(foregroundColor: black),
+                        //   child: Row(
+                        //     children: [
+                        //       rankIcon(loggedUser.rank),
+                        //       const SizedBox(width: 5.0),
+                        //       Text(convertRank(loggedUser.rank),
+                        //           style: const TextStyle(
+                        //               fontSize: 16.0,
+                        //               fontWeight: FontWeight.bold)),
+                        //       const SizedBox(width: 5.0),
+                        //       const Icon(
+                        //         Icons.info_outline,
+                        //         color: grey,
+                        //       )
+                        //     ],
+                        //   ),
+                        // )
                       ],
                     )
                   ]),
-                  const SizedBox(height: 25.0),
+                  const SizedBox(height: 25),
                   LabelRow(
                       icon: Icons.kebab_dining,
                       labelText: "Twoje preferencje",
@@ -119,7 +118,7 @@ class _ProfileState extends State<Profile> {
                       secondaryIcon: Icons.edit,
                       onTap: () {}),
                   PreferencesList(list: loggedUser.preferences),
-                  const SizedBox(height: 15.0),
+                  const SizedBox(height: 15),
                   LabelRow(
                       icon: Icons.no_meals,
                       labelText: "Ograniczenia i uczulenia",
@@ -134,7 +133,7 @@ class _ProfileState extends State<Profile> {
                     "ryby",
                     "skorupiaki"
                   ]),
-                  const SizedBox(height: 15.0),
+                  const SizedBox(height: 15),
                   LabelRow(
                       icon: Icons.person_add,
                       labelText: "Produkty dodane przez Ciebie",
@@ -142,7 +141,7 @@ class _ProfileState extends State<Profile> {
                       isSecondaryIconEnabled: false,
                       secondaryIcon: Icons.edit,
                       onTap: () {}),
-                  const SizedBox(height: 25.0),
+                  const SizedBox(height: 25),
                   HorizontalButton(
                       icon: Icons.edit,
                       label: "Edytuj profil",

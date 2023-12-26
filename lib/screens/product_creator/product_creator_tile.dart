@@ -3,24 +3,22 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:grocery_scanner/shared/colors.dart';
 
-class ProductCreatorTile extends StatelessWidget {
+class ProductCreatorImageInputTile extends StatelessWidget {
   final TilePosition position;
   final IconData icon;
   final String text;
   final void Function()? onPressed;
   final File? image;
   final String? deleteText;
-  final void Function()? onDelete;
 
-  const ProductCreatorTile(
+  const ProductCreatorImageInputTile(
       {super.key,
       required this.icon,
       required this.text,
       required this.position,
       required this.onPressed,
       this.image,
-      this.deleteText,
-      this.onDelete});
+      this.deleteText});
 
   @override
   Widget build(BuildContext context) {

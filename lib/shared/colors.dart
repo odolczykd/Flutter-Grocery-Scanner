@@ -4,6 +4,7 @@ const Color white = Colors.white;
 const Color black = Colors.black;
 const Color grey = Color(0xFF9E9E9E);
 const Color greyButton = Color(0x46A8A8A8);
+const Color greyButtonFullOpacity = Color(0xFF5F5F5F);
 const Color greyBg = Color(0xFFEEEEEE);
 const Color green = Color(0xFF4FB000);
 const Color orange = Color(0xFFEF6C00);

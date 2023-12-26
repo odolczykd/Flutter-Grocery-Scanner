@@ -26,6 +26,13 @@ class UserDatabaseService {
     });
   }
 
+  Future relateUserWithProduct(String barcode) async {
+    var documentSnapshot = await userCollection.doc(uid).get();
+    List<dynamic> yourProducts = documentSnapshot.get("yourProducts");
+    yourProducts.add(barcode);
+    return await userCollection.doc(uid).update({"yourProducts": yourProducts});
+  }
+
   Future pinProduct(Product product, [String mode = "pin"]) async {
     var documentSnapshot = await userCollection.doc(uid).get();
     List<dynamic> pinnedProducts = documentSnapshot.get("pinnedProducts");
@@ -58,6 +65,11 @@ class UserDatabaseService {
 
   Stream<UserData> get userData {
     return userCollection.doc(uid).snapshots().map(_userDataFromSnapshot);
+  }
+
+  Future<List> getFieldByName(String fieldName) async {
+    var documentSnapshot = await userCollection.doc(uid).get();
+    return documentSnapshot.get(fieldName);
   }
 
   // list all usernames in database

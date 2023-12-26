@@ -1,13 +1,15 @@
 // ignore_for_file: unnecessary_cast
 
 import 'package:flutter/material.dart';
-
-import '../../../shared/colors.dart';
-import '../../home/profile/shared/horizontal_button.dart';
+import 'package:grocery_scanner/screens/home/profile/shared/horizontal_button.dart';
+import 'package:grocery_scanner/shared/colors.dart';
 
 class ProductCreatorAllergensList extends StatefulWidget {
   Set allergens;
-  ProductCreatorAllergensList(this.allergens, {super.key});
+  Function(Set) callback;
+
+  ProductCreatorAllergensList(
+      {required this.allergens, required this.callback, super.key});
 
   @override
   State<ProductCreatorAllergensList> createState() =>
@@ -19,7 +21,7 @@ class _ProductCreatorAllergensListState
   Set<String> unusedAllergens = {};
   Set<String> allergensList = {};
   Widget? allergenSelect;
-  Widget addNewAllergenButton = const Placeholder();
+  Widget addNewAllergenButton = Container();
 
   @override
   void initState() {
@@ -97,6 +99,7 @@ class _ProductCreatorAllergensListState
                 setState(() {
                   allergensList.remove(e);
                   unusedAllergens.add(e);
+                  widget.callback(allergensList);
                 });
               },
               child: const Icon(
@@ -115,6 +118,7 @@ class _ProductCreatorAllergensListState
         .toList();
 
     return DropdownButton(
+        hint: const Text("Wybierz alergen z listy..."),
         style: const TextStyle(color: black, fontSize: 14),
         items: dropwdownItems,
         onChanged: (value) {
@@ -122,6 +126,7 @@ class _ProductCreatorAllergensListState
             allergensList.add(value!);
             unusedAllergens.remove(value);
             allergenSelect = null;
+            widget.callback(allergensList);
           });
         });
   }

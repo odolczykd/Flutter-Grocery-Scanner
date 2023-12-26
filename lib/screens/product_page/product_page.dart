@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_scanner/models/product.dart';
-import 'package:grocery_scanner/screens/product/shared/allergens_functions.dart';
-import 'package:grocery_scanner/screens/product/shared/full_screen_image.dart';
-import 'package:grocery_scanner/screens/product/shared/product_nutriscore_dialog_content.dart';
+import 'package:grocery_scanner/screens/product_page/shared/allergens_functions.dart';
+import 'package:grocery_scanner/screens/product_page/shared/full_screen_image.dart';
+import 'package:grocery_scanner/screens/product_page/shared/product_nutriscore_dialog_content.dart';
+import 'package:grocery_scanner/services/auth.dart';
+import 'package:grocery_scanner/services/user_database.dart';
 import 'package:grocery_scanner/shared/colors.dart';
 import 'package:grocery_scanner/shared/label_row.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +25,7 @@ class _ProductPageState extends State<ProductPage> {
   Widget build(BuildContext context) {
     String url = widget.product.images.front;
     // final loggedUser = Provider.of<User?>(context)!;
+    final AuthService _auth = AuthService();
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -101,8 +104,8 @@ class _ProductPageState extends State<ProductPage> {
                         children: [
                           TextButton(
                             onPressed: () async {
-                              // await UserDatabaseService(loggedUser.uid)
-                              //     .pinProduct(widget.product);
+                              await UserDatabaseService(_auth.currentUserUid!)
+                                  .pinProduct(widget.product);
                             },
                             style: TextButton.styleFrom(
                                 padding: EdgeInsets.zero,

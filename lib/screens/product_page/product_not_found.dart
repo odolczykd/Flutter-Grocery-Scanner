@@ -47,7 +47,7 @@ class ProductNotFound extends StatelessWidget {
                     label: "Dodaj nowy produkt",
                     color: orange,
                     onPressed: () =>
-                        Navigator.of(context).pushNamed("/product/creator")),
+                        Navigator.of(context).pushNamed("/product/add")),
                 const SizedBox(height: 10),
                 HorizontalButton(
                     icon: Icons.home,

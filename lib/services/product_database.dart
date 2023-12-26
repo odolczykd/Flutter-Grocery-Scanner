@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:grocery_scanner/models/product.dart';
 import 'package:grocery_scanner/models/product_images.dart';
 import 'package:grocery_scanner/models/product_nutriments.dart';
-
-import '../models/product.dart';
 
 class ProductDatabaseService {
   String barcode;
@@ -11,9 +10,14 @@ class ProductDatabaseService {
   final CollectionReference productsCollection =
       FirebaseFirestore.instance.collection("products");
 
-  Future addProduct(Product product) async {
+  Future<bool> addProduct(Product product) async {
     final productJson = product.toJson();
-    return await productsCollection.doc(barcode).set(productJson);
+    try {
+      await productsCollection.doc(barcode).set(productJson);
+      return true;
+    } on Exception {
+      return false;
+    }
   }
 
   Future<Product?> getProduct() async {
