@@ -15,7 +15,7 @@ class _HomeContentState extends State<HomeContent> {
     final userData = Provider.of<UserData>(context);
 
     return Column(
-      children: [Text(userData.username), Text(userData.rank)],
+      children: [Text(userData.username)],
     );
   }
 }

@@ -4,8 +4,8 @@ import 'package:grocery_scanner/shared/colors.dart';
 class HorizontalButton extends StatelessWidget {
   final IconData icon;
   final String label;
-  final void Function() onPressed;
   final Color color;
+  final void Function() onPressed;
 
   const HorizontalButton(
       {super.key,
@@ -16,20 +16,26 @@ class HorizontalButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
-            backgroundColor: greyButton,
-            shadowColor: Colors.transparent,
-            minimumSize: const Size.fromHeight(40.0),
-            foregroundColor: black),
-        onPressed: onPressed,
-        icon: Icon(
-          icon,
-          color: color,
-        ),
-        label: Text(
-          label,
-          style: const TextStyle(fontSize: 16.0),
-        ));
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+              backgroundColor: white,
+              side: BorderSide(color: color, width: 2),
+              shadowColor: Colors.transparent,
+              minimumSize: const Size.fromHeight(50),
+              foregroundColor: color,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10))),
+          onPressed: onPressed,
+          icon: Icon(
+            icon,
+            color: color,
+          ),
+          label: Text(
+            label.toUpperCase(),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          )),
+    );
   }
 }

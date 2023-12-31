@@ -1,14 +1,20 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_scanner/models/user.dart';
+import 'package:grocery_scanner/screens/home/profile/input_dialogs/profile_display_name_input_dialog.dart';
+import 'package:grocery_scanner/screens/home/profile/input_dialogs/profile_preferences_input_dialog.dart';
 import 'package:grocery_scanner/screens/home/profile/shared/horizontal_button.dart';
 import 'package:grocery_scanner/screens/home/profile/shared/preferences_list.dart';
+import 'package:grocery_scanner/screens/product_creator/allergens_list.dart';
 import 'package:grocery_scanner/services/auth.dart';
 import 'package:grocery_scanner/services/user_database.dart';
 import 'package:grocery_scanner/shared/colors.dart';
+import 'package:grocery_scanner/shared/form_text_field.dart';
 import 'package:grocery_scanner/shared/label_row.dart';
 import 'package:grocery_scanner/shared/loading.dart';
 import 'package:provider/provider.dart';
+
+import 'input_dialogs/profile_restrictions_input_dialog.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -20,31 +26,36 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   final AuthService _auth = AuthService();
 
+  String? tempDisplayName;
+  List preferences = [];
+  List restrictions = [];
+
   @override
   void initState() {
     super.initState();
+    _fetchPreferencesAndRestrictions();
   }
 
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User?>(context)!;
-    CollectionReference users = UserDatabaseService(user.uid).userCollection;
 
     return FutureBuilder(
-      future: users.doc(user.uid).get(),
+      future: UserDatabaseService(user.uid).userCollection.doc(user.uid).get(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
+          // TODO: Beautify it
           return const Text("Cos poszlo nie tak");
         }
         if (snapshot.hasData && !snapshot.data!.exists) {
+          // TODO: Beautify it
           return const Text("Dokument nie istnieje");
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Loading();
         }
 
-        Map<String, dynamic> data =
-            snapshot.data!.data() as Map<String, dynamic>;
+        final data = snapshot.data!.data() as Map<String, dynamic>;
         UserData loggedUser = UserData.fromJson(data);
 
         return SingleChildScrollView(
@@ -58,100 +69,154 @@ class _ProfileState extends State<Profile> {
                     const Icon(
                       Icons.account_circle,
                       color: green,
-                      size: 50,
+                      size: 60,
                     ),
                     const SizedBox(width: 15),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(loggedUser.username,
+                        Text(tempDisplayName ?? loggedUser.displayName,
                             style: const TextStyle(
                                 color: black,
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold)),
-                        // Rank Row
-                        // TextButton(
-                        //   onPressed: () => showDialog(
-                        //     context: context,
-                        //     builder: (context) => AlertDialog(
-                        //       title: const Text("Rangi",
-                        //           style: TextStyle(
-                        //               fontSize: 20.0,
-                        //               fontWeight: FontWeight.bold)),
-                        //       content: const RankDialogContent(),
-                        //       actions: [
-                        //         TextButton(
-                        //           onPressed: () => Navigator.pop(context),
-                        //           style: TextButton.styleFrom(
-                        //               foregroundColor: black),
-                        //           child: const Text("OK"),
-                        //         )
-                        //       ],
-                        //     ),
-                        //   ),
-                        //   style: TextButton.styleFrom(foregroundColor: black),
-                        //   child: Row(
-                        //     children: [
-                        //       rankIcon(loggedUser.rank),
-                        //       const SizedBox(width: 5.0),
-                        //       Text(convertRank(loggedUser.rank),
-                        //           style: const TextStyle(
-                        //               fontSize: 16.0,
-                        //               fontWeight: FontWeight.bold)),
-                        //       const SizedBox(width: 5.0),
-                        //       const Icon(
-                        //         Icons.info_outline,
-                        //         color: grey,
-                        //       )
-                        //     ],
-                        //   ),
-                        // )
+                        Text("(${loggedUser.username})",
+                            style: const TextStyle(
+                                color: black,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold))
                       ],
                     )
                   ]),
+
+                  // Restrictions
                   const SizedBox(height: 25),
-                  LabelRow(
-                      icon: Icons.kebab_dining,
-                      labelText: "Twoje preferencje",
-                      color: green,
-                      isSecondaryIconEnabled: true,
-                      secondaryIcon: Icons.edit,
-                      onTap: () {}),
-                  PreferencesList(list: loggedUser.preferences),
-                  const SizedBox(height: 15),
                   LabelRow(
                       icon: Icons.no_meals,
                       labelText: "Ograniczenia i uczulenia",
                       color: green,
                       isSecondaryIconEnabled: true,
                       secondaryIcon: Icons.edit,
-                      onTap: () {}),
-                  PreferencesList(list: [
-                    "orzechy",
-                    "nabiał",
-                    "jaja",
-                    "ryby",
-                    "skorupiaki"
-                  ]),
+                      onTap: () => showDialog(
+                          context: context,
+                          builder: (context) => ProfileRestrictionsInputDialog(
+                              initValue: restrictions,
+                              setValue: (input) async {
+                                setState(() => restrictions = input);
+
+                                bool result = await UserDatabaseService(
+                                        _auth.currentUserUid!)
+                                    .updateField("restrictions", input);
+                                if (result) {
+                                  Fluttertoast.showToast(
+                                      msg:
+                                          "Zaktualizowano listę ograniczeń i uczeleń",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      fontSize: 16);
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg:
+                                          "Nie udało się zaktualizować listy ograniczeń i uczeleń",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.BOTTOM,
+                                      fontSize: 16);
+                                }
+                              }))),
+                  _renderRestrictionsList(restrictions),
+
+                  // Preferences
                   const SizedBox(height: 15),
                   LabelRow(
-                      icon: Icons.person_add,
-                      labelText: "Produkty dodane przez Ciebie",
+                      icon: Icons.kebab_dining,
+                      labelText: "Twoje preferencje",
                       color: green,
-                      isSecondaryIconEnabled: false,
+                      isSecondaryIconEnabled: true,
                       secondaryIcon: Icons.edit,
-                      onTap: () {}),
-                  const SizedBox(height: 25),
-                  HorizontalButton(
-                      icon: Icons.edit,
-                      label: "Edytuj profil",
+                      onTap: () => showDialog(
+                          context: context,
+                          builder: (context) => ProfilePreferencesInputDialog(
+                              initValue: preferences,
+                              setValue: (input) async {
+                                setState(() => preferences = input);
+
+                                bool result = await UserDatabaseService(
+                                        _auth.currentUserUid!)
+                                    .updateField("preferences", input);
+                                if (result) {
+                                  Fluttertoast.showToast(
+                                      msg: "Zaktualizowano listę preferencji",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      fontSize: 16);
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg:
+                                          "Nie udało się zaktualizować listy preferencji",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.BOTTOM,
+                                      fontSize: 16);
+                                }
+                              }))),
+                  PreferencesList(list: preferences),
+
+                  // Profile Info
+                  const SizedBox(height: 15),
+                  const LabelRow(
+                      icon: Icons.info,
+                      labelText: "Informacje o profilu",
                       color: green,
-                      onPressed: () {}),
+                      isSecondaryIconEnabled: false),
+                  _renderProfileInfo(tempDisplayName ?? loggedUser.displayName,
+                      loggedUser.createdAtTimestamp),
+
+                  // Options (delete account + sign out)
+                  const SizedBox(height: 15),
+                  const LabelRow(
+                      icon: Icons.settings,
+                      labelText: "Opcje",
+                      color: green,
+                      isSecondaryIconEnabled: false),
+                  const SizedBox(height: 10),
+                  HorizontalButton(
+                      icon: Icons.add,
+                      label: "Dodaj nowy produkt",
+                      color: green,
+                      onPressed: () =>
+                          Navigator.of(context).pushNamed("/product/add")),
                   HorizontalButton(
                       icon: Icons.logout,
                       label: "Wyloguj się",
                       color: green,
-                      onPressed: () async => await _auth.signOut())
+                      onPressed: () async => await _auth.signOut()),
+                  HorizontalButton(
+                      icon: Icons.person_off,
+                      label: "Usuń konto",
+                      color: red,
+                      onPressed: () => showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                title: const Text("Usuń konto",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold)),
+                                content: const Text(
+                                    "Wszystkie dane dotyczące Twoich preferencji i przypiętych produktów zostaną utracone. Dodane przez Ciebie produkty pozostaną nienaruszone. Czy na pewno chcesz usunąć konto?"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    style: TextButton.styleFrom(
+                                        foregroundColor: black),
+                                    child: const Text("ANULUJ"),
+                                  ),
+                                  TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      style: TextButton.styleFrom(
+                                          foregroundColor: black),
+                                      child: const Text("USUŃ KONTO",
+                                          style: TextStyle(color: red)))
+                                ],
+                              ))),
                 ],
               )),
             ),
@@ -160,4 +225,119 @@ class _ProfileState extends State<Profile> {
       },
     );
   }
+
+  Future _fetchPreferencesAndRestrictions() async {
+    List _preferences = await UserDatabaseService(_auth.currentUserUid!)
+        .getFieldByName("preferences");
+    List _restrictions = await UserDatabaseService(_auth.currentUserUid!)
+        .getFieldByName("restrictions");
+
+    setState(() {
+      preferences = _preferences;
+      restrictions = _restrictions;
+    });
+  }
+
+  Widget _renderRestrictionsList(List restrictions) {
+    if (restrictions.isEmpty) {
+      return Container(
+        margin: const EdgeInsets.only(top: 10, bottom: 15),
+        child: const Column(children: [
+          Text(
+            "Póki co nic tu nie ma...",
+            style: TextStyle(fontSize: 16),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Kliknij "),
+              Icon(Icons.edit, color: green),
+              Text(" po prawej stronie, aby dodać element")
+            ],
+          )
+        ]),
+      );
+    }
+    return Column(
+        children: restrictions
+            .map((restr) => Row(children: [
+                  const SizedBox(width: 5),
+                  const Icon(
+                    Icons.navigate_next,
+                    color: green,
+                  ),
+                  Text(allergenLabels[restr]!),
+                ]))
+            .toList());
+  }
+
+  Widget _renderProfileInfo(String displayName, int createdAtTimestamp) {
+    final date = DateTime.fromMillisecondsSinceEpoch(createdAtTimestamp);
+    final accountCreatedDateFormatted =
+        "${date.day}.${date.month}.${date.year}";
+    final elapsedTimeFromAccountCreationFormatted =
+        _formatElapsedTimeFromAccountCreation(createdAtTimestamp);
+
+    return Align(
+        alignment: Alignment.centerLeft,
+        child: Column(children: [
+          Row(children: [
+            const Text("Imię: ", style: TextStyle(fontSize: 16)),
+            Text(displayName,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const Spacer(),
+            GestureDetector(
+                onTap: () => showDialog(
+                    context: context,
+                    builder: (context) => ProfileDisplayNameInputDialog(
+                        initValue: displayName,
+                        setValue: (input) async {
+                          setState(() => tempDisplayName = input);
+                          bool result =
+                              await UserDatabaseService(_auth.currentUserUid!)
+                                  .updateField("display_name", input);
+                          if (result) {
+                            Fluttertoast.showToast(
+                                msg: "Zmieniono imię",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                fontSize: 16);
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: "Nie udało się zmienić imienia",
+                                toastLength: Toast.LENGTH_LONG,
+                                gravity: ToastGravity.BOTTOM,
+                                fontSize: 16);
+                          }
+                        })),
+                child: const Icon(Icons.edit, color: green))
+          ]),
+          Row(
+            children: [
+              const Text("Utworzono: ", style: TextStyle(fontSize: 16)),
+              Text(
+                  "$accountCreatedDateFormatted ($elapsedTimeFromAccountCreationFormatted)",
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 16)),
+            ],
+          )
+        ]));
+  }
+
+  String _formatElapsedTimeFromAccountCreation(int createdAtTimestamp) {
+    num difference = DateTime.now().millisecondsSinceEpoch - createdAtTimestamp;
+    int days = (difference / (1000 * 60 * 60 * 24)).floor();
+    return days == 1 ? "$days dzień temu" : "$days dni temu";
+  }
+
+  // List<String> _mapPreferencesCodes() {
+  //   Map<String, String> translations = {
+  //     "vegetarian": "wegetariańskie",
+  //     "vegan": "wegańskie",
+  //     "palm_oil_free": "bez oleju palmowego"
+  //   };
+
+  //   return preferences.map((pref) => translations[pref]!).toList();
+  // }
 }

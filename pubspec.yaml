@@ -77,7 +77,6 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-  - assets/kolczyk.png
   - assets/nutriscore.png
   - assets/data/allergens.json
   #   - images/a_dot_burr.jpeg

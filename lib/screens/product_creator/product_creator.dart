@@ -10,6 +10,8 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 import 'package:grocery_scanner/models/product.dart';
 import 'package:grocery_scanner/models/product_images.dart';
 import 'package:grocery_scanner/models/product_nutriments.dart';
+import 'package:grocery_scanner/screens/product_creator/product_creator_barcode_input_dialog.dart';
+import 'package:grocery_scanner/screens/product_creator/product_creator_ingredients_input_dialog.dart';
 import 'package:grocery_scanner/screens/product_creator/product_creator_tile.dart';
 import 'package:grocery_scanner/screens/product_page/shared/product_nutriscore_dialog_content.dart';
 import 'package:grocery_scanner/services/auth.dart';
@@ -139,44 +141,56 @@ class _ProductCreatorState extends State<ProductCreator> {
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16)),
                     const SizedBox(height: 10),
-                    FormTextField(
-                      labelText: "Kod kreskowy",
-                      color: green,
-                      obscureText: false,
-                      callback: (val) {
-                        Future.delayed(const Duration(seconds: 3),
-                            () => setState(() => barcode = val));
-                      },
-                      validator: (val) {
-                        if (!RegExp(r"^[0-9]+$").hasMatch(val!)) {
-                          return "Kod kreskowy może zawierać wyłącznie cyfry";
-                        } else if (!(val.length == 8 || val.length == 13)) {
-                          return "Kod kreskowy musi mieć 8 lub 13 cyfr";
-                        } else {
-                          return null;
-                        }
-                      },
-                      value: barcode,
-                    ),
+                    LabelRow(
+                        icon: Icons.qr_code_scanner,
+                        labelText: "Kod kreskowy",
+                        color: green,
+                        isSecondaryIconEnabled: true,
+                        secondaryIcon: Icons.edit,
+                        onTap: () => showDialog(
+                            context: context,
+                            builder: (context) =>
+                                ProductCreatorBarcodeInputDialog(
+                                    initValue: barcode,
+                                    setValue: (input) =>
+                                        setState(() => barcode = input)))),
+                    Align(
+                        alignment: Alignment.centerLeft,
+                        child: barcode.isNotEmpty
+                            ? Text(barcode,
+                                style: const TextStyle(fontSize: 16))
+                            : const Text(
+                                "Nie zeskanowano kodu kreskowego",
+                                style: TextStyle(fontStyle: FontStyle.italic),
+                                textAlign: TextAlign.left,
+                              )),
                     const SizedBox(height: 10.0),
-                    FormTextField(
+                    LabelRow(
+                      icon: Icons.format_list_bulleted,
                       labelText: "Skład produktu",
                       color: green,
-                      obscureText: false,
-                      callback: (val) {
-                        Future.delayed(const Duration(seconds: 3),
-                            () => setState(() => ingredients = val));
-                      },
-                      validator: (val) {
-                        if (val!.isEmpty) {
-                          return "Skład produktu nie może być pusty";
-                        } else {
-                          return null;
-                        }
-                      },
-                      value: ingredients,
-                      multiline: true,
+                      isSecondaryIconEnabled: true,
+                      secondaryIcon: Icons.edit,
+                      onTap: () => showDialog(
+                          context: context,
+                          builder: (context) =>
+                              ProductCreatorIngredientsInputDialog(
+                                  initValue: ingredients,
+                                  setValue: (input) async {
+                                    setState(() => ingredients = input);
+                                    await _extractAllergensFromIngredients(
+                                        input);
+                                  })),
                     ),
+                    Align(
+                        alignment: Alignment.centerLeft,
+                        child: ingredients.isNotEmpty
+                            ? Text(ingredients)
+                            : const Text(
+                                "Nie dodano składu produktu",
+                                style: TextStyle(fontStyle: FontStyle.italic),
+                                textAlign: TextAlign.left,
+                              )),
                     const SizedBox(height: 10),
                     LabelRow(
                         icon: Icons.egg_outlined,
@@ -205,14 +219,19 @@ class _ProductCreatorState extends State<ProductCreator> {
                                 ))),
                     ProductCreatorAllergensList(
                         allergens: allergens,
-                        callback: (updatedAllergens) =>
-                            setState(() => allergens = updatedAllergens)),
+                        callback: (updatedAllergens) {
+                          setState(() => allergens = updatedAllergens);
+                        }),
                     const SizedBox(height: 10),
                     const LabelRow(
                         icon: Icons.fastfood_outlined,
                         labelText: "Tabela wartości odżywczych",
                         color: green,
                         isSecondaryIconEnabled: false),
+                    const Text(
+                        "Jeśli któraś z wartości nie jest podana, pozostaw puste pole",
+                        style: TextStyle(fontStyle: FontStyle.italic)),
+                    const SizedBox(height: 10),
                     _renderNutritionTable(),
                     const SizedBox(height: 10),
                     LabelRow(
@@ -245,11 +264,7 @@ class _ProductCreatorState extends State<ProductCreator> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: _nutriscoreGrades
                           .map((e) => GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  nutriscore = e;
-                                });
-                              },
+                              onTap: () => setState(() => nutriscore = e),
                               child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
@@ -553,7 +568,7 @@ class _ProductCreatorState extends State<ProductCreator> {
           Expanded(
             flex: 1,
             child: ProductCreatorImageInputTile(
-              icon: Icons.qr_code_scanner,
+              icon: Icons.barcode_reader,
               text: "Zeskanuj kod kreskowy",
               position: TilePosition.left,
               onPressed: () async {
@@ -649,9 +664,9 @@ class _ProductCreatorState extends State<ProductCreator> {
   Widget _renderNutritionTable() {
     return Table(
       columnWidths: const {
-        0: FlexColumnWidth(2),
-        1: FlexColumnWidth(1),
-        2: FlexColumnWidth(1)
+        0: FlexColumnWidth(3),
+        1: FlexColumnWidth(2),
+        2: FlexColumnWidth(2)
       },
       children: [
         // Header
@@ -840,7 +855,7 @@ class _ProductCreatorState extends State<ProductCreator> {
             child: Padding(
               padding: EdgeInsets.only(left: 5),
               child: Text(
-                "\t\tw tym kwasy nasycone",
+                "kwasy nasycone",
                 style: TextStyle(fontSize: 16),
               ),
             ),
@@ -948,7 +963,7 @@ class _ProductCreatorState extends State<ProductCreator> {
             child: Padding(
               padding: EdgeInsets.only(left: 5),
               child: Text(
-                "\t\tw tym cukry",
+                "cukry",
                 style: TextStyle(fontSize: 16),
               ),
             ),

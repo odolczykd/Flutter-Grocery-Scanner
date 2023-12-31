@@ -4,41 +4,34 @@ class User {
 }
 
 class UserData {
-  // final String uid;
   final String username;
-  final String rank;
-  final String avatar;
+  final String displayName;
+  final List<dynamic> preferences;
+  final List<dynamic> restrictions;
   final List<dynamic> yourProducts;
   final List<dynamic> recentlyScannedProducts;
   final List<dynamic> pinnedProducts;
-  final List<dynamic> preferences;
-  final List<dynamic> restrictions;
-  final DateTime createdAt;
+  final int createdAtTimestamp;
 
   UserData(
-      {
-      // required this.uid,
-      required this.username,
-      required this.rank,
-      required this.avatar,
+      {required this.username,
+      required this.displayName,
+      required this.preferences,
+      required this.restrictions,
       required this.yourProducts,
       required this.recentlyScannedProducts,
       required this.pinnedProducts,
-      required this.preferences,
-      required this.restrictions,
-      required this.createdAt});
+      required this.createdAtTimestamp});
 
   factory UserData.fromJson(Map<String, dynamic> json) {
     return UserData(
-        // uid: json["id"],
         username: json["username"],
-        rank: json["rank"],
-        avatar: json["avatar"],
-        yourProducts: json["yourProducts"],
-        recentlyScannedProducts: json["recentlyScannedProducts"],
-        pinnedProducts: json["pinnedProducts"],
+        displayName: json["display_name"],
         preferences: json["preferences"],
         restrictions: json["restrictions"],
-        createdAt: json["createdAt"] ?? DateTime.now());
+        yourProducts: json["your_products"],
+        recentlyScannedProducts: json["recently_scanned_products"],
+        pinnedProducts: json["pinned_products"],
+        createdAtTimestamp: json["created_at_timestamp"]);
   }
 }

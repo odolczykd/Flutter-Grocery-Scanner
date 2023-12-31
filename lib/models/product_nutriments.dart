@@ -105,10 +105,9 @@ class ProductNutriments {
       if (_areBothPresent(energyKJ)) ("energia [KJ]", energyKJ),
       if (_areBothPresent(energyKcal)) ("energia [kcal]", energyKcal),
       if (_areBothPresent(fat)) ("tłuszcz", fat),
-      if (_areBothPresent(saturatedFat))
-        ("   w tym kwasy nasycone", saturatedFat),
+      if (_areBothPresent(saturatedFat)) ("kwasy nasycone", saturatedFat),
       if (_areBothPresent(carbohydrates)) ("węglowodany", carbohydrates),
-      if (_areBothPresent(sugars)) ("   w tym cukry", sugars),
+      if (_areBothPresent(sugars)) ("cukry", sugars),
       if (_areBothPresent(proteins)) ("białko", proteins),
       if ((_areBothPresent(salt))) ("sól", salt)
     ];
@@ -121,9 +120,9 @@ class ProductNutriments {
         const SizedBox(height: 5.0),
         Table(
           columnWidths: const {
-            0: FlexColumnWidth(2),
-            1: FlexColumnWidth(1),
-            2: FlexColumnWidth(1)
+            0: FlexColumnWidth(3),
+            1: FlexColumnWidth(2),
+            2: FlexColumnWidth(2)
           },
           border:
               TableBorder.symmetric(inside: const BorderSide(color: greyBg)),
@@ -161,9 +160,9 @@ class ProductNutriments {
         ),
         Table(
           columnWidths: const {
-            0: FlexColumnWidth(2),
-            1: FlexColumnWidth(1),
-            2: FlexColumnWidth(1)
+            0: FlexColumnWidth(3),
+            1: FlexColumnWidth(2),
+            2: FlexColumnWidth(2)
           },
           border:
               TableBorder.symmetric(inside: const BorderSide(color: greyBg)),

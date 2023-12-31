@@ -1,14 +1,14 @@
 // ignore_for_file: unnecessary_cast
 
 import 'package:flutter/material.dart';
-import 'package:grocery_scanner/screens/home/profile/shared/horizontal_button.dart';
+import 'package:grocery_scanner/screens/home/profile/shared/transparent_horizontal_button.dart';
 import 'package:grocery_scanner/shared/colors.dart';
 
 class ProductCreatorAllergensList extends StatefulWidget {
-  Set allergens;
-  Function(Set) callback;
+  final Set allergens;
+  final Function(Set) callback;
 
-  ProductCreatorAllergensList(
+  const ProductCreatorAllergensList(
       {required this.allergens, required this.callback, super.key});
 
   @override
@@ -26,7 +26,7 @@ class _ProductCreatorAllergensListState
   @override
   void initState() {
     super.initState();
-    unusedAllergens = _allergenLabels.keys
+    unusedAllergens = allergenLabels.keys
         .map((key) => key as String)
         .where((key) => !widget.allergens.contains(key))
         .toSet();
@@ -37,6 +37,7 @@ class _ProductCreatorAllergensListState
   @override
   void didUpdateWidget(covariant ProductCreatorAllergensList oldWidget) {
     super.didUpdateWidget(oldWidget);
+    allergensList = _createAllergensList();
     if (widget.allergens != oldWidget.allergens) {
       allergensList = _createAllergensList();
     }
@@ -52,36 +53,6 @@ class _ProductCreatorAllergensListState
             ]);
   }
 
-  // Widget _createAllergenRow(String label) => Row(children: [
-  //       const SizedBox(width: 5),
-  //       const Icon(
-  //         Icons.navigate_next,
-  //         color: green,
-  //       ),
-  //       Text(_allergenLabels[label]!),
-  //       const Spacer(),
-  //       GestureDetector(
-  //         onTap: () {},
-  //         child: const Icon(
-  //           Icons.delete,
-  //           color: green,
-  //         ),
-  //       )
-  //     ]) as Widget;
-
-  // List<Widget> _createAllergensList() => widget.allergens
-  //     .map(
-  //       (e) => Row(children: [
-  //         const SizedBox(width: 5),
-  //         const Icon(
-  //           Icons.navigate_next,
-  //           color: green,
-  //         ),
-  //         Text(_allergenLabels[e]!)
-  //       ]) as Widget,
-  //     )
-  //     .toList();
-
   Set<String> _createAllergensList() =>
       widget.allergens.map((e) => e as String).toSet();
 
@@ -92,7 +63,7 @@ class _ProductCreatorAllergensListState
               Icons.navigate_next,
               color: green,
             ),
-            Text(_allergenLabels[e]!),
+            Text(allergenLabels[e]!),
             const Spacer(),
             GestureDetector(
               onTap: () {
@@ -103,7 +74,7 @@ class _ProductCreatorAllergensListState
                 });
               },
               child: const Icon(
-                Icons.delete_outline,
+                Icons.delete,
                 color: green,
               ),
             )
@@ -114,7 +85,7 @@ class _ProductCreatorAllergensListState
     List<DropdownMenuItem<String>> dropwdownItems = unusedAllergens
         .where((element) => !allergensList.contains(element))
         .map(
-            (e) => DropdownMenuItem(value: e, child: Text(_allergenLabels[e]!)))
+            (e) => DropdownMenuItem(value: e, child: Text(allergenLabels[e]!)))
         .toList();
 
     return DropdownButton(
@@ -131,18 +102,16 @@ class _ProductCreatorAllergensListState
         });
   }
 
-  Widget _createAddNewAllergenButton() => HorizontalButton(
+  Widget _createAddNewAllergenButton() => TransparentHorizontalButton(
       icon: Icons.add,
       label: "Dodaj alergen",
       color: green,
       onPressed: () {
-        setState(() {
-          allergenSelect = _createAllergenSelect();
-        });
+        setState(() => allergenSelect = _createAllergenSelect());
       });
 }
 
-Map<String, String> _allergenLabels = {
+Map<String, String> allergenLabels = {
   "gluten": "zboża zawierające gluten i produkty pochodne",
   "shellfish": "skorupiaki i produkty pochodne",
   "eggs": "jaja i produkty pochodne",

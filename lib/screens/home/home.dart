@@ -53,7 +53,7 @@ class _HomeState extends State<Home> {
                 BottomNavigationBarItem(
                     icon: Icon(Icons.home), label: "Strona główna"),
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.qr_code_scanner), label: "Skanuj produkt"),
+                    icon: Icon(Icons.barcode_reader), label: "Skanuj produkt"),
                 BottomNavigationBarItem(
                     icon: Icon(Icons.person), label: "Twój profil")
               ],

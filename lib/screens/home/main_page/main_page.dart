@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_scanner/models/product.dart';
-import 'package:grocery_scanner/screens/home/main_page/add_new_product_tile.dart';
+import 'package:grocery_scanner/screens/home/main_page/action_tiles/add_new_product_tile.dart';
+import 'package:grocery_scanner/screens/home/main_page/action_tiles/logout_tile.dart';
 import 'package:grocery_scanner/screens/home/main_page/product_tile.dart';
+import 'package:grocery_scanner/screens/home/profile/shared/horizontal_button.dart';
 import 'package:grocery_scanner/services/auth.dart';
 import 'package:grocery_scanner/services/product_database.dart';
 import 'package:grocery_scanner/shared/colors.dart';
@@ -54,7 +56,7 @@ class _MainPageState extends State<MainPage> {
         UserData loggedUser = UserData.fromJson(data);
 
         return Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
           child: SafeArea(
               child: SingleChildScrollView(
             child: Column(
@@ -68,7 +70,7 @@ class _MainPageState extends State<MainPage> {
                       size: 45,
                     ),
                     const SizedBox(width: 15),
-                    Text("Cześć, ${loggedUser.username}!",
+                    Text("Cześć, ${loggedUser.displayName}!",
                         style: const TextStyle(
                             color: black,
                             fontSize: 24,
@@ -187,7 +189,7 @@ class _MainPageState extends State<MainPage> {
                 const Row(
                   children: [
                     Icon(Icons.touch_app, color: green),
-                    SizedBox(width: 5.0),
+                    SizedBox(width: 5),
                     Text(
                       "Przyciski akcji",
                       style:
@@ -195,7 +197,26 @@ class _MainPageState extends State<MainPage> {
                     )
                   ],
                 ),
-                const AddNewProductTile()
+                const SizedBox(height: 10),
+                Column(
+                  children: [
+                    HorizontalButton(
+                        icon: Icons.add,
+                        label: "Dodaj nowy produkt",
+                        color: green,
+                        onPressed: () =>
+                            Navigator.of(context).pushNamed("/product/add")),
+                    HorizontalButton(
+                        icon: Icons.logout,
+                        label: "Wyloguj się",
+                        color: green,
+                        onPressed: () async => await _auth.signOut())
+                  ],
+                )
+                // const SingleChildScrollView(
+                //   scrollDirection: Axis.horizontal,
+                //   child: Row(children: [AddNewProductTile(), LogoutTile()]),
+                // ),
               ],
             ),
           )),
@@ -206,10 +227,10 @@ class _MainPageState extends State<MainPage> {
 
   void _getAllProductsData() async {
     // Get Products' barcodes
-    List pinnedProductsBarcodes = await getProductsFromUser("pinnedProducts");
+    List pinnedProductsBarcodes = await getProductsFromUser("pinned_products");
     List recentlyScannedProductsBarcodes =
-        await getProductsFromUser("recentlyScannedProducts");
-    List yourProductsBarcodes = await getProductsFromUser("yourProducts");
+        await getProductsFromUser("recently_scanned_products");
+    List yourProductsBarcodes = await getProductsFromUser("your_products");
 
     // Get Product models from given barcodes
     List<Product> _pinnedProducts =
