@@ -29,7 +29,6 @@ class ProductDatabaseService {
           barcode: product.get("barcode"),
           productName: product.get("product_name"),
           brand: product.get("brand"),
-          country: product.get("country"),
           images: ProductImages(
               front: product.get("images")["front"],
               ingredients: product.get("images")["ingredients"],
@@ -63,7 +62,8 @@ class ProductDatabaseService {
             "value_100g": product.get("nutriments")["salt"]["value_100g"]
           }),
           allergens: (product.get("allergens") as List).toSet(),
-          nutriscore: product.get("nutriscore"));
+          nutriscore: product.get("nutriscore"),
+          tags: product.get("tags"));
     } on Exception {
       return null;
     } on Error {

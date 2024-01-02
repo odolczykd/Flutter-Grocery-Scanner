@@ -56,15 +56,15 @@ class _FormTextFieldState extends State<FormTextField> {
         fillColor: white,
         filled: true,
         labelText: widget.labelText,
-        contentPadding: const EdgeInsets.all(15.0),
+        contentPadding: const EdgeInsets.all(15),
         labelStyle: const TextStyle(color: grey),
         border: OutlineInputBorder(
-          borderSide: const BorderSide(color: grey, width: 2.0),
-          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(color: grey, width: 2),
+          borderRadius: BorderRadius.circular(10),
         ),
         focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: widget.color, width: 2.0),
-            borderRadius: BorderRadius.circular(10.0)),
+            borderSide: BorderSide(color: widget.color, width: 2),
+            borderRadius: BorderRadius.circular(10)),
         focusColor: widget.color,
       ),
       onChanged: (val) =>

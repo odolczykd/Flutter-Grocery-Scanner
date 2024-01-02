@@ -10,19 +10,19 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 import 'package:grocery_scanner/models/product.dart';
 import 'package:grocery_scanner/models/product_images.dart';
 import 'package:grocery_scanner/models/product_nutriments.dart';
-import 'package:grocery_scanner/screens/product_creator/product_creator_barcode_input_dialog.dart';
-import 'package:grocery_scanner/screens/product_creator/product_creator_ingredients_input_dialog.dart';
+import 'package:grocery_scanner/screens/product_creator/input_dialogs/product_creator_barcode_input_dialog.dart';
+import 'package:grocery_scanner/screens/product_creator/input_dialogs/product_creator_ingredients_input_dialog.dart';
 import 'package:grocery_scanner/screens/product_creator/product_creator_tile.dart';
-import 'package:grocery_scanner/screens/product_page/shared/product_nutriscore_dialog_content.dart';
-import 'package:grocery_scanner/services/auth.dart';
-import 'package:grocery_scanner/services/product_database.dart';
-import 'package:grocery_scanner/services/user_database.dart';
+import 'package:grocery_scanner/screens/product_page/dialog_contents/product_nutriscore_dialog_content.dart';
+import 'package:grocery_scanner/services/auth_service.dart';
+import 'package:grocery_scanner/services/product_database_service.dart';
+import 'package:grocery_scanner/services/user_database_service.dart';
 import 'package:grocery_scanner/shared/colors.dart';
 import 'package:grocery_scanner/shared/form_text_field.dart';
 import 'package:grocery_scanner/shared/label_row.dart';
 import 'package:image_picker/image_picker.dart';
 import '../product_page/shared/allergens_functions.dart';
-import '../product_page/shared/product_allergens_dialog_content.dart';
+import '../product_page/dialog_contents/product_allergens_dialog_content.dart';
 import 'allergens_list.dart';
 
 const _nutriscoreGrades = {"A", "B", "C", "D", "E", "?"};
@@ -53,7 +53,6 @@ class _ProductCreatorState extends State<ProductCreator> {
   // Form Field Values
   String productName = "";
   String brand = "";
-  String country = "";
   String barcode = "";
   String ingredients = "";
   Set<dynamic> allergens = {};
@@ -67,6 +66,11 @@ class _ProductCreatorState extends State<ProductCreator> {
       proteins: _emptyNutriment(),
       salt: _emptyNutriment());
   String nutriscore = "?";
+  List<Map<String, String>> tags = [
+    {"name": "palm_oil_free", "status": "unknown"},
+    {"name": "vegetarian", "status": "unknown"},
+    {"name": "vegan", "status": "unknown"}
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +91,7 @@ class _ProductCreatorState extends State<ProductCreator> {
                 key: _formKey,
                 child: Column(
                   children: [
+                    // Product Name
                     FormTextField(
                         labelText: "Nazwa produktu",
                         color: green,
@@ -103,6 +108,8 @@ class _ProductCreatorState extends State<ProductCreator> {
                             return null;
                           }
                         }),
+
+                    // Brand
                     const SizedBox(height: 10),
                     FormTextField(
                         labelText: "Marka",
@@ -118,29 +125,19 @@ class _ProductCreatorState extends State<ProductCreator> {
                             return null;
                           }
                         }),
-                    const SizedBox(height: 10),
-                    FormTextField(
-                        labelText: "Kraj pochodzenia",
-                        color: green,
-                        obscureText: false,
-                        callback: (val) {
-                          setState(() => country = val);
-                        },
-                        validator: (val) {
-                          if (val!.isEmpty) {
-                            return "Kraj pochodzenia nie może być pusty";
-                          } else {
-                            return null;
-                          }
-                        }),
+
+                    // Image Tiles
                     const SizedBox(height: 10),
                     _renderTiles(),
+
                     const SizedBox(height: 10),
                     const Text(
                         "Uzupełnij pozostałe dane i popraw te, które zostały niedokładnie odczytane z dodanych zdjęć",
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16)),
                     const SizedBox(height: 10),
+
+                    // Barcode
                     LabelRow(
                         icon: Icons.qr_code_scanner,
                         labelText: "Kod kreskowy",
@@ -164,6 +161,8 @@ class _ProductCreatorState extends State<ProductCreator> {
                                 style: TextStyle(fontStyle: FontStyle.italic),
                                 textAlign: TextAlign.left,
                               )),
+
+                    // Ingredients
                     const SizedBox(height: 10.0),
                     LabelRow(
                       icon: Icons.format_list_bulleted,
@@ -191,6 +190,8 @@ class _ProductCreatorState extends State<ProductCreator> {
                                 style: TextStyle(fontStyle: FontStyle.italic),
                                 textAlign: TextAlign.left,
                               )),
+
+                    // Allergens
                     const SizedBox(height: 10),
                     LabelRow(
                         icon: Icons.egg_outlined,
@@ -222,6 +223,8 @@ class _ProductCreatorState extends State<ProductCreator> {
                         callback: (updatedAllergens) {
                           setState(() => allergens = updatedAllergens);
                         }),
+
+                    // Nutriments
                     const SizedBox(height: 10),
                     const LabelRow(
                         icon: Icons.fastfood_outlined,
@@ -233,6 +236,8 @@ class _ProductCreatorState extends State<ProductCreator> {
                         style: TextStyle(fontStyle: FontStyle.italic)),
                     const SizedBox(height: 10),
                     _renderNutritionTable(),
+
+                    // Nutri-Score
                     const SizedBox(height: 10),
                     LabelRow(
                         icon: Icons.local_pizza_outlined,
@@ -277,8 +282,20 @@ class _ProductCreatorState extends State<ProductCreator> {
                                   ])))
                           .toList(),
                     ),
+
+                    // Additional Info (Tags)
+                    const SizedBox(height: 10),
+                    const LabelRow(
+                        icon: Icons.eco_outlined,
+                        labelText: "Dodatkowe informacje",
+                        color: green,
+                        isSecondaryIconEnabled: false),
+                    _renderAdditionalInfoCheckboxes(),
+
                     const SizedBox(height: 10),
                     _renderFormErrors(),
+
+                    // Home Button
                     const SizedBox(height: 10),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -306,6 +323,8 @@ class _ProductCreatorState extends State<ProductCreator> {
                                     style: TextStyle(fontSize: 16)),
                               ],
                             )),
+
+                        // Add Product Button
                         const SizedBox(width: 10),
                         FilledButton(
                             onPressed: () async {
@@ -382,7 +401,6 @@ class _ProductCreatorState extends State<ProductCreator> {
                                     barcode: barcode,
                                     productName: productName,
                                     brand: brand,
-                                    country: country,
                                     images: ProductImages(
                                         front: imageFrontUrl,
                                         ingredients: imageIngredientsUrl,
@@ -392,13 +410,14 @@ class _ProductCreatorState extends State<ProductCreator> {
                                     allergens: allergens,
                                     nutriscore: nutriscore == "?"
                                         ? "unknown"
-                                        : nutriscore);
+                                        : nutriscore,
+                                    tags: tags);
 
-                                // Fluttertoast.showToast(
-                                //     msg: "Trwa dodawanie produktu...",
-                                //     toastLength: Toast.LENGTH_SHORT,
-                                //     gravity: ToastGravity.BOTTOM,
-                                //     fontSize: 16);
+                                Fluttertoast.showToast(
+                                    msg: "Trwa dodawanie produktu...",
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    fontSize: 16);
 
                                 // Add Product to Firestore
                                 final response =
@@ -1111,6 +1130,95 @@ class _ProductCreatorState extends State<ProductCreator> {
               },
             ),
           )
+        ])
+      ],
+    );
+  }
+
+  Widget _renderAdditionalInfoCheckboxes() {
+    return Table(
+      columnWidths: const {0: FlexColumnWidth(2), 1: FlexColumnWidth(1)},
+      children: [
+        // Palm Oil
+        TableRow(children: [
+          const TableCell(
+            verticalAlignment: TableCellVerticalAlignment.middle,
+            child: Text(
+              "Czy produkt zawiera olej palmowy?",
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+          TableCell(
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              child: DropdownButton(
+                  value: tags[0]["status"],
+                  items: const [
+                    DropdownMenuItem(value: "positive", child: Text("Tak")),
+                    DropdownMenuItem(value: "negative", child: Text("Nie")),
+                    DropdownMenuItem(value: "unknown", child: Text("Nie wiem"))
+                  ],
+                  isExpanded: true,
+                  borderRadius: BorderRadius.circular(10),
+                  onChanged: (val) {
+                    setState(() => tags[0]["status"] = val ?? "unknown");
+                    print(tags);
+                  }))
+        ]),
+
+        // Vegetarian
+        TableRow(children: [
+          const TableCell(
+            verticalAlignment: TableCellVerticalAlignment.middle,
+            child: Text(
+              "Czy produkt jest wegetariański?",
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+          TableCell(
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              child: DropdownButton(
+                  value: tags[1]["status"],
+                  items: const [
+                    DropdownMenuItem(value: "positive", child: Text("Tak")),
+                    DropdownMenuItem(value: "negative", child: Text("Nie")),
+                    DropdownMenuItem(
+                        value: "maybe", child: Text("Może nie być")),
+                    DropdownMenuItem(value: "unknown", child: Text("Nie wiem"))
+                  ],
+                  isExpanded: true,
+                  borderRadius: BorderRadius.circular(10),
+                  onChanged: (val) {
+                    setState(() => tags[1]["status"] = val ?? "unknown");
+                    print(tags);
+                  }))
+        ]),
+
+        // Vegan
+        TableRow(children: [
+          const TableCell(
+            verticalAlignment: TableCellVerticalAlignment.middle,
+            child: Text(
+              "Czy produkt jest wegański?",
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+          TableCell(
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              child: DropdownButton(
+                  value: tags[2]["status"],
+                  items: const [
+                    DropdownMenuItem(value: "positive", child: Text("Tak")),
+                    DropdownMenuItem(value: "negative", child: Text("Nie")),
+                    DropdownMenuItem(
+                        value: "maybe", child: Text("Może nie być")),
+                    DropdownMenuItem(value: "unknown", child: Text("Nie wiem"))
+                  ],
+                  isExpanded: true,
+                  borderRadius: BorderRadius.circular(10),
+                  onChanged: (val) {
+                    setState(() => tags[2]["status"] = val ?? "unknown");
+                    print(tags);
+                  }))
         ])
       ],
     );

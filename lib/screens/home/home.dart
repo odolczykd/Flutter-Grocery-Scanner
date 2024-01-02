@@ -6,8 +6,8 @@ import 'package:grocery_scanner/screens/home/profile/profile.dart';
 import 'package:grocery_scanner/screens/home/scanner/scanner.dart';
 import 'package:grocery_scanner/screens/product_page/product_page.dart';
 import 'package:grocery_scanner/screens/product_creator/product_creator.dart';
-import 'package:grocery_scanner/services/auth.dart';
-import 'package:grocery_scanner/services/user_database.dart';
+import 'package:grocery_scanner/services/auth_service.dart';
+import 'package:grocery_scanner/services/user_database_service.dart';
 import 'package:grocery_scanner/shared/colors.dart';
 import 'package:provider/provider.dart';
 

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:grocery_scanner/models/product.dart';
 import 'package:http/http.dart' as http;
 
-const PRODUCT_API_URL = "https://world.openfoodfacts.net/api/v2/product";
+const PRODUCT_API_URL = "https://world.openfoodfacts.org/api/v2/product";
 
 class OpenFoodFactsApiService {
   static Future<ProductResponse?> fetchProductByBarcode(String barcode) async {

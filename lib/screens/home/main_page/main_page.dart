@@ -1,16 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_scanner/models/product.dart';
-import 'package:grocery_scanner/screens/home/main_page/action_tiles/add_new_product_tile.dart';
-import 'package:grocery_scanner/screens/home/main_page/action_tiles/logout_tile.dart';
 import 'package:grocery_scanner/screens/home/main_page/product_tile.dart';
 import 'package:grocery_scanner/screens/home/profile/shared/horizontal_button.dart';
-import 'package:grocery_scanner/services/auth.dart';
-import 'package:grocery_scanner/services/product_database.dart';
+import 'package:grocery_scanner/services/auth_service.dart';
+import 'package:grocery_scanner/services/product_database_service.dart';
 import 'package:grocery_scanner/shared/colors.dart';
+import 'package:grocery_scanner/shared/error_page.dart';
 import 'package:provider/provider.dart';
 import 'package:grocery_scanner/models/user.dart';
-import 'package:grocery_scanner/services/user_database.dart';
+import 'package:grocery_scanner/services/user_database_service.dart';
 import 'package:grocery_scanner/shared/loading.dart';
 
 class MainPage extends StatefulWidget {
@@ -42,10 +41,10 @@ class _MainPageState extends State<MainPage> {
       future: users.doc(user.uid).get(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return const Text("Cos poszlo nie tak");
+          return const ErrorPage();
         }
         if (snapshot.hasData && !snapshot.data!.exists) {
-          return const Text("Dokument nie istnieje");
+          return const ErrorPage();
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Loading();
@@ -62,6 +61,7 @@ class _MainPageState extends State<MainPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Greetings
                 Row(
                   children: [
                     const Icon(
@@ -77,6 +77,8 @@ class _MainPageState extends State<MainPage> {
                             fontWeight: FontWeight.bold)),
                   ],
                 ),
+
+                // Recently Scanned Products
                 const SizedBox(height: 30),
                 const Row(
                   children: [
@@ -113,6 +115,8 @@ class _MainPageState extends State<MainPage> {
                           .toList(),
                     ),
                   ),
+
+                // Pinned Products
                 const SizedBox(height: 15),
                 const Row(
                   children: [
@@ -149,6 +153,8 @@ class _MainPageState extends State<MainPage> {
                           .toList(),
                     ),
                   ),
+
+                // Your Products
                 const SizedBox(height: 15),
                 const Row(
                   children: [
@@ -185,6 +191,8 @@ class _MainPageState extends State<MainPage> {
                           .toList(),
                     ),
                   ),
+
+                // Action Buttons
                 const SizedBox(height: 15),
                 const Row(
                   children: [
@@ -213,10 +221,6 @@ class _MainPageState extends State<MainPage> {
                         onPressed: () async => await _auth.signOut())
                   ],
                 )
-                // const SingleChildScrollView(
-                //   scrollDirection: Axis.horizontal,
-                //   child: Row(children: [AddNewProductTile(), LogoutTile()]),
-                // ),
               ],
             ),
           )),

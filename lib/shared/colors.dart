@@ -43,7 +43,7 @@ Widget nutriscoreTile(String nutriscoreGrade) {
     width: 50,
     height: 50,
     child: Padding(
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.all(10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

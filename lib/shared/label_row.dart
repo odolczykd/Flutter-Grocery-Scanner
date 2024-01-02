@@ -20,14 +20,14 @@ class LabelRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 5.0),
+      padding: const EdgeInsets.only(bottom: 5),
       child: Row(
         children: [
           Icon(icon, color: color),
-          const SizedBox(width: 5.0),
+          const SizedBox(width: 5),
           Text(
             labelText,
-            style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           if (isSecondaryIconEnabled) const Spacer(),
           if (isSecondaryIconEnabled)

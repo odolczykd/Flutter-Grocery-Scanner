@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_scanner/models/user.dart';
+import 'package:grocery_scanner/screens/home/profile/input_dialogs/profile_deletion_input_dialog.dart';
 import 'package:grocery_scanner/screens/home/profile/input_dialogs/profile_display_name_input_dialog.dart';
 import 'package:grocery_scanner/screens/home/profile/input_dialogs/profile_preferences_input_dialog.dart';
 import 'package:grocery_scanner/screens/home/profile/shared/horizontal_button.dart';
 import 'package:grocery_scanner/screens/home/profile/shared/preferences_list.dart';
 import 'package:grocery_scanner/screens/product_creator/allergens_list.dart';
-import 'package:grocery_scanner/services/auth.dart';
-import 'package:grocery_scanner/services/user_database.dart';
+import 'package:grocery_scanner/services/auth_service.dart';
+import 'package:grocery_scanner/services/user_database_service.dart';
 import 'package:grocery_scanner/shared/colors.dart';
-import 'package:grocery_scanner/shared/form_text_field.dart';
 import 'package:grocery_scanner/shared/label_row.dart';
 import 'package:grocery_scanner/shared/loading.dart';
 import 'package:provider/provider.dart';
@@ -195,28 +195,50 @@ class _ProfileState extends State<Profile> {
                       color: red,
                       onPressed: () => showDialog(
                           context: context,
-                          builder: (context) => AlertDialog(
-                                title: const Text("Usuń konto",
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold)),
-                                content: const Text(
-                                    "Wszystkie dane dotyczące Twoich preferencji i przypiętych produktów zostaną utracone. Dodane przez Ciebie produkty pozostaną nienaruszone. Czy na pewno chcesz usunąć konto?"),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    style: TextButton.styleFrom(
-                                        foregroundColor: black),
-                                    child: const Text("ANULUJ"),
-                                  ),
-                                  TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      style: TextButton.styleFrom(
-                                          foregroundColor: black),
-                                      child: const Text("USUŃ KONTO",
-                                          style: TextStyle(color: red)))
-                                ],
-                              ))),
+                          builder: (context) => const ProfileDeletionInputDialog()
+                          // AlertDialog(
+                          //       title: const Text("Usuń konto",
+                          //           style: TextStyle(
+                          //               fontSize: 20,
+                          //               fontWeight: FontWeight.bold)),
+                          //       content: const Text(
+                          //           "Wszystkie dane dotyczące Twoich preferencji i przypiętych produktów zostaną utracone. Dodane przez Ciebie produkty pozostaną nienaruszone. Czy na pewno chcesz usunąć konto?"),
+                          //       actions: [
+                          //         TextButton(
+                          //           onPressed: () => Navigator.pop(context),
+                          //           style: TextButton.styleFrom(
+                          //               foregroundColor: black),
+                          //           child: const Text("ANULUJ"),
+                          //         ),
+                          //         TextButton(
+                          //             onPressed: () async {
+                          //               // Navigator.of(context).pushNamed("/");
+                          //               await UserDatabaseService(
+                          //                       _auth.currentUserUid!)
+                          //                   .deleteDocument();
+                          //               bool result =
+                          //                   await _auth.deleteAccount();
+                          //               if (result) {
+                          //                 Fluttertoast.showToast(
+                          //                     msg: "Konto zostało usunięte",
+                          //                     toastLength: Toast.LENGTH_LONG,
+                          //                     gravity: ToastGravity.BOTTOM,
+                          //                     fontSize: 16);
+                          //               } else {
+                          //                 Fluttertoast.showToast(
+                          //                     msg: "Nie udało się usunąć konta",
+                          //                     toastLength: Toast.LENGTH_LONG,
+                          //                     gravity: ToastGravity.BOTTOM,
+                          //                     fontSize: 16);
+                          //               }
+                          //             },
+                          //             style: TextButton.styleFrom(
+                          //                 foregroundColor: black),
+                          //             child: const Text("USUŃ KONTO",
+                          //                 style: TextStyle(color: red)))
+                          //       ],
+                          //     )
+                              )),
                 ],
               )),
             ),

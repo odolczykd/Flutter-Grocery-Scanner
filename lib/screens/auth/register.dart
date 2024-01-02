@@ -1,6 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_scanner/shared/form_text_field.dart';
-import 'package:grocery_scanner/services/auth.dart';
+import 'package:grocery_scanner/services/auth_service.dart';
 import 'package:grocery_scanner/shared/colors.dart';
 import 'package:email_validator/email_validator.dart';
 
@@ -17,10 +18,12 @@ class _RegisterState extends State<Register> {
 
   // Form Field Values
   String username = "";
+  String displayName = "";
   String email = "";
   String password = "";
   String passwordConfirm = "";
 
+  bool isUsernameOccupied = true;
   String formErrorMessage = "";
 
   @override
@@ -29,11 +32,14 @@ class _RegisterState extends State<Register> {
         key: _formKey,
         child: Column(
           children: [
+            // Form Errors
             Text(
               formErrorMessage,
-              style: const TextStyle(color: red, fontSize: 16.0),
+              style: const TextStyle(color: red, fontSize: 16),
             ),
-            const SizedBox(height: 20.0),
+
+            // Username
+            const SizedBox(height: 20),
             FormTextField(
                 callback: (val) => setState(() => username = val),
                 labelText: "Nazwa użytkownika",
@@ -45,15 +51,28 @@ class _RegisterState extends State<Register> {
                   } else if (RegExp(r'[!@#<>?":`~;[\]\\|=+)(*&^%-]+')
                       .hasMatch(val)) {
                     return "Dopuszczalne znaki to litery, cyfry oraz symbol _";
-                  }
-                  // else if (login jest juz zajety) {
-                  //   return "Nazwa użytkownika jest zajęta";
-                  // }
-                  else {
+                  } else {
                     return null;
                   }
                 }),
-            const SizedBox(height: 10.0),
+
+            // Display Name
+            const SizedBox(height: 10),
+            FormTextField(
+                callback: (val) => setState(() => displayName = val),
+                labelText: "Imię",
+                color: orange,
+                obscureText: false,
+                validator: (val) {
+                  if (val!.isEmpty) {
+                    return "Imię nie może być puste";
+                  } else {
+                    return null;
+                  }
+                }),
+
+            // Email Address
+            const SizedBox(height: 10),
             FormTextField(
               callback: (val) => setState(() => email = val),
               labelText: "Adres e-mail",
@@ -63,7 +82,9 @@ class _RegisterState extends State<Register> {
                   ? "Wprowadź poprawny adres e-mail"
                   : null,
             ),
-            const SizedBox(height: 10.0),
+
+            // Password
+            const SizedBox(height: 10),
             FormTextField(
                 callback: (val) => setState(() => password = val),
                 labelText: "Hasło",
@@ -83,19 +104,31 @@ class _RegisterState extends State<Register> {
                     return null;
                   }
                 }),
-            const SizedBox(height: 10.0),
+
+            // Password Confirm
+            const SizedBox(height: 10),
             FormTextField(
                 labelText: "Powtórz hasło",
                 color: orange,
                 obscureText: true,
                 validator: (val) =>
                     password != val ? "Hasła się nie zgadzają" : null),
-            const SizedBox(height: 25.0),
+            const SizedBox(height: 25),
             FilledButton(
               onPressed: () async {
+                bool isUsernameOccupied =
+                    await _checkIfUsernameIsOccupied(username);
+
+                if (isUsernameOccupied) {
+                  setState(
+                      () => formErrorMessage = "Nazwa użytkownika jest zajęta");
+                  return;
+                }
+
                 // Form Validation
                 if (_formKey.currentState!.validate()) {
-                  dynamic result = _auth.register(username, email, password);
+                  dynamic result =
+                      _auth.register(username, displayName, email, password);
                   if (result == null) {
                     setState(() => formErrorMessage =
                         "Rejestracja nie powiodła się! Spróbuj ponownie później.");
@@ -103,17 +136,25 @@ class _RegisterState extends State<Register> {
                 }
               },
               style: ButtonStyle(
-                  elevation: const MaterialStatePropertyAll(0.0),
+                  elevation: const MaterialStatePropertyAll(0),
                   backgroundColor: const MaterialStatePropertyAll(orange),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0)))),
+                          borderRadius: BorderRadius.circular(10)))),
               child: const Text(
                 "ZAŁÓŻ KONTO",
-                style: TextStyle(fontSize: 16.0),
+                style: TextStyle(fontSize: 18),
               ),
             ),
           ],
         ));
+  }
+
+  Future<bool> _checkIfUsernameIsOccupied(String username) async {
+    final querySnapshot =
+        await FirebaseFirestore.instance.collection("users").get();
+    final allUsernames =
+        querySnapshot.docs.map((doc) => doc.get("username")).toList();
+    return allUsernames.contains(username);
   }
 }

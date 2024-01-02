@@ -116,8 +116,8 @@ class ProductNutriments {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text("Tabela może zawierać wartości przybliżone.",
-            style: TextStyle(fontSize: 15.0, fontStyle: FontStyle.italic)),
-        const SizedBox(height: 5.0),
+            style: TextStyle(fontSize: 15, fontStyle: FontStyle.italic)),
+        const SizedBox(height: 5),
         Table(
           columnWidths: const {
             0: FlexColumnWidth(3),
@@ -130,28 +130,28 @@ class ProductNutriments {
             TableRow(children: [
               Container(
                 color: green,
-                padding: const EdgeInsets.all(5.0),
+                padding: const EdgeInsets.all(5),
                 child: const Text("wartość odżywcza",
                     style: TextStyle(
-                        fontSize: 15.0,
+                        fontSize: 15,
                         fontWeight: FontWeight.bold,
                         color: white)),
               ),
               Container(
                 color: green,
-                padding: const EdgeInsets.all(5.0),
+                padding: const EdgeInsets.all(5),
                 child: const Text("w porcji",
                     style: TextStyle(
-                        fontSize: 15.0,
+                        fontSize: 15,
                         fontWeight: FontWeight.bold,
                         color: white)),
               ),
               Container(
                 color: green,
-                padding: const EdgeInsets.all(5.0),
+                padding: const EdgeInsets.all(5),
                 child: const Text("w 100 g/ml",
                     style: TextStyle(
-                        fontSize: 15.0,
+                        fontSize: 15,
                         fontWeight: FontWeight.bold,
                         color: white)),
               )
@@ -172,25 +172,25 @@ class ProductNutriments {
                       color: nutriments.indexOf(nutr) % 2 == 0
                           ? greyBg
                           : greyButton,
-                      padding: const EdgeInsets.all(5.0),
+                      padding: const EdgeInsets.all(5),
                       child:
-                          Text(nutr.$1, style: const TextStyle(fontSize: 15.0)),
+                          Text(nutr.$1, style: const TextStyle(fontSize: 15)),
                     ),
                     Container(
                       color: nutriments.indexOf(nutr) % 2 == 0
                           ? greyBg
                           : greyButton,
-                      padding: const EdgeInsets.all(5.0),
+                      padding: const EdgeInsets.all(5),
                       child: Text(nutr.$2["value"],
-                          style: const TextStyle(fontSize: 15.0)),
+                          style: const TextStyle(fontSize: 15)),
                     ),
                     Container(
                       color: nutriments.indexOf(nutr) % 2 == 0
                           ? greyBg
                           : greyButton,
-                      padding: const EdgeInsets.all(5.0),
+                      padding: const EdgeInsets.all(5),
                       child: Text(nutr.$2["value_100g"],
-                          style: const TextStyle(fontSize: 15.0)),
+                          style: const TextStyle(fontSize: 15)),
                     )
                   ]))
               .toList(),

@@ -31,24 +31,26 @@ class _ProductCreatorIngredientsInputDialogState
       title: const Text("Edytuj skład produktu",
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
       content: IntrinsicHeight(
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              FormTextField(
-                labelText: "Skład produktu",
-                color: green,
-                obscureText: false,
-                callback: (val) => input = val,
-                validator: (val) => null,
-                multiline: true,
-                value: widget.initValue,
-              ),
-              const SizedBox(height: 10),
-              if (validatorMsg.isNotEmpty)
-                Text(validatorMsg, style: const TextStyle(color: red))
-            ],
+        child: SingleChildScrollView(
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FormTextField(
+                  labelText: "Skład produktu",
+                  color: green,
+                  obscureText: false,
+                  callback: (val) => input = val,
+                  validator: (val) => null,
+                  multiline: true,
+                  value: widget.initValue,
+                ),
+                const SizedBox(height: 10),
+                if (validatorMsg.isNotEmpty)
+                  Text(validatorMsg, style: const TextStyle(color: red))
+              ],
+            ),
           ),
         ),
       ),

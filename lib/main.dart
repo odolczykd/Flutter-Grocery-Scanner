@@ -12,7 +12,8 @@ import 'package:grocery_scanner/screens/product_page/product_not_found.dart';
 import 'package:grocery_scanner/screens/product_page/product_page.dart';
 import 'package:grocery_scanner/screens/product_page/product_fetcher_local.dart';
 import 'package:grocery_scanner/screens/product_page/product_router.dart';
-import 'package:grocery_scanner/services/auth.dart';
+import 'package:grocery_scanner/services/auth_service.dart';
+import 'package:grocery_scanner/shared/error_page.dart';
 import 'package:provider/provider.dart';
 
 void main() async {

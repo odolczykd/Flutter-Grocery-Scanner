@@ -1,7 +1,5 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_scanner/shared/colors.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ProductAllergensDialogContent extends StatelessWidget {
   const ProductAllergensDialogContent({super.key});
@@ -12,10 +10,10 @@ class ProductAllergensDialogContent extends StatelessWidget {
         child: Column(children: [
       const Text(
           "Alergeny pokarmowe i składniki wywołujące reakcje nietolerancji muszą być oznaczane w wykazie składników oferowanych środków spożywczych z dokładnym odniesieniem do ich nazwy."),
-      const SizedBox(height: 5.0),
+      const SizedBox(height: 5),
       const Text(
           "Nazwa alergenu, substancji wywołującej reakcję nietolerancji oraz środków spożywczych zawierających składniki złożone musi być podkreślona w wykazie składników środka spożywczego za pomocą pisma wyraźnie odróżniającego ją od reszty wykazu składników, np. za pomocą innej czcionki, stylu pisma lub koloru tła, np.:"),
-      const SizedBox(height: 5.0),
+      const SizedBox(height: 5),
       RichText(
           text: const TextSpan(
               text: "Składniki: pomidory, cukier, przecier z ",
@@ -28,7 +26,7 @@ class ProductAllergensDialogContent extends StatelessWidget {
                 text: ", skrobia modyfikowana, sól, zioła.",
                 style: TextStyle(color: black, fontStyle: FontStyle.italic)),
           ])),
-      const SizedBox(height: 5.0),
+      const SizedBox(height: 5),
       RichText(
           text: const TextSpan(
               text:
@@ -43,7 +41,7 @@ class ProductAllergensDialogContent extends StatelessWidget {
                 )),
             TextSpan(text: ")", style: TextStyle(color: black)),
           ])),
-      const SizedBox(height: 5.0),
+      const SizedBox(height: 5),
       RichText(
           text: const TextSpan(
               text: "Składniki: lecytyna ",

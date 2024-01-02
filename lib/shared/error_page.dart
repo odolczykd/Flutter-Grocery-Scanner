@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grocery_scanner/screens/home/profile/shared/horizontal_button.dart';
-import 'package:grocery_scanner/services/auth_service.dart';
 import 'package:grocery_scanner/shared/colors.dart';
 
-class ProductNotFound extends StatelessWidget {
-  const ProductNotFound({super.key});
+class ErrorPage extends StatelessWidget {
+  const ErrorPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final auth = AuthService();
-    bool isUserLoggedIn = auth.currentUserUid != null;
-
     return Scaffold(
       backgroundColor: greyBg,
       body: SafeArea(
@@ -20,18 +17,15 @@ class ProductNotFound extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.no_food,
-                  size: 80,
-                  color: orange,
-                ),
+                SvgPicture.asset("assets/svg/chicken-bite.svg",
+                    width: 80, height: 80),
                 const SizedBox(height: 15),
-                const Text("Nie znaleziono produktu",
+                const Text("Coś poszło nie tak...",
                     style:
                         TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 30),
                 const Text(
-                  "Upewnij się, czy poprawnie odczytano kod kreskowy skanowanego produktu",
+                  "Nie udało się poprawnie wczytać tej strony.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
@@ -39,21 +33,13 @@ class ProductNotFound extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 const Text(
-                  "Jeśli produkt nie istnieje w naszej bazie, możesz go dodać w łatwy i wygodny sposób!",
+                  "Upewnij się, że masz stabilne połączenie z Internetem lub spróbuj ponownie później.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
                   ),
                 ),
                 const SizedBox(height: 50),
-                if (isUserLoggedIn)
-                  HorizontalButton(
-                      icon: Icons.add_circle_outline,
-                      label: "Dodaj nowy produkt",
-                      color: orange,
-                      onPressed: () =>
-                          Navigator.of(context).pushNamed("/product/add")),
-                const SizedBox(height: 10),
                 HorizontalButton(
                     icon: Icons.home,
                     label: "Wróć na stronę główną",

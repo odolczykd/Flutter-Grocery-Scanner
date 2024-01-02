@@ -11,10 +11,12 @@ class UserDatabaseService {
   final CollectionReference userCollection =
       FirebaseFirestore.instance.collection("users");
 
-  Future initializeUserData({required String username}) async {
+  Future initializeUserData(
+      {required String username, required String displayName}) async {
     // TODO: Fix situation: uid = null
     return await userCollection.doc(uid).set({
       "username": username,
+      "display_name": displayName,
       "preferences": [],
       "restrictions": [],
       "recently_scanned_products": [],
@@ -75,22 +77,33 @@ class UserDatabaseService {
     }
   }
 
-  UserData _userDataFromSnapshot(DocumentSnapshot snapshot) {
-    return UserData(
-        // uid: uid,
-        username: snapshot.get("username"),
-        displayName: snapshot.get("display_name"),
-        preferences: snapshot.get("preferences"),
-        restrictions: snapshot.get("restrictions"),
-        yourProducts: snapshot.get("your_products"),
-        recentlyScannedProducts: snapshot.get("recently_scanned_products"),
-        pinnedProducts: snapshot.get("pinned_products"),
-        createdAtTimestamp: snapshot.get("created_at_timestamp"));
+  Future<bool> deleteDocument() async {
+    try {
+      await userCollection.doc(uid).delete();
+      return true;
+    } on Exception {
+      return false;
+    } on Error {
+      return false;
+    }
   }
 
-  Stream<UserData> get userData {
-    return userCollection.doc(uid).snapshots().map(_userDataFromSnapshot);
-  }
+  // UserData _userDataFromSnapshot(DocumentSnapshot snapshot) {
+  //   return UserData(
+  //       // uid: uid,
+  //       username: snapshot.get("username"),
+  //       displayName: snapshot.get("display_name"),
+  //       preferences: snapshot.get("preferences"),
+  //       restrictions: snapshot.get("restrictions"),
+  //       yourProducts: snapshot.get("your_products"),
+  //       recentlyScannedProducts: snapshot.get("recently_scanned_products"),
+  //       pinnedProducts: snapshot.get("pinned_products"),
+  //       createdAtTimestamp: snapshot.get("created_at_timestamp"));
+  // }
+
+  // Stream<UserData> get userData {
+  //   return userCollection.doc(uid).snapshots().map(_userDataFromSnapshot);
+  // }
 
   Future<List> getFieldByName(String fieldName) async {
     var documentSnapshot = await userCollection.doc(uid).get();

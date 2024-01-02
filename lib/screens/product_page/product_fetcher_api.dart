@@ -1,17 +1,12 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:grocery_scanner/models/product.dart';
-import 'package:grocery_scanner/models/user.dart';
 import 'package:grocery_scanner/screens/product_page/product_page.dart';
 import 'package:grocery_scanner/screens/product_page/product_not_found.dart';
 import 'package:grocery_scanner/screens/product_page/shared/allergens_functions.dart';
-import 'package:grocery_scanner/services/open_food_facts.dart';
-import 'package:grocery_scanner/services/product_database.dart';
-import 'package:grocery_scanner/services/translator.dart';
+import 'package:grocery_scanner/services/open_food_facts_service.dart';
+import 'package:grocery_scanner/services/product_database_service.dart';
+import 'package:grocery_scanner/services/deepl_translator_service.dart';
 import 'package:grocery_scanner/shared/loading.dart';
-import 'package:provider/provider.dart';
 
 class ProductFetcherApi extends StatefulWidget {
   final String? barcode;
@@ -38,7 +33,7 @@ class _ProductFetcherApiState extends State<ProductFetcherApi> {
       productFuture.then((product) async {
         // Translate Product Ingredients
         final ingredientsTranslation =
-            await TranslatorService.translate(product!.ingredients);
+            await DeepLTranslatorService.translate(product!.ingredients);
         setState(() {
           productIngredientsTranslation =
               !ingredientsTranslation.detectedSourceLang.compareIgnoreCase("PL")
@@ -48,7 +43,7 @@ class _ProductFetcherApiState extends State<ProductFetcherApi> {
 
         // Translate Product Allergens
         final allergensTranslation =
-            await TranslatorService.translate(product.allergens);
+            await DeepLTranslatorService.translate(product.allergens);
         setState(() {
           productAllergensTranslation =
               !allergensTranslation.detectedSourceLang.compareIgnoreCase("PL")
@@ -82,8 +77,6 @@ class _ProductFetcherApiState extends State<ProductFetcherApi> {
 
   @override
   Widget build(BuildContext context) {
-    // final user = Provider.of<User?>(context)!;
-
     return FutureBuilder(
       future: productFuture,
       builder: (context, snapshot) {
@@ -99,34 +92,15 @@ class _ProductFetcherApiState extends State<ProductFetcherApi> {
             barcode: product.barcode,
             productName: product.productName,
             brand: product.brand,
-            country: product.country,
             images: product.images,
             ingredients: productIngredientsTranslation ?? "",
             nutriments: product.nutriments,
             allergens: allergens,
-            nutriscore: product.nutriscore);
+            nutriscore: product.nutriscore,
+            tags: product.tags);
         ProductDatabaseService(product.barcode).addProduct(translatedProduct);
         return ProductPage(translatedProduct);
       },
     );
   }
 }
-
-// Future<Map<String, dynamic>> _readJsonFile(String filePath) async {
-//   final file = await rootBundle.loadString(filePath);
-//   return jsonDecode(file);
-// }
-
-// List<String> _separateWords(String? text) {
-//   const separateRuleRegex =
-//       r"[^\p{Alphabetic}\p{Mark}\p{Connector_Punctuation}\p{Join_Control}\s]+";
-//   return text == null
-//       ? []
-//       : text
-//           .replaceAll(RegExp(separateRuleRegex, unicode: true), "")
-//           .split(" ")
-//           .where((e) => e.isNotEmpty)
-//           .map((e) => e.trim())
-//           .map((e) => e.toLowerCase())
-//           .toList();
-// }

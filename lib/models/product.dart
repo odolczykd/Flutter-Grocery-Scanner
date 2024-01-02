@@ -5,29 +5,28 @@ class Product {
   final String barcode;
   final String productName;
   final String brand;
-  final String country;
   final ProductImages images;
   final String ingredients;
   final ProductNutriments nutriments;
-  final Set<dynamic> allergens;
+  final Set allergens;
   final String nutriscore;
+  final List tags;
 
   Product(
       {required this.barcode,
       required this.productName,
       required this.brand,
-      required this.country,
       required this.images,
       required this.ingredients,
       required this.nutriments,
       required this.allergens,
-      required this.nutriscore});
+      required this.nutriscore,
+      required this.tags});
 
   Map<String, dynamic> toJson() => {
         "barcode": barcode,
         "product_name": productName,
         "brand": brand,
-        "country": country,
         "images": {
           "front": images.front,
           "ingredients": images.ingredients,
@@ -70,6 +69,7 @@ class Product {
           },
         },
         "nutriscore": nutriscore,
+        "tags": tags
       };
 }
 
@@ -77,30 +77,29 @@ class ProductResponse {
   final String barcode;
   final String productName;
   final String brand;
-  final String country;
   final ProductImages images;
   final String ingredients;
   final ProductNutriments nutriments;
   final String allergens;
   final String nutriscore;
+  final List tags;
 
   ProductResponse(
       {required this.barcode,
       required this.productName,
       required this.brand,
-      required this.country,
       required this.images,
       required this.ingredients,
       required this.nutriments,
       required this.allergens,
-      required this.nutriscore});
+      required this.nutriscore,
+      required this.tags});
 
   factory ProductResponse.fromJson(Map<String, dynamic> json) {
     return ProductResponse(
         barcode: json["code"],
         productName: _getFirstNonEmptyValue(json, r"^product_name_", "N/A"),
         brand: _getFirstNonEmptyValue(json, r"^brand", "N/A"),
-        country: json["countries"] ?? "N/A",
         images: ProductImages(
             front: json["image_front_url"] ?? "",
             ingredients: json["image_ingredients_url"] ?? "",
@@ -108,7 +107,8 @@ class ProductResponse {
         ingredients: _getFirstNonEmptyValue(json, r"^ingredients_text"),
         allergens: _getFirstNonEmptyValue(json, r"^allergens"),
         nutriments: ProductNutriments.fromJson(json["nutriments"]),
-        nutriscore: json["nutriscore_grade"] ?? "unknown");
+        nutriscore: json["nutriscore_grade"] ?? "unknown",
+        tags: _extractTags(json["ingredients_analysis_tags"] ?? []));
   }
 }
 
@@ -123,4 +123,45 @@ String _getFirstNonEmptyValue(Map<String, dynamic> json, String pattern,
     if (entry != "") return entry;
   }
   return emptyValue;
+}
+
+List _extractTags(List rawTags) {
+  String PALM_OIL_PATTERN = r"palm-oil";
+  String VEGETARIAN_PATTERN = r"vegetarian";
+  String VEGAN_PATTERN = r"vegan";
+
+  String FREE_PATTERN = r"free";
+  String NON_PATTERN = r"non-";
+  String MAYBE_PATTERN = r"maybe-";
+
+  List<Map<String, String>> tags = [
+    {"name": "palm_oil_free", "status": "unknown"},
+    {"name": "vegetarian", "status": "unknown"},
+    {"name": "vegan", "status": "unknown"}
+  ];
+
+  List<String> rawTagsTrimmed = rawTags.map((tag) {
+    try {
+      return (tag as String).split(":")[1];
+    } on RangeError {
+      return tag as String;
+    }
+  }).toList();
+
+  for (String tag in rawTagsTrimmed) {
+    if (RegExp(PALM_OIL_PATTERN).hasMatch(tag)) {
+      if (tag == "palm-oil") tags[0]["status"] = "negative";
+      if (RegExp(FREE_PATTERN).hasMatch(tag)) tags[0]["status"] = "positive";
+    } else if (RegExp(VEGETARIAN_PATTERN).hasMatch(tag)) {
+      if (RegExp(NON_PATTERN).hasMatch(tag)) tags[1]["status"] = "negative";
+      if (RegExp(MAYBE_PATTERN).hasMatch(tag)) tags[1]["status"] = "maybe";
+      if (tag == "vegetarian") tags[1]["status"] = "positive";
+    } else if (RegExp(VEGAN_PATTERN).hasMatch(tag)) {
+      if (RegExp(NON_PATTERN).hasMatch(tag)) tags[2]["status"] = "negative";
+      if (RegExp(MAYBE_PATTERN).hasMatch(tag)) tags[2]["status"] = "maybe";
+      if (tag == "vegan") tags[2]["status"] = "positive";
+    } else {}
+  }
+
+  return tags;
 }

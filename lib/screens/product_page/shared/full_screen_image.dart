@@ -10,7 +10,7 @@ class FullScreenImage extends StatelessWidget {
       backgroundColor: Colors.transparent,
       shadowColor: Colors.transparent,
       child: Padding(
-        padding: const EdgeInsets.all(15.0),
+        padding: const EdgeInsets.all(15),
         child: Container(
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
@@ -18,18 +18,5 @@ class FullScreenImage extends StatelessWidget {
         ),
       ),
     );
-    // return Scaffold(
-    //     body: GestureDetector(
-    //   onTap: () {
-    //     Navigator.pop(context);
-    //   },
-    //   child: Scaffold(
-    //       backgroundColor: blackOpacity,
-    //       body: Center(
-    //         child: Column(
-    //             mainAxisAlignment: MainAxisAlignment.center,
-    //             children: [const Icon(Icons.close), Image.network(imageUrl)]),
-    //       )),
-    // ));
   }
 }

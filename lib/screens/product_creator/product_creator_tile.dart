@@ -43,7 +43,7 @@ class ProductCreatorImageInputTile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10), color: green),
           height: 100,
           child: Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(10),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -52,12 +52,12 @@ class ProductCreatorImageInputTile extends StatelessWidget {
                     ? Icon(
                         icon,
                         color: white,
-                        size: 35.0,
+                        size: 35,
                       )
                     : const Icon(
                         Icons.delete,
                         color: white,
-                        size: 35.0,
+                        size: 35,
                       ),
                 const SizedBox(height: 5),
                 image == null
