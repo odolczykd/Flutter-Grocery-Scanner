@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:grocery_scanner/models/product.dart';
-import 'package:grocery_scanner/models/user.dart';
+
+const MAX_SIZE_OF_RECENTLY_SCANNED_PRODUCTS_ARRAY = 50;
 
 class UserDatabaseService {
   String uid;
@@ -63,6 +64,39 @@ class UserDatabaseService {
       return null;
     } on Error {
       return null;
+    }
+  }
+
+  Future<bool> addProductToRecentlyScanned(Product product) async {
+    final barcode = product.barcode;
+
+    try {
+      var documentSnapshot = await userCollection.doc(uid).get();
+      List<dynamic> recentlyScannedProducts =
+          documentSnapshot.get("recently_scanned_products");
+
+      if (recentlyScannedProducts.contains(barcode)) {
+        recentlyScannedProducts.remove(barcode);
+        recentlyScannedProducts.insert(0, barcode);
+
+        await userCollection
+            .doc(uid)
+            .update({"recently_scanned_products": recentlyScannedProducts});
+        return true;
+      }
+
+      if (recentlyScannedProducts.length >=
+          MAX_SIZE_OF_RECENTLY_SCANNED_PRODUCTS_ARRAY) {
+        recentlyScannedProducts.removeLast();
+      }
+      recentlyScannedProducts.insert(0, barcode);
+
+      await userCollection
+          .doc(uid)
+          .update({"recently_scanned_products": recentlyScannedProducts});
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 

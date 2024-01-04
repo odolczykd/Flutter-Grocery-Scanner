@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:grocery_scanner/shared/colors.dart';
 
+// ignore: must_be_immutable
 class FormTextField extends StatefulWidget {
   final String labelText;
   final Color color;

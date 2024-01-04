@@ -7,13 +7,9 @@ import 'package:grocery_scanner/screens/home/main_page/main_page.dart';
 import 'package:grocery_scanner/screens/home/profile/profile.dart';
 import 'package:grocery_scanner/screens/home/scanner/scanner.dart';
 import 'package:grocery_scanner/screens/product_creator/product_creator.dart';
-import 'package:grocery_scanner/screens/product_page/product_fetcher_api.dart';
 import 'package:grocery_scanner/screens/product_page/product_not_found.dart';
-import 'package:grocery_scanner/screens/product_page/product_page.dart';
-import 'package:grocery_scanner/screens/product_page/product_fetcher_local.dart';
 import 'package:grocery_scanner/screens/product_page/product_router.dart';
 import 'package:grocery_scanner/services/auth_service.dart';
-import 'package:grocery_scanner/shared/error_page.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -45,16 +41,6 @@ class App extends StatelessWidget {
           "/product/rip": (context) => const ProductNotFound(),
           "/product/add": (context) => const ProductCreator()
         },
-        // home: AuthListener(),
-        // home: Product(),
-        // home: ProductCreator(),
-        // home: ProductController("5900385000815")
-        // home: ProductFetcherLocal("5900512990095")
-        // home: ProductFetcherLocal("8714100666920")
-        // home: ProductFetcherLocal("5900385000815")
-        // home: ProductFetcherLocal("5900820011529")
-        // home: ProductFetcherLocal("87654321")
-        // home: ProductController(null)
       ),
     );
   }

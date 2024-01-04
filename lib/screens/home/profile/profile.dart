@@ -4,17 +4,17 @@ import 'package:grocery_scanner/models/user.dart';
 import 'package:grocery_scanner/screens/home/profile/input_dialogs/profile_deletion_input_dialog.dart';
 import 'package:grocery_scanner/screens/home/profile/input_dialogs/profile_display_name_input_dialog.dart';
 import 'package:grocery_scanner/screens/home/profile/input_dialogs/profile_preferences_input_dialog.dart';
+import 'package:grocery_scanner/screens/home/profile/input_dialogs/profile_restrictions_input_dialog.dart';
 import 'package:grocery_scanner/screens/home/profile/shared/horizontal_button.dart';
 import 'package:grocery_scanner/screens/home/profile/shared/preferences_list.dart';
 import 'package:grocery_scanner/screens/product_creator/allergens_list.dart';
 import 'package:grocery_scanner/services/auth_service.dart';
 import 'package:grocery_scanner/services/user_database_service.dart';
 import 'package:grocery_scanner/shared/colors.dart';
+import 'package:grocery_scanner/shared/error_page.dart';
 import 'package:grocery_scanner/shared/label_row.dart';
 import 'package:grocery_scanner/shared/loading.dart';
 import 'package:provider/provider.dart';
-
-import 'input_dialogs/profile_restrictions_input_dialog.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -44,12 +44,10 @@ class _ProfileState extends State<Profile> {
       future: UserDatabaseService(user.uid).userCollection.doc(user.uid).get(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          // TODO: Beautify it
-          return const Text("Cos poszlo nie tak");
+          return const ErrorPage();
         }
         if (snapshot.hasData && !snapshot.data!.exists) {
-          // TODO: Beautify it
-          return const Text("Dokument nie istnieje");
+          return const ErrorPage();
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Loading();
@@ -65,6 +63,7 @@ class _ProfileState extends State<Profile> {
               child: Center(
                   child: Column(
                 children: [
+                  // Logged User Info
                   Row(children: [
                     const Icon(
                       Icons.account_circle,
@@ -178,67 +177,29 @@ class _ProfileState extends State<Profile> {
                       color: green,
                       isSecondaryIconEnabled: false),
                   const SizedBox(height: 10),
+
                   HorizontalButton(
                       icon: Icons.add,
                       label: "Dodaj nowy produkt",
                       color: green,
                       onPressed: () =>
                           Navigator.of(context).pushNamed("/product/add")),
+
                   HorizontalButton(
                       icon: Icons.logout,
                       label: "Wyloguj się",
                       color: green,
                       onPressed: () async => await _auth.signOut()),
+
                   HorizontalButton(
-                      icon: Icons.person_off,
-                      label: "Usuń konto",
-                      color: red,
-                      onPressed: () => showDialog(
-                          context: context,
-                          builder: (context) => const ProfileDeletionInputDialog()
-                          // AlertDialog(
-                          //       title: const Text("Usuń konto",
-                          //           style: TextStyle(
-                          //               fontSize: 20,
-                          //               fontWeight: FontWeight.bold)),
-                          //       content: const Text(
-                          //           "Wszystkie dane dotyczące Twoich preferencji i przypiętych produktów zostaną utracone. Dodane przez Ciebie produkty pozostaną nienaruszone. Czy na pewno chcesz usunąć konto?"),
-                          //       actions: [
-                          //         TextButton(
-                          //           onPressed: () => Navigator.pop(context),
-                          //           style: TextButton.styleFrom(
-                          //               foregroundColor: black),
-                          //           child: const Text("ANULUJ"),
-                          //         ),
-                          //         TextButton(
-                          //             onPressed: () async {
-                          //               // Navigator.of(context).pushNamed("/");
-                          //               await UserDatabaseService(
-                          //                       _auth.currentUserUid!)
-                          //                   .deleteDocument();
-                          //               bool result =
-                          //                   await _auth.deleteAccount();
-                          //               if (result) {
-                          //                 Fluttertoast.showToast(
-                          //                     msg: "Konto zostało usunięte",
-                          //                     toastLength: Toast.LENGTH_LONG,
-                          //                     gravity: ToastGravity.BOTTOM,
-                          //                     fontSize: 16);
-                          //               } else {
-                          //                 Fluttertoast.showToast(
-                          //                     msg: "Nie udało się usunąć konta",
-                          //                     toastLength: Toast.LENGTH_LONG,
-                          //                     gravity: ToastGravity.BOTTOM,
-                          //                     fontSize: 16);
-                          //               }
-                          //             },
-                          //             style: TextButton.styleFrom(
-                          //                 foregroundColor: black),
-                          //             child: const Text("USUŃ KONTO",
-                          //                 style: TextStyle(color: red)))
-                          //       ],
-                          //     )
-                              )),
+                    icon: Icons.person_off,
+                    label: "Usuń konto",
+                    color: red,
+                    onPressed: () => showDialog(
+                      context: context,
+                      builder: (context) => const ProfileDeletionInputDialog(),
+                    ),
+                  ),
                 ],
               )),
             ),
@@ -352,14 +313,4 @@ class _ProfileState extends State<Profile> {
     int days = (difference / (1000 * 60 * 60 * 24)).floor();
     return days == 1 ? "$days dzień temu" : "$days dni temu";
   }
-
-  // List<String> _mapPreferencesCodes() {
-  //   Map<String, String> translations = {
-  //     "vegetarian": "wegetariańskie",
-  //     "vegan": "wegańskie",
-  //     "palm_oil_free": "bez oleju palmowego"
-  //   };
-
-  //   return preferences.map((pref) => translations[pref]!).toList();
-  // }
 }

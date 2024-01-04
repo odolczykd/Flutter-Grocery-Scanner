@@ -23,8 +23,8 @@ class _RegisterState extends State<Register> {
   String password = "";
   String passwordConfirm = "";
 
-  bool isUsernameOccupied = true;
   String formErrorMessage = "";
+  bool isUsernameOccupied = true;
 
   @override
   Widget build(BuildContext context) {
@@ -127,8 +127,9 @@ class _RegisterState extends State<Register> {
 
                 // Form Validation
                 if (_formKey.currentState!.validate()) {
-                  dynamic result =
-                      _auth.register(username, displayName, email, password);
+                  // TODO: remove await if causes errors
+                  var result = await _auth.register(
+                      username, displayName, email, password);
                   if (result == null) {
                     setState(() => formErrorMessage =
                         "Rejestracja nie powiodła się! Spróbuj ponownie później.");
@@ -151,10 +152,14 @@ class _RegisterState extends State<Register> {
   }
 
   Future<bool> _checkIfUsernameIsOccupied(String username) async {
-    final querySnapshot =
-        await FirebaseFirestore.instance.collection("users").get();
-    final allUsernames =
-        querySnapshot.docs.map((doc) => doc.get("username")).toList();
-    return allUsernames.contains(username);
+    try {
+      final querySnapshot =
+          await FirebaseFirestore.instance.collection("users").get();
+      final allUsernames =
+          querySnapshot.docs.map((doc) => doc.get("username")).toList();
+      return allUsernames.contains(username);
+    } catch (e) {
+      return false;
+    }
   }
 }

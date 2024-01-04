@@ -29,7 +29,7 @@ class AuthService {
     }
   }
 
-  Future register(String username, String displayName, String email,
+  Future<User?> register(String username, String displayName, String email,
       String password) async {
     try {
       firebase_auth.UserCredential result = await _auth

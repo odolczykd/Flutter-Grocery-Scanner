@@ -24,15 +24,27 @@ class _ProductPageState extends State<ProductPage> {
   Set<String> userPreferences = {};
   Set<String> userRestrictions = {};
 
+  bool isUserLoggedIn = false;
+  bool isProductBelongToUser = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isUserLoggedIn = _auth.currentUserUid != null;
+    _checkIfProductBelongsToUser();
+    // TODO: check if this condition (instead of  _auth.currentUserUid != null) causes errors
+    if (isUserLoggedIn) _addProductToRecentlyScanned();
+  }
+
   @override
   Widget build(BuildContext context) {
     String productImageUrl = widget.product.images.front;
-    bool isUserLoggedIn = _auth.currentUserUid != null;
 
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           children: [
+            // Product Front Image + Buttons
             GestureDetector(
               onTap: () async {
                 await showDialog(
@@ -59,7 +71,8 @@ class _ProductPageState extends State<ProductPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             _renderReturnButton(),
-                            if (isUserLoggedIn) _renderEditButton()
+                            if (isUserLoggedIn && isProductBelongToUser)
+                              _renderEditButton()
                           ],
                         ),
                       ),
@@ -78,6 +91,7 @@ class _ProductPageState extends State<ProductPage> {
                 ),
               ),
             ),
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: SizedBox(
@@ -169,6 +183,18 @@ class _ProductPageState extends State<ProductPage> {
     );
   }
 
+  Future _checkIfProductBelongsToUser() async {
+    bool checkResult = isUserLoggedIn
+        ? await UserDatabaseService(_auth.currentUserUid!)
+            .checkIfProductBelongsToUser(widget.product)
+        : false;
+    setState(() => isProductBelongToUser = checkResult);
+  }
+
+  Future _addProductToRecentlyScanned() async =>
+      await UserDatabaseService(_auth.currentUserUid!)
+          .addProductToRecentlyScanned(widget.product);
+
   Widget _renderReturnButton() => TextButton(
         onPressed: () {
           Navigator.pop(context);
@@ -228,6 +254,7 @@ class _ProductPageState extends State<ProductPage> {
             .checkIfProductIsPinned(widget.product),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
+            // Do not display button
             return const SizedBox(width: 0);
           } else {
             bool isProductAlreadyPinned = snapshot.data!;
@@ -303,7 +330,10 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   Widget _renderNutriscoreButton() {
-    if (nutriscoreGrades.contains(widget.product.nutriscore.toUpperCase())) {
+    if (!nutriscoreGrades.contains(widget.product.nutriscore.toUpperCase())) {
+      // Do not display button
+      return const SizedBox(width: 0);
+    } else {
       return TextButton(
         onPressed: () => showDialog(
             context: context,
@@ -337,8 +367,6 @@ class _ProductPageState extends State<ProductPage> {
           ),
         ),
       );
-    } else {
-      return const SizedBox(width: 0);
     }
   }
 
@@ -377,7 +405,7 @@ class _ProductPageState extends State<ProductPage> {
       "vegan": "produkt nie jest lub może nie być wegański"
     };
 
-    _getLoggedUserPrefsAndRestrictions();
+    _getLoggedUserPreferencesAndRestrictions();
 
     // Restrictions
     for (String restr in userRestrictions) {
@@ -499,7 +527,7 @@ class _ProductPageState extends State<ProductPage> {
     );
   }
 
-  Future _getLoggedUserPrefsAndRestrictions() async {
+  Future _getLoggedUserPreferencesAndRestrictions() async {
     List _userPreferences = await UserDatabaseService(_auth.currentUserUid!)
         .getFieldByName("preferences");
     List _userRestrictions = await UserDatabaseService(_auth.currentUserUid!)

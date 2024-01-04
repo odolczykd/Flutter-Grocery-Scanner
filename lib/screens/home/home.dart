@@ -4,11 +4,9 @@ import 'package:grocery_scanner/models/user.dart';
 import 'package:grocery_scanner/screens/home/main_page/main_page.dart';
 import 'package:grocery_scanner/screens/home/profile/profile.dart';
 import 'package:grocery_scanner/screens/home/scanner/scanner.dart';
-import 'package:grocery_scanner/screens/product_page/product_page.dart';
-import 'package:grocery_scanner/screens/product_creator/product_creator.dart';
-import 'package:grocery_scanner/services/auth_service.dart';
 import 'package:grocery_scanner/services/user_database_service.dart';
 import 'package:grocery_scanner/shared/colors.dart';
+import 'package:grocery_scanner/shared/error_page.dart';
 import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
@@ -19,8 +17,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final AuthService _auth = AuthService();
-
   int _selectedIndex = 0;
   final List<Widget> _pages = [
     const MainPage(),
@@ -37,10 +33,10 @@ class _HomeState extends State<Home> {
       future: users.doc(user.uid).get(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return const Text("Cos poszlo nie tak");
+          return const ErrorPage();
         }
         if (snapshot.hasData && !snapshot.data!.exists) {
-          return const Text("Dokument nie istnieje");
+          return const ErrorPage();
         }
 
         return Scaffold(
@@ -60,14 +56,7 @@ class _HomeState extends State<Home> {
               currentIndex: _selectedIndex,
               onTap: (value) => setState(() => _selectedIndex = value),
             ),
-            // body: Padding(
-            //   padding: const EdgeInsets.all(20.0),
-            //   child: _pages.elementAt(_selectedIndex),
-            // )
-            body: _pages.elementAt(_selectedIndex)
-            // body: Product(),
-            // body: ProductCreator(),
-            );
+            body: _pages.elementAt(_selectedIndex));
       },
     );
   }

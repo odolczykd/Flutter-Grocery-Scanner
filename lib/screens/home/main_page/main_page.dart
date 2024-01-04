@@ -50,15 +50,15 @@ class _MainPageState extends State<MainPage> {
           return const Loading();
         }
 
-        Map<String, dynamic> data =
+        Map<String, dynamic> userSnapshotData =
             snapshot.data!.data() as Map<String, dynamic>;
-        UserData loggedUser = UserData.fromJson(data);
+        UserData loggedUser = UserData.fromJson(userSnapshotData);
 
-        return Padding(
-          padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-          child: SafeArea(
-              child: SingleChildScrollView(
-            child: Column(
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+            child: SafeArea(
+                child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Greetings
@@ -85,36 +85,13 @@ class _MainPageState extends State<MainPage> {
                     Icon(Icons.update, color: green),
                     SizedBox(width: 5),
                     Text(
-                      "Ostatnio skanowane produkty",
+                      "Ostatnio przeglądane produkty",
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     )
                   ],
                 ),
-                if (recentlyScannedProducts.isEmpty)
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    child: const Column(
-                      children: [
-                        SizedBox(height: 10),
-                        Text(
-                          "Póki co nic tu nie ma...",
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        Text(
-                            "Skanuj produkty, a będą się one wyświetlać w tej sekcji"),
-                      ],
-                    ),
-                  )
-                else
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: recentlyScannedProducts
-                          .map((product) => ProductTile(product))
-                          .toList(),
-                    ),
-                  ),
+                _renderRecentlyScannedProducts(),
 
                 // Pinned Products
                 const SizedBox(height: 15),
@@ -129,30 +106,7 @@ class _MainPageState extends State<MainPage> {
                     )
                   ],
                 ),
-                if (pinnedProducts.isEmpty)
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    child: const Column(
-                      children: [
-                        SizedBox(height: 10),
-                        Text(
-                          "Póki co nic tu nie ma...",
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        Text(
-                            "Przypinaj produkty, a będą się one wyświetlać w tej sekcji"),
-                      ],
-                    ),
-                  )
-                else
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: pinnedProducts
-                          .map((product) => ProductTile(product))
-                          .toList(),
-                    ),
-                  ),
+                _renderPinnedProducts(),
 
                 // Your Products
                 const SizedBox(height: 15),
@@ -167,30 +121,7 @@ class _MainPageState extends State<MainPage> {
                     )
                   ],
                 ),
-                if (yourProducts.isEmpty)
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    child: const Column(
-                      children: [
-                        SizedBox(height: 10),
-                        Text(
-                          "Póki co nic tu nie ma...",
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        Text(
-                            "Dodawaj produkty, a będą się one wyświetlać w tej sekcji"),
-                      ],
-                    ),
-                  )
-                else
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: yourProducts
-                          .map((product) => ProductTile(product))
-                          .toList(),
-                    ),
-                  ),
+                _renderYourProducts(),
 
                 // Action Buttons
                 const SizedBox(height: 15),
@@ -220,16 +151,97 @@ class _MainPageState extends State<MainPage> {
                         color: green,
                         onPressed: () async => await _auth.signOut())
                   ],
-                )
+                ),
+                const SizedBox(height: 20),
               ],
-            ),
-          )),
+            )),
+          ),
         );
       },
     );
   }
 
-  void _getAllProductsData() async {
+  Widget _renderRecentlyScannedProducts() {
+    if (recentlyScannedProducts.isEmpty) {
+      return SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: const Column(
+          children: [
+            SizedBox(height: 10),
+            Text(
+              "Póki co nic tu nie ma...",
+              style: TextStyle(fontSize: 16),
+            ),
+            Text("Skanuj produkty, a będą się one wyświetlać w tej sekcji"),
+          ],
+        ),
+      );
+    } else {
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: recentlyScannedProducts.reversed
+              .map((product) => ProductTile(product))
+              .toList(),
+        ),
+      );
+    }
+  }
+
+  Widget _renderPinnedProducts() {
+    if (pinnedProducts.isEmpty) {
+      return SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: const Column(
+          children: [
+            SizedBox(height: 10),
+            Text(
+              "Póki co nic tu nie ma...",
+              style: TextStyle(fontSize: 16),
+            ),
+            Text("Przypinaj produkty, a będą się one wyświetlać w tej sekcji"),
+          ],
+        ),
+      );
+    } else {
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children:
+              pinnedProducts.map((product) => ProductTile(product)).toList(),
+        ),
+      );
+    }
+  }
+
+  Widget _renderYourProducts() {
+    if (yourProducts.isEmpty) {
+      return SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: const Column(
+          children: [
+            SizedBox(height: 10),
+            Text(
+              "Póki co nic tu nie ma...",
+              style: TextStyle(fontSize: 16),
+            ),
+            Text("Dodawaj produkty, a będą się one wyświetlać w tej sekcji"),
+          ],
+        ),
+      );
+    } else {
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children:
+              yourProducts.map((product) => ProductTile(product)).toList(),
+        ),
+      );
+    }
+  }
+
+  // TODO: Check if Future causes errors
+  Future _getAllProductsData() async {
     // Get Products' barcodes
     List pinnedProductsBarcodes = await getProductsFromUser("pinned_products");
     List recentlyScannedProductsBarcodes =
