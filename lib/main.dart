@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:grocery_scanner/models/user.dart';
 import 'package:grocery_scanner/screens/auth_listener.dart';
 import 'package:grocery_scanner/screens/home/home.dart';
@@ -24,6 +25,11 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Force Portrait Orientation Only
+    SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
+    );
+
     // StreamProvider for Listening Auth Changes
     return StreamProvider<User?>.value(
       value: AuthService().user,

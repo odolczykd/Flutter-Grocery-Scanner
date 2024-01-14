@@ -1,6 +1,8 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_scanner/screens/home/profile/shared/horizontal_button.dart';
+import 'package:grocery_scanner/screens/home/profile/shared/horizontal_filled_button.dart';
 import 'package:grocery_scanner/shared/form_text_field.dart';
 import 'package:grocery_scanner/services/auth_service.dart';
 import 'package:grocery_scanner/shared/colors.dart';
@@ -33,12 +35,6 @@ class _LoginState extends State<Login> {
           key: _formKey,
           child: Column(
             children: [
-              // Form Errors
-              Text(
-                formErrorMessage,
-                style: const TextStyle(color: red, fontSize: 16),
-              ),
-
               // Email Address
               const SizedBox(height: 20),
               FormTextField(
@@ -66,31 +62,41 @@ class _LoginState extends State<Login> {
                 validator: (val) => val!.isEmpty ? "Wprowadź hasło" : null,
               ),
 
+              // Form Errors
+              const SizedBox(height: 10),
+              Text(
+                formErrorMessage,
+                style: const TextStyle(color: red, fontSize: 16),
+              ),
+
               // Login Button
-              const SizedBox(height: 25),
-              FilledButton(
+              const SizedBox(height: 10),
+              HorizontalFilledButton(
+                label: "Zaloguj się",
+                color: green,
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     setState(() => isLoading = true);
-                    dynamic result = _auth.signIn(email, password);
-                    if (result == null) {
+                    dynamic result = await _auth.signIn(email, password);
+
+                    if (result == "user-not-found" ||
+                        result == "invalid-email" ||
+                        result == "wrong-password") {
                       setState(() {
                         formErrorMessage = "Błędny adres e-mail lub hasło";
                         isLoading = false;
                       });
                     }
+
+                    if (result == null) {
+                      Fluttertoast.showToast(
+                          msg: "Coś poszło nie tak... Spróbuj ponownie później",
+                          toastLength: Toast.LENGTH_LONG,
+                          gravity: ToastGravity.BOTTOM,
+                          fontSize: 16);
+                    }
                   }
                 },
-                style: ButtonStyle(
-                    elevation: const MaterialStatePropertyAll(0),
-                    backgroundColor: const MaterialStatePropertyAll(green),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)))),
-                child: const Text(
-                  "ZALOGUJ",
-                  style: TextStyle(fontSize: 18),
-                ),
               ),
 
               // Quick Scan Mode Button

@@ -172,7 +172,7 @@ class _MainPageState extends State<MainPage> {
               "Póki co nic tu nie ma...",
               style: TextStyle(fontSize: 16),
             ),
-            Text("Skanuj produkty, a będą się one wyświetlać w tej sekcji"),
+            Text("Przeglądaj produkty, a będą się one wyświetlać w tej sekcji"),
           ],
         ),
       );
@@ -240,7 +240,6 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  // TODO: Check if Future causes errors
   Future _getAllProductsData() async {
     // Get Products' barcodes
     List pinnedProductsBarcodes = await getProductsFromUser("pinned_products");

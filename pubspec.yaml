@@ -53,6 +53,8 @@ dependencies:
   fluttertoast: ^8.2.4
   barcode_finder: ^0.0.5
   flutter_launcher_icons: ^0.13.1
+  image_cropper: ^4.0.1
+  path_provider: ^2.1.2
 
 dev_dependencies:
   flutter_test:
@@ -112,6 +114,7 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
 
+# App Icon
 flutter_launcher_icons:
   android: "launcher_icon"
   image_path: "assets/img/icon.png"

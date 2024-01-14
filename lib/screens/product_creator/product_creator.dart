@@ -10,6 +10,7 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 import 'package:grocery_scanner/models/product.dart';
 import 'package:grocery_scanner/models/product_images.dart';
 import 'package:grocery_scanner/models/product_nutriments.dart';
+import 'package:grocery_scanner/screens/home/profile/shared/horizontal_button.dart';
 import 'package:grocery_scanner/screens/product_creator/input_dialogs/product_creator_barcode_input_dialog.dart';
 import 'package:grocery_scanner/screens/product_creator/input_dialogs/product_creator_ingredients_input_dialog.dart';
 import 'package:grocery_scanner/screens/product_creator/product_creator_tile.dart';
@@ -20,7 +21,10 @@ import 'package:grocery_scanner/services/user_database_service.dart';
 import 'package:grocery_scanner/shared/colors.dart';
 import 'package:grocery_scanner/shared/form_text_field.dart';
 import 'package:grocery_scanner/shared/label_row.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import '../product_page/shared/allergens_functions.dart';
 import '../product_page/dialog_contents/product_allergens_dialog_content.dart';
 import 'allergens_list.dart';
@@ -29,8 +33,8 @@ const _nutriscoreGrades = {"A", "B", "C", "D", "E", "?"};
 Map<String, dynamic> _emptyNutriment() => {"value": "N/A", "value_100g": "N/A"};
 
 class ProductCreator extends StatefulWidget {
-  final String? productBarcode;
-  const ProductCreator({super.key, this.productBarcode});
+  final Product? productToEdit;
+  const ProductCreator({super.key, this.productToEdit});
 
   @override
   State<ProductCreator> createState() => _ProductCreatorState();
@@ -42,6 +46,7 @@ class _ProductCreatorState extends State<ProductCreator> {
   final _firebaseStorage = FirebaseStorage.instance;
   final _imagePicker = ImagePicker();
 
+  bool isEditMode = false;
   bool isProductAlreadySent = false;
   Set<String> formErrorMessages = {};
 
@@ -66,33 +71,55 @@ class _ProductCreatorState extends State<ProductCreator> {
       proteins: _emptyNutriment(),
       salt: _emptyNutriment());
   String nutriscore = "?";
-  List<Map<String, String>> tags = [
+  List<Map<String, dynamic>> tags = [
     {"name": "palm_oil_free", "status": "unknown"},
     {"name": "vegetarian", "status": "unknown"},
     {"name": "vegan", "status": "unknown"}
   ];
 
   @override
+  void initState() {
+    super.initState();
+    isEditMode = widget.productToEdit != null;
+
+    if (isEditMode) {
+      _fetchProductImages();
+
+      productName = widget.productToEdit!.productName;
+      brand = widget.productToEdit!.brand;
+      barcode = widget.productToEdit!.barcode;
+      ingredients = widget.productToEdit!.ingredients;
+      allergens = widget.productToEdit!.allergens;
+      nutriments = widget.productToEdit!.nutriments;
+      nutriscore = widget.productToEdit!.nutriscore;
+      tags = widget.productToEdit!.tags
+          .map((e) => e as Map<String, dynamic>)
+          .toList();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SingleChildScrollView(
-            child: SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Dodaj nowy produkt",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 30),
-            Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    // Product Name
-                    FormTextField(
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isEditMode ? "Edytuj produkt" : "Dodaj nowy produkt",
+                  style: const TextStyle(
+                      fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 30),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      // Product Name
+                      FormTextField(
                         labelText: "Nazwa produktu",
                         color: green,
                         obscureText: false,
@@ -107,11 +134,14 @@ class _ProductCreatorState extends State<ProductCreator> {
                           } else {
                             return null;
                           }
-                        }),
+                        },
+                        value:
+                            isEditMode ? widget.productToEdit!.productName : "",
+                      ),
 
-                    // Brand
-                    const SizedBox(height: 10),
-                    FormTextField(
+                      // Brand
+                      const SizedBox(height: 10),
+                      FormTextField(
                         labelText: "Marka",
                         color: green,
                         obscureText: false,
@@ -124,228 +154,226 @@ class _ProductCreatorState extends State<ProductCreator> {
                           } else {
                             return null;
                           }
-                        }),
+                        },
+                        value: isEditMode ? widget.productToEdit!.brand : "",
+                      ),
 
-                    // Image Tiles
-                    const SizedBox(height: 10),
-                    _renderTiles(),
+                      // Image Tiles
+                      const SizedBox(height: 10),
+                      _renderTiles(),
 
-                    const SizedBox(height: 10),
-                    const Text(
-                        "Uzupełnij pozostałe dane i popraw te, które zostały niedokładnie odczytane z dodanych zdjęć",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
-                    const SizedBox(height: 10),
+                      const SizedBox(height: 10),
+                      const Text(
+                          "Uzupełnij pozostałe dane i popraw te, które zostały niedokładnie odczytane z dodanych zdjęć",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16)),
+                      const SizedBox(height: 10),
 
-                    // Barcode
-                    LabelRow(
-                        icon: Icons.qr_code_scanner,
-                        labelText: "Kod kreskowy",
+                      // Barcode
+                      LabelRow(
+                          icon: Icons.qr_code_scanner,
+                          labelText: "Kod kreskowy",
+                          color: green,
+                          isSecondaryIconEnabled: true,
+                          secondaryIcon: Icons.edit,
+                          onTap: () => showDialog(
+                              context: context,
+                              builder: (context) =>
+                                  ProductCreatorBarcodeInputDialog(
+                                      initValue: barcode,
+                                      setValue: (input) =>
+                                          setState(() => barcode = input)))),
+                      Align(
+                          alignment: Alignment.centerLeft,
+                          child: barcode.isNotEmpty
+                              ? Text(barcode,
+                                  style: const TextStyle(fontSize: 16))
+                              : const Text(
+                                  "Nie zeskanowano kodu kreskowego",
+                                  style: TextStyle(fontStyle: FontStyle.italic),
+                                  textAlign: TextAlign.left,
+                                )),
+
+                      // Ingredients
+                      const SizedBox(height: 10.0),
+                      LabelRow(
+                        icon: Icons.format_list_bulleted,
+                        labelText: "Skład produktu",
                         color: green,
                         isSecondaryIconEnabled: true,
                         secondaryIcon: Icons.edit,
                         onTap: () => showDialog(
                             context: context,
                             builder: (context) =>
-                                ProductCreatorBarcodeInputDialog(
-                                    initValue: barcode,
-                                    setValue: (input) =>
-                                        setState(() => barcode = input)))),
-                    Align(
-                        alignment: Alignment.centerLeft,
-                        child: barcode.isNotEmpty
-                            ? Text(barcode,
-                                style: const TextStyle(fontSize: 16))
-                            : const Text(
-                                "Nie zeskanowano kodu kreskowego",
-                                style: TextStyle(fontStyle: FontStyle.italic),
-                                textAlign: TextAlign.left,
-                              )),
+                                ProductCreatorIngredientsInputDialog(
+                                    initValue: ingredients,
+                                    setValue: (input) async {
+                                      setState(() => ingredients = input);
+                                      await _extractAllergensFromIngredients(
+                                          input);
+                                    })),
+                      ),
+                      Align(
+                          alignment: Alignment.centerLeft,
+                          child: ingredients.isNotEmpty
+                              ? Text(ingredients)
+                              : const Text(
+                                  "Nie dodano składu produktu",
+                                  style: TextStyle(fontStyle: FontStyle.italic),
+                                  textAlign: TextAlign.left,
+                                )),
 
-                    // Ingredients
-                    const SizedBox(height: 10.0),
-                    LabelRow(
-                      icon: Icons.format_list_bulleted,
-                      labelText: "Skład produktu",
-                      color: green,
-                      isSecondaryIconEnabled: true,
-                      secondaryIcon: Icons.edit,
-                      onTap: () => showDialog(
-                          context: context,
-                          builder: (context) =>
-                              ProductCreatorIngredientsInputDialog(
-                                  initValue: ingredients,
-                                  setValue: (input) async {
-                                    setState(() => ingredients = input);
-                                    await _extractAllergensFromIngredients(
-                                        input);
-                                  })),
-                    ),
-                    Align(
-                        alignment: Alignment.centerLeft,
-                        child: ingredients.isNotEmpty
-                            ? Text(ingredients)
-                            : const Text(
-                                "Nie dodano składu produktu",
-                                style: TextStyle(fontStyle: FontStyle.italic),
-                                textAlign: TextAlign.left,
-                              )),
-
-                    // Allergens
-                    const SizedBox(height: 10),
-                    LabelRow(
-                        icon: Icons.egg_outlined,
-                        labelText: "Lista alergenów",
-                        color: green,
-                        isSecondaryIconEnabled: true,
-                        secondaryIcon: Icons.info_outline,
-                        onTap: () => showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                                  title: const Text(
-                                      "Jak szukać alergenów na etykiecie produktu?",
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold)),
-                                  content:
-                                      const ProductAllergensDialogContent(),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      style: TextButton.styleFrom(
-                                          foregroundColor: black),
-                                      child: const Text("OK"),
-                                    )
-                                  ],
-                                ))),
-                    ProductCreatorAllergensList(
-                        allergens: allergens,
-                        callback: (updatedAllergens) {
-                          setState(() => allergens = updatedAllergens);
-                        }),
-
-                    // Nutriments
-                    const SizedBox(height: 10),
-                    const LabelRow(
-                        icon: Icons.fastfood_outlined,
-                        labelText: "Tabela wartości odżywczych",
-                        color: green,
-                        isSecondaryIconEnabled: false),
-                    const Text(
-                        "Jeśli któraś z wartości nie jest podana, pozostaw puste pole",
-                        style: TextStyle(fontStyle: FontStyle.italic)),
-                    const SizedBox(height: 10),
-                    _renderNutritionTable(),
-
-                    // Nutri-Score
-                    const SizedBox(height: 10),
-                    LabelRow(
-                        icon: Icons.local_pizza_outlined,
-                        labelText: "Nutri-Score",
-                        color: green,
-                        isSecondaryIconEnabled: true,
-                        secondaryIcon: Icons.info_outline,
-                        onTap: () => showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                                  title: const Text("Wskaźnik Nutri-Score",
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold)),
-                                  content:
-                                      const ProductNutriscoreDialogContent(),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      style: TextButton.styleFrom(
-                                          foregroundColor: black),
-                                      child: const Text("OK"),
-                                    )
-                                  ],
-                                ))),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: _nutriscoreGrades
-                          .map((e) => GestureDetector(
-                              onTap: () => setState(() => nutriscore = e),
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    nutriscoreTile(e),
-                                    if (nutriscore == e)
-                                      const Icon(
-                                        Icons.keyboard_arrow_up,
-                                        size: 30,
+                      // Allergens
+                      const SizedBox(height: 10),
+                      LabelRow(
+                          icon: Icons.egg_outlined,
+                          labelText: "Lista alergenów",
+                          color: green,
+                          isSecondaryIconEnabled: true,
+                          secondaryIcon: Icons.info_outline,
+                          onTap: () => showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                    title: const Text(
+                                        "Jak szukać alergenów na etykiecie produktu?",
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold)),
+                                    content:
+                                        const ProductAllergensDialogContent(),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        style: TextButton.styleFrom(
+                                            foregroundColor: black),
+                                        child: const Text("OK"),
                                       )
-                                  ])))
-                          .toList(),
-                    ),
+                                    ],
+                                  ))),
+                      ProductCreatorAllergensList(
+                          allergens: allergens,
+                          callback: (updatedAllergens) {
+                            setState(() => allergens = updatedAllergens);
+                          }),
 
-                    // Additional Info (Tags)
-                    const SizedBox(height: 10),
-                    const LabelRow(
-                        icon: Icons.eco_outlined,
-                        labelText: "Dodatkowe informacje",
-                        color: green,
-                        isSecondaryIconEnabled: false),
-                    _renderAdditionalInfoCheckboxes(),
+                      // Nutriments
+                      const SizedBox(height: 10),
+                      const LabelRow(
+                          icon: Icons.fastfood_outlined,
+                          labelText: "Tabela wartości odżywczych",
+                          color: green,
+                          isSecondaryIconEnabled: false),
+                      const Text(
+                          "Jeśli któraś z wartości nie jest podana, pozostaw puste pole",
+                          style: TextStyle(fontStyle: FontStyle.italic)),
+                      const SizedBox(height: 10),
+                      _renderNutritionTable(),
 
-                    const SizedBox(height: 10),
-                    _renderFormErrors(),
+                      // Nutri-Score
+                      const SizedBox(height: 10),
+                      LabelRow(
+                          icon: Icons.local_pizza_outlined,
+                          labelText: "Nutri-Score",
+                          color: green,
+                          isSecondaryIconEnabled: true,
+                          secondaryIcon: Icons.info_outline,
+                          onTap: () => showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                    title: const Text("Wskaźnik Nutri-Score",
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold)),
+                                    content:
+                                        const ProductNutriscoreDialogContent(),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        style: TextButton.styleFrom(
+                                            foregroundColor: black),
+                                        child: const Text("OK"),
+                                      )
+                                    ],
+                                  ))),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: _nutriscoreGrades
+                            .map((e) => GestureDetector(
+                                onTap: () => setState(() => nutriscore = e),
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      nutriscoreTile(e),
+                                      if (nutriscore == e)
+                                        const Icon(
+                                          Icons.keyboard_arrow_up,
+                                          size: 30,
+                                        )
+                                    ])))
+                            .toList(),
+                      ),
 
-                    // Home Button
-                    const SizedBox(height: 10),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        FilledButton(
+                      // Additional Info (Tags)
+                      const SizedBox(height: 10),
+                      const LabelRow(
+                          icon: Icons.eco_outlined,
+                          labelText: "Dodatkowe informacje",
+                          color: green,
+                          isSecondaryIconEnabled: false),
+                      _renderAdditionalInfoCheckboxes(),
+
+                      const SizedBox(height: 10),
+                      _renderFormErrors(),
+
+                      // Buttons
+                      const SizedBox(height: 10),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Home Button
+                          HorizontalButton(
+                            icon: Icons.home,
+                            label: "Wróć na stronę główną",
+                            color: green,
                             onPressed: () {
                               Navigator.of(context).pop();
                               Navigator.of(context).pushNamed("/home");
                             },
-                            style: ButtonStyle(
-                                elevation: const MaterialStatePropertyAll(0),
-                                backgroundColor:
-                                    const MaterialStatePropertyAll(green),
-                                shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10)))),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.home_outlined),
-                                SizedBox(width: 5),
-                                Text("WRÓĆ NA STRONĘ GŁÓWNĄ",
-                                    style: TextStyle(fontSize: 16)),
-                              ],
-                            )),
+                          ),
 
-                        // Add Product Button
-                        const SizedBox(width: 10),
-                        FilledButton(
+                          // Add Product Button
+                          const SizedBox(width: 10),
+                          HorizontalButton(
+                            icon: isEditMode ? Icons.save : Icons.add,
+                            label:
+                                isEditMode ? "Zapisz zmiany" : "Dodaj produkt",
+                            color: isProductAlreadySent
+                                ? greyButtonFullOpacity
+                                : green,
                             onPressed: () async {
                               // Check if product already exists
-                              final productChecker =
-                                  await ProductDatabaseService(barcode)
-                                      .getProduct();
-                              if (productChecker != null) {
-                                setState(() {
-                                  isProductAlreadySent = true;
-                                });
-                                Fluttertoast.showToast(
-                                    msg: "Ten produkt już został dodany",
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    fontSize: 16);
-                                return;
-                              }
+                              if (!isEditMode) {
+                                final productChecker =
+                                    await ProductDatabaseService(barcode)
+                                        .getProduct();
+                                if (productChecker != null) {
+                                  setState(() {
+                                    isProductAlreadySent = true;
+                                  });
+                                  Fluttertoast.showToast(
+                                      msg: "Ten produkt już został dodany",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      fontSize: 16);
+                                  return;
+                                }
 
-                              if (isProductAlreadySent) {
-                                return;
+                                if (isProductAlreadySent) {
+                                  return;
+                                }
                               }
 
                               setState(() {
@@ -413,20 +441,15 @@ class _ProductCreatorState extends State<ProductCreator> {
                                         : nutriscore,
                                     tags: tags);
 
-                                Fluttertoast.showToast(
-                                    msg: "Trwa dodawanie produktu...",
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    fontSize: 16);
-
                                 // Add Product to Firestore
                                 final response =
                                     await ProductDatabaseService(barcode)
                                         .addProduct(product);
                                 if (response == false) {
                                   Fluttertoast.showToast(
-                                      msg:
-                                          "Nie udało się dodać nowego produktu",
+                                      msg: isEditMode
+                                          ? "Nie udało się zapisać produktu"
+                                          : "Nie udało się dodać nowego produktu",
                                       toastLength: Toast.LENGTH_LONG,
                                       gravity: ToastGravity.BOTTOM,
                                       fontSize: 16);
@@ -436,12 +459,16 @@ class _ProductCreatorState extends State<ProductCreator> {
                                   });
 
                                   // Add Product to logged user's products list
-                                  await UserDatabaseService(
-                                          _auth.currentUserUid!)
-                                      .relateUserWithProduct(barcode);
+                                  if (!isEditMode) {
+                                    await UserDatabaseService(
+                                            _auth.currentUserUid!)
+                                        .relateUserWithProduct(barcode);
+                                  }
 
                                   Fluttertoast.showToast(
-                                      msg: "Pomyślnie dodano nowy produkt",
+                                      msg: isEditMode
+                                          ? "Zapisano produkt"
+                                          : "Pomyślnie dodano nowy produkt",
                                       toastLength: Toast.LENGTH_SHORT,
                                       gravity: ToastGravity.BOTTOM,
                                       fontSize: 16);
@@ -454,54 +481,87 @@ class _ProductCreatorState extends State<ProductCreator> {
                                     fontSize: 16);
                               }
                             },
-                            style: ButtonStyle(
-                                elevation: const MaterialStatePropertyAll(0),
-                                backgroundColor: isProductAlreadySent
-                                    ? const MaterialStatePropertyAll(
-                                        greyButtonFullOpacity)
-                                    : const MaterialStatePropertyAll(green),
-                                shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10)))),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.add),
-                                SizedBox(width: 5),
-                                Text("DODAJ PRODUKT",
-                                    style: TextStyle(fontSize: 16)),
-                              ],
-                            )),
-                      ],
-                    )
-                  ],
-                ))
-          ],
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
-    )));
+    );
+  }
+
+  Future _fetchProductImages() async {
+    final productImageFrontResponse =
+        await http.get(Uri.parse(widget.productToEdit!.images.front));
+    final productImageIngredientsResponse =
+        await http.get(Uri.parse(widget.productToEdit!.images.ingredients));
+    final productImageNutrimentsResponse =
+        await http.get(Uri.parse(widget.productToEdit!.images.nutrition));
+
+    final dir = await getApplicationDocumentsDirectory();
+
+    File productImageFrontFile =
+        File("${dir.path}/temp_${widget.productToEdit!.barcode}_front.jpg");
+    File productImageIngredientsFile = File(
+        "${dir.path}/temp_${widget.productToEdit!.barcode}_ingredients.jpg");
+    File productImageNutrimentsFile =
+        File("${dir.path}/temp_${widget.productToEdit!.barcode}_nutrition.jpg");
+
+    await productImageFrontFile
+        .writeAsBytes(productImageFrontResponse.bodyBytes);
+    await productImageIngredientsFile
+        .writeAsBytes(productImageIngredientsResponse.bodyBytes);
+    await productImageNutrimentsFile
+        .writeAsBytes(productImageNutrimentsResponse.bodyBytes);
+
+    setState(() {
+      productImageFront = productImageFrontFile;
+      productImageIngredients = productImageIngredientsFile;
+      productImageNutriments = productImageNutrimentsFile;
+    });
   }
 
   Future _getImageFromCamera({required String type}) async {
     final pickedImage = await _imagePicker.pickImage(
         source: ImageSource.camera, imageQuality: 100);
 
+    if (pickedImage != null) {
+      await _cropImage(path: pickedImage.path, type: type);
+    }
+  }
+
+  Future _cropImage({required String path, required String type}) async {
+    CroppedFile? croppedFile =
+        await ImageCropper().cropImage(sourcePath: path, uiSettings: [
+      AndroidUiSettings(
+        toolbarTitle: "Przytnij zdjęcie",
+        toolbarColor: white,
+        toolbarWidgetColor: green,
+        backgroundColor: white,
+        activeControlsWidgetColor: green,
+        lockAspectRatio: false,
+      )
+    ]);
+
     setState(() {
-      if (pickedImage != null) {
+      if (croppedFile != null) {
         switch (type) {
           case "barcode":
-            productImageBarcode = File(pickedImage.path);
+            productImageBarcode = File(croppedFile.path);
             break;
           case "front":
-            productImageFront = File(pickedImage.path);
+            productImageFront = File(croppedFile.path);
             break;
           case "ingriedients":
-            productImageIngredients = File(pickedImage.path);
+            productImageIngredients = File(croppedFile.path);
             break;
           case "nutriments":
-            productImageNutriments = File(pickedImage.path);
+            productImageNutriments = File(croppedFile.path);
             break;
           default:
             break;
@@ -510,47 +570,34 @@ class _ProductCreatorState extends State<ProductCreator> {
     });
   }
 
-  Future _readTextFromImage({required String type}) async {
+  Future _readTextFromImage() async {
     final pickedImage = await _imagePicker.pickImage(
         source: ImageSource.camera, imageQuality: 100);
 
-    setState(() {
-      if (pickedImage != null) {
-        switch (type) {
-          case "front":
-            productImageFront = File(pickedImage.path);
-            break;
-          case "ingredients":
-            productImageIngredients = File(pickedImage.path);
-            break;
-          case "nutriments":
-            productImageNutriments = File(pickedImage.path);
-            break;
-          default:
-            return;
-        }
-      }
-    });
-
     if (pickedImage != null) {
-      final textRecognizer =
-          TextRecognizer(script: TextRecognitionScript.latin);
-      final recognizedText = await textRecognizer
-          .processImage(InputImage.fromFile(File(pickedImage.path)));
+      CroppedFile? croppedFile = await ImageCropper()
+          .cropImage(sourcePath: pickedImage.path, uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: "Przytnij zdjęcie",
+          toolbarColor: green,
+          toolbarWidgetColor: white,
+          lockAspectRatio: false,
+        )
+      ]);
 
-      setState(() {
-        switch (type) {
-          case "ingredients":
-            ingredients = recognizedText.text.replaceAll("\n", " ");
-            break;
-          case "nutriments":
-            break;
-          default:
-            break;
-        }
-      });
+      if (croppedFile != null) {
+        final textRecognizer =
+            TextRecognizer(script: TextRecognitionScript.latin);
+        final recognizedText = await textRecognizer
+            .processImage(InputImage.fromFile(File(croppedFile.path)));
 
-      textRecognizer.close();
+        setState(() {
+          productImageIngredients = File(croppedFile.path);
+          ingredients = recognizedText.text.replaceAll("\n", " ");
+        });
+
+        textRecognizer.close();
+      }
     }
   }
 
@@ -645,7 +692,7 @@ class _ProductCreatorState extends State<ProductCreator> {
                 position: TilePosition.left,
                 onPressed: () async {
                   if (productImageIngredients == null) {
-                    await _readTextFromImage(type: "ingredients");
+                    await _readTextFromImage();
                     await _extractAllergensFromIngredients(ingredients);
                   } else {
                     setState(() {
@@ -738,6 +785,9 @@ class _ProductCreatorState extends State<ProductCreator> {
                   return null;
                 }
               },
+              value: (isEditMode && nutriments.energyKJ["value"] != "N/A")
+                  ? nutriments.energyKJ["value"]
+                  : "",
             ),
           ),
           Padding(
@@ -758,6 +808,9 @@ class _ProductCreatorState extends State<ProductCreator> {
                   return null;
                 }
               },
+              value: (isEditMode && nutriments.energyKJ["value_100g"] != "N/A")
+                  ? nutriments.energyKJ["value_100g"]
+                  : "",
             ),
           )
         ]),
@@ -791,6 +844,9 @@ class _ProductCreatorState extends State<ProductCreator> {
                   return null;
                 }
               },
+              value: (isEditMode && nutriments.energyKcal["value"] != "N/A")
+                  ? nutriments.energyKcal["value"]
+                  : "",
             ),
           ),
           Padding(
@@ -811,6 +867,10 @@ class _ProductCreatorState extends State<ProductCreator> {
                   return null;
                 }
               },
+              value:
+                  (isEditMode && nutriments.energyKcal["value_100g"] != "N/A")
+                      ? nutriments.energyKcal["value_100g"]
+                      : "",
             ),
           )
         ]),
@@ -844,6 +904,9 @@ class _ProductCreatorState extends State<ProductCreator> {
                   return null;
                 }
               },
+              value: (isEditMode && nutriments.fat["value"] != "N/A")
+                  ? nutriments.fat["value"]
+                  : "",
             ),
           ),
           Padding(
@@ -863,6 +926,9 @@ class _ProductCreatorState extends State<ProductCreator> {
                   return null;
                 }
               },
+              value: (isEditMode && nutriments.fat["value_100g"] != "N/A")
+                  ? nutriments.fat["value_100g"]
+                  : "",
             ),
           )
         ]),
@@ -897,6 +963,9 @@ class _ProductCreatorState extends State<ProductCreator> {
                   return null;
                 }
               },
+              value: (isEditMode && nutriments.saturatedFat["value"] != "N/A")
+                  ? nutriments.saturatedFat["value"]
+                  : "",
             ),
           ),
           Padding(
@@ -917,6 +986,10 @@ class _ProductCreatorState extends State<ProductCreator> {
                   return null;
                 }
               },
+              value:
+                  (isEditMode && nutriments.saturatedFat["value_100g"] != "N/A")
+                      ? nutriments.saturatedFat["value_100g"]
+                      : "",
             ),
           )
         ]),
@@ -951,6 +1024,9 @@ class _ProductCreatorState extends State<ProductCreator> {
                   return null;
                 }
               },
+              value: (isEditMode && nutriments.carbohydrates["value"] != "N/A")
+                  ? nutriments.carbohydrates["value"]
+                  : "",
             ),
           ),
           Padding(
@@ -971,6 +1047,10 @@ class _ProductCreatorState extends State<ProductCreator> {
                   return null;
                 }
               },
+              value: (isEditMode &&
+                      nutriments.carbohydrates["value_100g"] != "N/A")
+                  ? nutriments.carbohydrates["value_100g"]
+                  : "",
             ),
           )
         ]),
@@ -1004,6 +1084,9 @@ class _ProductCreatorState extends State<ProductCreator> {
                   return null;
                 }
               },
+              value: (isEditMode && nutriments.sugars["value"] != "N/A")
+                  ? nutriments.sugars["value"]
+                  : "",
             ),
           ),
           Padding(
@@ -1023,6 +1106,9 @@ class _ProductCreatorState extends State<ProductCreator> {
                   return null;
                 }
               },
+              value: (isEditMode && nutriments.sugars["value_100g"] != "N/A")
+                  ? nutriments.sugars["value_100g"]
+                  : "",
             ),
           )
         ]),
@@ -1056,6 +1142,9 @@ class _ProductCreatorState extends State<ProductCreator> {
                   return null;
                 }
               },
+              value: (isEditMode && nutriments.proteins["value"] != "N/A")
+                  ? nutriments.proteins["value"]
+                  : "",
             ),
           ),
           Padding(
@@ -1076,6 +1165,9 @@ class _ProductCreatorState extends State<ProductCreator> {
                   return null;
                 }
               },
+              value: (isEditMode && nutriments.proteins["value_100g"] != "N/A")
+                  ? nutriments.proteins["value_100g"]
+                  : "",
             ),
           )
         ]),
@@ -1109,6 +1201,9 @@ class _ProductCreatorState extends State<ProductCreator> {
                   return null;
                 }
               },
+              value: (isEditMode && nutriments.salt["value"] != "N/A")
+                  ? nutriments.salt["value"]
+                  : "",
             ),
           ),
           Padding(
@@ -1128,6 +1223,9 @@ class _ProductCreatorState extends State<ProductCreator> {
                   return null;
                 }
               },
+              value: (isEditMode && nutriments.salt["value_100g"] != "N/A")
+                  ? nutriments.salt["value_100g"]
+                  : "",
             ),
           )
         ])
@@ -1161,7 +1259,6 @@ class _ProductCreatorState extends State<ProductCreator> {
                   borderRadius: BorderRadius.circular(10),
                   onChanged: (val) {
                     setState(() => tags[0]["status"] = val ?? "unknown");
-                    print(tags);
                   }))
         ]),
 
@@ -1189,7 +1286,6 @@ class _ProductCreatorState extends State<ProductCreator> {
                   borderRadius: BorderRadius.circular(10),
                   onChanged: (val) {
                     setState(() => tags[1]["status"] = val ?? "unknown");
-                    print(tags);
                   }))
         ]),
 
@@ -1217,7 +1313,6 @@ class _ProductCreatorState extends State<ProductCreator> {
                   borderRadius: BorderRadius.circular(10),
                   onChanged: (val) {
                     setState(() => tags[2]["status"] = val ?? "unknown");
-                    print(tags);
                   }))
         ])
       ],

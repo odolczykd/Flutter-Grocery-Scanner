@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:grocery_scanner/screens/home/profile/shared/horizontal_filled_button.dart';
 import 'package:grocery_scanner/shared/form_text_field.dart';
 import 'package:grocery_scanner/services/auth_service.dart';
 import 'package:grocery_scanner/shared/colors.dart';
@@ -32,12 +34,6 @@ class _RegisterState extends State<Register> {
         key: _formKey,
         child: Column(
           children: [
-            // Form Errors
-            Text(
-              formErrorMessage,
-              style: const TextStyle(color: red, fontSize: 16),
-            ),
-
             // Username
             const SizedBox(height: 20),
             FormTextField(
@@ -113,8 +109,19 @@ class _RegisterState extends State<Register> {
                 obscureText: true,
                 validator: (val) =>
                     password != val ? "Hasła się nie zgadzają" : null),
-            const SizedBox(height: 25),
-            FilledButton(
+
+            // Form Errors
+            const SizedBox(height: 10),
+            Text(
+              formErrorMessage,
+              style: const TextStyle(color: red, fontSize: 16),
+            ),
+
+            // Register Button
+            const SizedBox(height: 10),
+            HorizontalFilledButton(
+              label: "Załóż konto",
+              color: orange,
               onPressed: () async {
                 bool isUsernameOccupied =
                     await _checkIfUsernameIsOccupied(username);
@@ -127,26 +134,27 @@ class _RegisterState extends State<Register> {
 
                 // Form Validation
                 if (_formKey.currentState!.validate()) {
-                  // TODO: remove await if causes errors
                   var result = await _auth.register(
                       username, displayName, email, password);
+
                   if (result == null) {
-                    setState(() => formErrorMessage =
-                        "Rejestracja nie powiodła się! Spróbuj ponownie później.");
+                    Fluttertoast.showToast(
+                        msg: "Coś poszło nie tak... Spróbuj ponownie później",
+                        toastLength: Toast.LENGTH_LONG,
+                        gravity: ToastGravity.BOTTOM,
+                        fontSize: 16);
+                    // setState(() => formErrorMessage =
+                    //     "Rejestracja nie powiodła się! Spróbuj ponownie później.");
+                  } else {
+                    Fluttertoast.showToast(
+                        msg: "Pomyślnie założono konto",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        fontSize: 16);
                   }
                 }
               },
-              style: ButtonStyle(
-                  elevation: const MaterialStatePropertyAll(0),
-                  backgroundColor: const MaterialStatePropertyAll(orange),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)))),
-              child: const Text(
-                "ZAŁÓŻ KONTO",
-                style: TextStyle(fontSize: 18),
-              ),
-            ),
+            )
           ],
         ));
   }

@@ -31,6 +31,7 @@ class ProductCreatorImageInputTile extends StatelessWidget {
             : const EdgeInsets.fromLTRB(5, 5, 0, 5),
         child: Container(
           width: double.maxFinite,
+          height: 100,
           decoration: image != null
               ? BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
@@ -40,8 +41,9 @@ class ProductCreatorImageInputTile extends StatelessWidget {
                       fit: BoxFit.cover,
                       opacity: 0.7))
               : BoxDecoration(
-                  borderRadius: BorderRadius.circular(10), color: green),
-          height: 100,
+                  border: Border.all(width: 2, color: green),
+                  borderRadius: BorderRadius.circular(10),
+                  color: white),
           child: Padding(
             padding: const EdgeInsets.all(10),
             child: Column(
@@ -51,13 +53,13 @@ class ProductCreatorImageInputTile extends StatelessWidget {
                 image == null
                     ? Icon(
                         icon,
-                        color: white,
-                        size: 35,
+                        color: green,
+                        size: 30,
                       )
                     : const Icon(
                         Icons.delete,
                         color: white,
-                        size: 35,
+                        size: 30,
                       ),
                 const SizedBox(height: 5),
                 image == null
@@ -65,7 +67,7 @@ class ProductCreatorImageInputTile extends StatelessWidget {
                         text,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
-                            color: white,
+                            color: green,
                             fontWeight: FontWeight.bold,
                             fontSize: 16),
                       )

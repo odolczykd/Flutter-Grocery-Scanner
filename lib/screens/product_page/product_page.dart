@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_scanner/models/product.dart';
+import 'package:grocery_scanner/screens/product_creator/product_creator.dart';
 import 'package:grocery_scanner/screens/product_page/shared/full_screen_image.dart';
 import 'package:grocery_scanner/screens/product_page/dialog_contents/product_nutriscore_dialog_content.dart';
 import 'package:grocery_scanner/screens/product_page/shared/product_tags.dart';
@@ -32,7 +33,6 @@ class _ProductPageState extends State<ProductPage> {
     super.initState();
     isUserLoggedIn = _auth.currentUserUid != null;
     _checkIfProductBelongsToUser();
-    // TODO: check if this condition (instead of  _auth.currentUserUid != null) causes errors
     if (isUserLoggedIn) _addProductToRecentlyScanned();
   }
 
@@ -226,7 +226,9 @@ class _ProductPageState extends State<ProductPage> {
         } else {
           return TextButton(
             onPressed: () {
-              // TODO: Redirect to ProductCreator page with given barcode (edit mode)
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) =>
+                      ProductCreator(productToEdit: widget.product)));
             },
             style: TextButton.styleFrom(
                 padding: EdgeInsets.zero, alignment: Alignment.topRight),

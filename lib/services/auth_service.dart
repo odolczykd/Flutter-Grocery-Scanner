@@ -6,17 +6,13 @@ class AuthService {
   final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;
 
   // Auth Change User Stream
-  Stream<User?> get user {
-    return _auth.authStateChanges().map(_convertFirebaseUserToCustomUser);
-  }
+  Stream<User?> get user =>
+      _auth.authStateChanges().map(_convertFirebaseUserToCustomUser);
 
-  String? get currentUserUid {
-    return _auth.currentUser?.uid;
-  }
+  String? get currentUserUid => _auth.currentUser?.uid;
 
-  User? _convertFirebaseUserToCustomUser(firebase_auth.User? user) {
-    return user != null ? User(uid: user.uid) : null;
-  }
+  User? _convertFirebaseUserToCustomUser(firebase_auth.User? user) =>
+      user != null ? User(uid: user.uid) : null;
 
   Future signIn(String email, String password) async {
     try {
@@ -24,6 +20,8 @@ class AuthService {
           .signInWithEmailAndPassword(email: email, password: password);
       firebase_auth.User? user = result.user;
       return _convertFirebaseUserToCustomUser(user);
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      return e.code;
     } catch (e) {
       return null;
     }
@@ -66,19 +64,4 @@ class AuthService {
       return false;
     }
   }
-
-  // Future<void> _reauthenticateAndDelete() async {
-  //   try {
-  //     final provider = _auth.currentUser?.providerData.first;
-
-  //     if (firebase_auth.GoogleAuthProvider().providerId ==
-  //         provider?.providerId) {
-  //       await _auth.currentUser!
-  //           .reauthenticateWithProvider(firebase_auth.GoogleAuthProvider());
-  //     }
-  //     await _auth.currentUser?.delete();
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
 }

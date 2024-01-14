@@ -36,7 +36,7 @@ class _LoginRegisterState extends State<LoginRegister> {
 
                     // Login Register Switch
                     ToggleSwitch(
-                        fontSize: 16,
+                        fontSize: 14,
                         minWidth: 125,
                         initialLabelIndex: activeLabelIndex,
                         cornerRadius: 10,
@@ -48,13 +48,13 @@ class _LoginRegisterState extends State<LoginRegister> {
                           [orange]
                         ],
                         totalSwitches: 2,
-                        labels: const ["Logowanie", "Rejestracja"],
+                        labels: const ["LOGOWANIE", "REJESTRACJA"],
                         onToggle: (index) => setState(() {
                               isLogin = (index == 0);
                               activeLabelIndex = index!;
                             })),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
                     isLogin ? const Login() : const Register()
                   ],
                 )),
