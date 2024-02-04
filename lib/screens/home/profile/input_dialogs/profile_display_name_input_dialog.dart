@@ -28,8 +28,13 @@ class _ProfileDisplayNameInputDialogState
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Edytuj imię",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+      title: const Text(
+        "Edytuj imię",
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       content: IntrinsicHeight(
         child: SizedBox(
           width: MediaQuery.of(context).size.width,
@@ -46,16 +51,20 @@ class _ProfileDisplayNameInputDialogState
               ),
               const SizedBox(height: 10),
               if (validatorMsg.isNotEmpty)
-                Text(validatorMsg, style: const TextStyle(color: red))
+                Text(
+                  validatorMsg,
+                  style: const TextStyle(color: red),
+                ),
             ],
           ),
         ),
       ),
       actions: [
         TextButton(
-            onPressed: () => Navigator.pop(context),
-            style: TextButton.styleFrom(foregroundColor: black),
-            child: const Text("ANULUJ")),
+          onPressed: () => Navigator.pop(context),
+          style: TextButton.styleFrom(foregroundColor: black),
+          child: const Text("ANULUJ"),
+        ),
         TextButton(
           onPressed: () {
             validatorMsg = "";

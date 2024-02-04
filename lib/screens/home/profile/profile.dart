@@ -61,147 +61,171 @@ class _ProfileState extends State<Profile> {
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Center(
-                  child: Column(
-                children: [
-                  // Logged User Info
-                  Row(children: [
-                    const Icon(
-                      Icons.account_circle,
-                      color: green,
-                      size: 60,
-                    ),
-                    const SizedBox(width: 15),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                child: Column(
+                  children: [
+                    // Logged User Info
+                    Row(
                       children: [
-                        Text(tempDisplayName ?? loggedUser.displayName,
-                            style: const TextStyle(
-                                color: black,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold)),
-                        Text("(${loggedUser.username})",
-                            style: const TextStyle(
-                                color: black,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold))
+                        const Icon(
+                          Icons.account_circle,
+                          color: green,
+                          size: 60,
+                        ),
+                        const SizedBox(width: 15),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              tempDisplayName ?? loggedUser.displayName,
+                              style: const TextStyle(
+                                  color: black,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              "(${loggedUser.username})",
+                              style: const TextStyle(
+                                  color: black,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            )
+                          ],
+                        )
                       ],
-                    )
-                  ]),
+                    ),
 
-                  // Restrictions
-                  const SizedBox(height: 25),
-                  LabelRow(
+                    // Restrictions
+                    const SizedBox(height: 25),
+                    LabelRow(
                       icon: Icons.no_meals,
                       labelText: "Ograniczenia i uczulenia",
                       color: green,
                       isSecondaryIconEnabled: true,
                       secondaryIcon: Icons.edit,
                       onTap: () => showDialog(
-                          context: context,
-                          builder: (context) => ProfileRestrictionsInputDialog(
-                              initValue: restrictions,
-                              setValue: (input) async {
-                                setState(() => restrictions = input);
+                        context: context,
+                        builder: (context) => ProfileRestrictionsInputDialog(
+                          initValue: restrictions,
+                          setValue: (input) async {
+                            setState(() => restrictions = input);
 
-                                bool result = await UserDatabaseService(
-                                        _auth.currentUserUid!)
+                            bool result =
+                                await UserDatabaseService(_auth.currentUserUid!)
                                     .updateField("restrictions", input);
-                                if (result) {
-                                  Fluttertoast.showToast(
-                                      msg:
-                                          "Zaktualizowano listę ograniczeń i uczeleń",
-                                      toastLength: Toast.LENGTH_SHORT,
-                                      gravity: ToastGravity.BOTTOM,
-                                      fontSize: 16);
-                                } else {
-                                  Fluttertoast.showToast(
-                                      msg:
-                                          "Nie udało się zaktualizować listy ograniczeń i uczeleń",
-                                      toastLength: Toast.LENGTH_LONG,
-                                      gravity: ToastGravity.BOTTOM,
-                                      fontSize: 16);
-                                }
-                              }))),
-                  _renderRestrictionsList(restrictions),
+                            if (result) {
+                              Fluttertoast.showToast(
+                                msg:
+                                    "Zaktualizowano listę ograniczeń i uczeleń",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                fontSize: 16,
+                              );
+                            } else {
+                              Fluttertoast.showToast(
+                                msg:
+                                    "Nie udało się zaktualizować listy ograniczeń i uczeleń",
+                                toastLength: Toast.LENGTH_LONG,
+                                gravity: ToastGravity.BOTTOM,
+                                fontSize: 16,
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                    _renderRestrictionsList(restrictions),
 
-                  // Preferences
-                  const SizedBox(height: 15),
-                  LabelRow(
+                    // Preferences
+                    const SizedBox(height: 15),
+                    LabelRow(
                       icon: Icons.kebab_dining,
                       labelText: "Twoje preferencje",
                       color: green,
                       isSecondaryIconEnabled: true,
                       secondaryIcon: Icons.edit,
                       onTap: () => showDialog(
-                          context: context,
-                          builder: (context) => ProfilePreferencesInputDialog(
-                              initValue: preferences,
-                              setValue: (input) async {
-                                setState(() => preferences = input);
+                        context: context,
+                        builder: (context) => ProfilePreferencesInputDialog(
+                          initValue: preferences,
+                          setValue: (input) async {
+                            setState(() => preferences = input);
 
-                                bool result = await UserDatabaseService(
-                                        _auth.currentUserUid!)
+                            bool result =
+                                await UserDatabaseService(_auth.currentUserUid!)
                                     .updateField("preferences", input);
-                                if (result) {
-                                  Fluttertoast.showToast(
-                                      msg: "Zaktualizowano listę preferencji",
-                                      toastLength: Toast.LENGTH_SHORT,
-                                      gravity: ToastGravity.BOTTOM,
-                                      fontSize: 16);
-                                } else {
-                                  Fluttertoast.showToast(
-                                      msg:
-                                          "Nie udało się zaktualizować listy preferencji",
-                                      toastLength: Toast.LENGTH_LONG,
-                                      gravity: ToastGravity.BOTTOM,
-                                      fontSize: 16);
-                                }
-                              }))),
-                  PreferencesList(list: preferences),
+                            if (result) {
+                              Fluttertoast.showToast(
+                                msg: "Zaktualizowano listę preferencji",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                fontSize: 16,
+                              );
+                            } else {
+                              Fluttertoast.showToast(
+                                msg:
+                                    "Nie udało się zaktualizować listy preferencji",
+                                toastLength: Toast.LENGTH_LONG,
+                                gravity: ToastGravity.BOTTOM,
+                                fontSize: 16,
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                    PreferencesList(list: preferences),
 
-                  // Profile Info
-                  const SizedBox(height: 15),
-                  const LabelRow(
+                    // Profile Info
+                    const SizedBox(height: 15),
+                    const LabelRow(
                       icon: Icons.info,
                       labelText: "Informacje o profilu",
                       color: green,
-                      isSecondaryIconEnabled: false),
-                  _renderProfileInfo(tempDisplayName ?? loggedUser.displayName,
-                      loggedUser.createdAtTimestamp),
+                      isSecondaryIconEnabled: false,
+                    ),
+                    _renderProfileInfo(
+                      tempDisplayName ?? loggedUser.displayName,
+                      loggedUser.createdAtTimestamp,
+                    ),
 
-                  // Options (delete account + sign out)
-                  const SizedBox(height: 15),
-                  const LabelRow(
+                    // Options (delete account + sign out)
+                    const SizedBox(height: 15),
+                    const LabelRow(
                       icon: Icons.settings,
                       labelText: "Opcje",
                       color: green,
-                      isSecondaryIconEnabled: false),
-                  const SizedBox(height: 10),
+                      isSecondaryIconEnabled: false,
+                    ),
+                    const SizedBox(height: 10),
 
-                  HorizontalButton(
+                    HorizontalButton(
                       icon: Icons.add,
                       label: "Dodaj nowy produkt",
                       color: green,
                       onPressed: () =>
-                          Navigator.of(context).pushNamed("/product/add")),
+                          Navigator.of(context).pushNamed("/product/add"),
+                    ),
 
-                  HorizontalButton(
+                    HorizontalButton(
                       icon: Icons.logout,
                       label: "Wyloguj się",
                       color: green,
-                      onPressed: () async => await _auth.signOut()),
-
-                  HorizontalButton(
-                    icon: Icons.person_off,
-                    label: "Usuń konto",
-                    color: red,
-                    onPressed: () => showDialog(
-                      context: context,
-                      builder: (context) => const ProfileDeletionInputDialog(),
+                      onPressed: () async => await _auth.signOut(),
                     ),
-                  ),
-                ],
-              )),
+
+                    HorizontalButton(
+                      icon: Icons.person_off,
+                      label: "Usuń konto",
+                      color: red,
+                      onPressed: () => showDialog(
+                        context: context,
+                        builder: (context) =>
+                            const ProfileDeletionInputDialog(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         );
@@ -225,92 +249,114 @@ class _ProfileState extends State<Profile> {
     if (restrictions.isEmpty) {
       return Container(
         margin: const EdgeInsets.only(top: 10, bottom: 15),
-        child: const Column(children: [
-          Text(
-            "Póki co nic tu nie ma...",
-            style: TextStyle(fontSize: 16),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("Kliknij "),
-              Icon(Icons.edit, color: green),
-              Text(" po prawej stronie, aby dodać element")
-            ],
-          )
-        ]),
+        child: const Column(
+          children: [
+            Text(
+              "Póki co nic tu nie ma...",
+              style: TextStyle(fontSize: 16),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Kliknij "),
+                Icon(Icons.edit, color: green),
+                Text(" po prawej stronie, aby dodać element")
+              ],
+            )
+          ],
+        ),
       );
     }
     return Column(
-        children: restrictions
-            .map((restr) => Row(children: [
-                  const SizedBox(width: 5),
-                  const Icon(
-                    Icons.navigate_next,
-                    color: green,
-                  ),
-                  Text(allergenLabels[restr]!),
-                ]))
-            .toList());
+      children: restrictions
+          .map(
+            (restr) => Row(
+              children: [
+                const SizedBox(width: 5),
+                const Icon(Icons.navigate_next, color: green),
+                Text(allergenLabels[restr]!),
+              ],
+            ),
+          )
+          .toList(),
+    );
   }
 
   Widget _renderProfileInfo(String displayName, int createdAtTimestamp) {
-    final date = DateTime.fromMillisecondsSinceEpoch(createdAtTimestamp);
+    final date = DateTime.fromMillisecondsSinceEpoch(createdAtTimestamp * 1000);
     final accountCreatedDateFormatted =
         "${date.day}.${date.month}.${date.year}";
     final elapsedTimeFromAccountCreationFormatted =
         _formatElapsedTimeFromAccountCreation(createdAtTimestamp);
 
     return Align(
-        alignment: Alignment.centerLeft,
-        child: Column(children: [
-          Row(children: [
-            const Text("Imię: ", style: TextStyle(fontSize: 16)),
-            Text(displayName,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            const Spacer(),
-            GestureDetector(
+      alignment: Alignment.centerLeft,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              const Text("Imię: ", style: TextStyle(fontSize: 16)),
+              Text(
+                displayName,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              const Spacer(),
+              GestureDetector(
                 onTap: () => showDialog(
-                    context: context,
-                    builder: (context) => ProfileDisplayNameInputDialog(
-                        initValue: displayName,
-                        setValue: (input) async {
-                          setState(() => tempDisplayName = input);
-                          bool result =
-                              await UserDatabaseService(_auth.currentUserUid!)
-                                  .updateField("display_name", input);
-                          if (result) {
-                            Fluttertoast.showToast(
-                                msg: "Zmieniono imię",
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                fontSize: 16);
-                          } else {
-                            Fluttertoast.showToast(
-                                msg: "Nie udało się zmienić imienia",
-                                toastLength: Toast.LENGTH_LONG,
-                                gravity: ToastGravity.BOTTOM,
-                                fontSize: 16);
-                          }
-                        })),
-                child: const Icon(Icons.edit, color: green))
-          ]),
+                  context: context,
+                  builder: (context) => ProfileDisplayNameInputDialog(
+                    initValue: displayName,
+                    setValue: (input) async {
+                      setState(() => tempDisplayName = input);
+                      bool result =
+                          await UserDatabaseService(_auth.currentUserUid!)
+                              .updateField("display_name", input);
+                      if (result) {
+                        Fluttertoast.showToast(
+                          msg: "Zmieniono imię",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          fontSize: 16,
+                        );
+                      } else {
+                        Fluttertoast.showToast(
+                          msg: "Nie udało się zmienić imienia",
+                          toastLength: Toast.LENGTH_LONG,
+                          gravity: ToastGravity.BOTTOM,
+                          fontSize: 16,
+                        );
+                      }
+                    },
+                  ),
+                ),
+                child: const Icon(Icons.edit, color: green),
+              )
+            ],
+          ),
           Row(
             children: [
               const Text("Utworzono: ", style: TextStyle(fontSize: 16)),
               Text(
-                  "$accountCreatedDateFormatted ($elapsedTimeFromAccountCreationFormatted)",
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 16)),
+                "$accountCreatedDateFormatted ($elapsedTimeFromAccountCreationFormatted)",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
             ],
           )
-        ]));
+        ],
+      ),
+    );
   }
 
   String _formatElapsedTimeFromAccountCreation(int createdAtTimestamp) {
-    num difference = DateTime.now().millisecondsSinceEpoch - createdAtTimestamp;
-    int days = (difference / (1000 * 60 * 60 * 24)).floor();
+    num difference =
+        (DateTime.now().millisecondsSinceEpoch / 1000) - createdAtTimestamp;
+    int days = (difference / (60 * 60 * 24)).floor();
     return days == 1 ? "$days dzień temu" : "$days dni temu";
   }
 }

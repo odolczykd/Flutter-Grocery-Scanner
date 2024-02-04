@@ -31,8 +31,13 @@ class _ProfileDeletionInputDialogState
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Usuń konto",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+      title: const Text(
+        "Usuń konto",
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       content: IntrinsicHeight(
         child: SizedBox(
           width: MediaQuery.of(context).size.width,
@@ -71,28 +76,34 @@ class _ProfileDeletionInputDialogState
           child: const Text("ANULUJ"),
         ),
         TextButton(
-            onPressed: () async {
-              await UserDatabaseService(_auth.currentUserUid!).deleteDocument();
-              bool result = await _auth.deleteAccount(email, password);
-              if (result) {
-                Fluttertoast.showToast(
-                    msg: "Konto zostało usunięte",
-                    toastLength: Toast.LENGTH_LONG,
-                    gravity: ToastGravity.BOTTOM,
-                    fontSize: 16);
-                Navigator.of(context).pop();
-                Navigator.of(context).pushNamed("/");
-              } else {
-                Fluttertoast.showToast(
-                    msg:
-                        "Coś poszło nie tak... Sprawdź, czy wprowadzone dane są poprawne",
-                    toastLength: Toast.LENGTH_LONG,
-                    gravity: ToastGravity.BOTTOM,
-                    fontSize: 16);
-              }
-            },
-            style: TextButton.styleFrom(foregroundColor: black),
-            child: const Text("USUŃ KONTO", style: TextStyle(color: red)))
+          onPressed: () async {
+            await UserDatabaseService(_auth.currentUserUid!).deleteDocument();
+            bool result = await _auth.deleteAccount(email, password);
+            if (result) {
+              Fluttertoast.showToast(
+                msg: "Konto zostało usunięte",
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.BOTTOM,
+                fontSize: 16,
+              );
+              Navigator.of(context).pop();
+              Navigator.of(context).pushNamed("/");
+            } else {
+              Fluttertoast.showToast(
+                msg:
+                    "Coś poszło nie tak... Sprawdź, czy wprowadzone dane są poprawne",
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.BOTTOM,
+                fontSize: 16,
+              );
+            }
+          },
+          style: TextButton.styleFrom(foregroundColor: black),
+          child: const Text(
+            "USUŃ KONTO",
+            style: TextStyle(color: red),
+          ),
+        ),
       ],
     );
   }

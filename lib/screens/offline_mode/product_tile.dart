@@ -1,27 +1,45 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:grocery_scanner/models/product.dart';
+import 'package:grocery_scanner/screens/offline_mode/offline_product_page.dart';
+import 'package:grocery_scanner/screens/product_creator/product_creator_tile.dart';
 import 'package:grocery_scanner/shared/colors.dart';
 
 class ProductTile extends StatelessWidget {
-  final Product product;
+  final ProductOffline product;
+  final TilePosition position;
 
-  const ProductTile(this.product, {super.key});
+  const ProductTile({
+    super.key,
+    required this.product,
+    required this.position,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, "/product", arguments: product);
-      },
+    return TextButton(
+      style: TextButton.styleFrom(padding: EdgeInsets.zero),
+      onPressed: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => OfflineProductPage(product),
+        ),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(5),
+        padding: position == TilePosition.left
+            ? const EdgeInsets.fromLTRB(0, 5, 5, 5)
+            : const EdgeInsets.fromLTRB(5, 5, 0, 5),
         child: Container(
-          width: 200,
-          height: 160,
+          width: double.maxFinite,
+          height: 130,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             image: DecorationImage(
-                image: NetworkImage(product.images.front), fit: BoxFit.cover),
+              image: MemoryImage(
+                Uint8List.fromList(product.images.front),
+              ),
+              fit: BoxFit.cover,
+            ),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -46,12 +64,12 @@ class ProductTile extends StatelessWidget {
                       style: const TextStyle(
                         color: white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                        fontSize: 16,
                       ),
                     ),
                   ),
                 ),
-              ),
+              )
             ],
           ),
         ),

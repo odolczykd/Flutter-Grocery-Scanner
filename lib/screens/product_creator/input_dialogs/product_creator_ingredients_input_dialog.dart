@@ -28,8 +28,13 @@ class _ProductCreatorIngredientsInputDialogState
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Edytuj skład produktu",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+      title: const Text(
+        "Edytuj skład produktu",
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       content: IntrinsicHeight(
         child: SingleChildScrollView(
           child: SizedBox(
@@ -48,7 +53,10 @@ class _ProductCreatorIngredientsInputDialogState
                 ),
                 const SizedBox(height: 10),
                 if (validatorMsg.isNotEmpty)
-                  Text(validatorMsg, style: const TextStyle(color: red))
+                  Text(
+                    validatorMsg,
+                    style: const TextStyle(color: red),
+                  )
               ],
             ),
           ),

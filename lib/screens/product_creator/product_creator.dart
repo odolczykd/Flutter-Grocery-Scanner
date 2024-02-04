@@ -111,7 +111,9 @@ class _ProductCreatorState extends State<ProductCreator> {
                 Text(
                   isEditMode ? "Edytuj produkt" : "Dodaj nowy produkt",
                   style: const TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold),
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 30),
                 Form(
@@ -164,35 +166,44 @@ class _ProductCreatorState extends State<ProductCreator> {
 
                       const SizedBox(height: 10),
                       const Text(
-                          "Uzupełnij pozostałe dane i popraw te, które zostały niedokładnie odczytane z dodanych zdjęć",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16)),
+                        "Uzupełnij pozostałe dane i popraw te, które zostały niedokładnie odczytane z dodanych zdjęć",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
                       const SizedBox(height: 10),
 
                       // Barcode
                       LabelRow(
-                          icon: Icons.qr_code_scanner,
-                          labelText: "Kod kreskowy",
-                          color: green,
-                          isSecondaryIconEnabled: true,
-                          secondaryIcon: Icons.edit,
-                          onTap: () => showDialog(
-                              context: context,
-                              builder: (context) =>
-                                  ProductCreatorBarcodeInputDialog(
-                                      initValue: barcode,
-                                      setValue: (input) =>
-                                          setState(() => barcode = input)))),
+                        icon: Icons.qr_code_scanner,
+                        labelText: "Kod kreskowy",
+                        color: green,
+                        isSecondaryIconEnabled: true,
+                        secondaryIcon: Icons.edit,
+                        onTap: () => showDialog(
+                          context: context,
+                          builder: (context) =>
+                              ProductCreatorBarcodeInputDialog(
+                            initValue: barcode,
+                            setValue: (input) =>
+                                setState(() => barcode = input),
+                          ),
+                        ),
+                      ),
                       Align(
-                          alignment: Alignment.centerLeft,
-                          child: barcode.isNotEmpty
-                              ? Text(barcode,
-                                  style: const TextStyle(fontSize: 16))
-                              : const Text(
-                                  "Nie zeskanowano kodu kreskowego",
-                                  style: TextStyle(fontStyle: FontStyle.italic),
-                                  textAlign: TextAlign.left,
-                                )),
+                        alignment: Alignment.centerLeft,
+                        child: barcode.isNotEmpty
+                            ? Text(
+                                barcode,
+                                style: const TextStyle(fontSize: 16),
+                              )
+                            : const Text(
+                                "Nie zeskanowano kodu kreskowego",
+                                textAlign: TextAlign.left,
+                                style: TextStyle(fontStyle: FontStyle.italic),
+                              ),
+                      ),
 
                       // Ingredients
                       const SizedBox(height: 10.0),
@@ -203,58 +214,65 @@ class _ProductCreatorState extends State<ProductCreator> {
                         isSecondaryIconEnabled: true,
                         secondaryIcon: Icons.edit,
                         onTap: () => showDialog(
-                            context: context,
-                            builder: (context) =>
-                                ProductCreatorIngredientsInputDialog(
-                                    initValue: ingredients,
-                                    setValue: (input) async {
-                                      setState(() => ingredients = input);
-                                      await _extractAllergensFromIngredients(
-                                          input);
-                                    })),
+                          context: context,
+                          builder: (context) =>
+                              ProductCreatorIngredientsInputDialog(
+                            initValue: ingredients,
+                            setValue: (input) async {
+                              setState(() => ingredients = input);
+                              await _extractAllergensFromIngredients(input);
+                            },
+                          ),
+                        ),
                       ),
                       Align(
-                          alignment: Alignment.centerLeft,
-                          child: ingredients.isNotEmpty
-                              ? Text(ingredients)
-                              : const Text(
-                                  "Nie dodano składu produktu",
-                                  style: TextStyle(fontStyle: FontStyle.italic),
-                                  textAlign: TextAlign.left,
-                                )),
+                        alignment: Alignment.centerLeft,
+                        child: ingredients.isNotEmpty
+                            ? Text(ingredients)
+                            : const Text(
+                                "Nie dodano składu produktu",
+                                textAlign: TextAlign.left,
+                                style: TextStyle(fontStyle: FontStyle.italic),
+                              ),
+                      ),
 
                       // Allergens
                       const SizedBox(height: 10),
                       LabelRow(
-                          icon: Icons.egg_outlined,
-                          labelText: "Lista alergenów",
-                          color: green,
-                          isSecondaryIconEnabled: true,
-                          secondaryIcon: Icons.info_outline,
-                          onTap: () => showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                    title: const Text(
-                                        "Jak szukać alergenów na etykiecie produktu?",
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold)),
-                                    content:
-                                        const ProductAllergensDialogContent(),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        style: TextButton.styleFrom(
-                                            foregroundColor: black),
-                                        child: const Text("OK"),
-                                      )
-                                    ],
-                                  ))),
+                        icon: Icons.egg_outlined,
+                        labelText: "Lista alergenów",
+                        color: green,
+                        isSecondaryIconEnabled: true,
+                        secondaryIcon: Icons.info_outline,
+                        onTap: () => showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text(
+                              "Jak szukać alergenów na etykiecie produktu?",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            content: const ProductAllergensDialogContent(),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                style: TextButton.styleFrom(
+                                  foregroundColor: black,
+                                ),
+                                child: const Text("OK"),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
                       ProductCreatorAllergensList(
-                          allergens: allergens,
-                          callback: (updatedAllergens) {
-                            setState(() => allergens = updatedAllergens);
-                          }),
+                        allergens: allergens,
+                        callback: (updatedAllergens) {
+                          setState(() => allergens = updatedAllergens);
+                        },
+                      ),
 
                       // Nutriments
                       const SizedBox(height: 10),
@@ -264,65 +282,75 @@ class _ProductCreatorState extends State<ProductCreator> {
                           color: green,
                           isSecondaryIconEnabled: false),
                       const Text(
-                          "Jeśli któraś z wartości nie jest podana, pozostaw puste pole",
-                          style: TextStyle(fontStyle: FontStyle.italic)),
+                        "Jeśli któraś z wartości nie jest podana, pozostaw puste pole",
+                        style: TextStyle(fontStyle: FontStyle.italic),
+                      ),
                       const SizedBox(height: 10),
                       _renderNutritionTable(),
 
                       // Nutri-Score
                       const SizedBox(height: 10),
                       LabelRow(
-                          icon: Icons.local_pizza_outlined,
-                          labelText: "Nutri-Score",
-                          color: green,
-                          isSecondaryIconEnabled: true,
-                          secondaryIcon: Icons.info_outline,
-                          onTap: () => showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                    title: const Text("Wskaźnik Nutri-Score",
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold)),
-                                    content:
-                                        const ProductNutriscoreDialogContent(),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        style: TextButton.styleFrom(
-                                            foregroundColor: black),
-                                        child: const Text("OK"),
-                                      )
-                                    ],
-                                  ))),
+                        icon: Icons.local_pizza_outlined,
+                        labelText: "Nutri-Score",
+                        color: green,
+                        isSecondaryIconEnabled: true,
+                        secondaryIcon: Icons.info_outline,
+                        onTap: () => showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text(
+                              "Wskaźnik Nutri-Score",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            content: const ProductNutriscoreDialogContent(),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                style: TextButton.styleFrom(
+                                  foregroundColor: black,
+                                ),
+                                child: const Text("OK"),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: _nutriscoreGrades
-                            .map((e) => GestureDetector(
+                            .map(
+                              (e) => GestureDetector(
                                 onTap: () => setState(() => nutriscore = e),
                                 child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      nutriscoreTile(e),
-                                      if (nutriscore == e)
-                                        const Icon(
-                                          Icons.keyboard_arrow_up,
-                                          size: 30,
-                                        )
-                                    ])))
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    nutriscoreTile(e),
+                                    if (nutriscore == e)
+                                      const Icon(
+                                        Icons.keyboard_arrow_up,
+                                        size: 30,
+                                      )
+                                  ],
+                                ),
+                              ),
+                            )
                             .toList(),
                       ),
 
                       // Additional Info (Tags)
                       const SizedBox(height: 10),
                       const LabelRow(
-                          icon: Icons.eco_outlined,
-                          labelText: "Dodatkowe informacje",
-                          color: green,
-                          isSecondaryIconEnabled: false),
+                        icon: Icons.eco_outlined,
+                        labelText: "Dodatkowe informacje",
+                        color: green,
+                        isSecondaryIconEnabled: false,
+                      ),
                       _renderAdditionalInfoCheckboxes(),
 
                       const SizedBox(height: 10),
@@ -364,10 +392,11 @@ class _ProductCreatorState extends State<ProductCreator> {
                                     isProductAlreadySent = true;
                                   });
                                   Fluttertoast.showToast(
-                                      msg: "Ten produkt już został dodany",
-                                      toastLength: Toast.LENGTH_SHORT,
-                                      gravity: ToastGravity.BOTTOM,
-                                      fontSize: 16);
+                                    msg: "Ten produkt już został dodany",
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    fontSize: 16,
+                                  );
                                   return;
                                 }
 
@@ -392,9 +421,10 @@ class _ProductCreatorState extends State<ProductCreator> {
                               } else {
                                 imageFrontUrl =
                                     await _uploadImageToFirebaseStorage(
-                                        image: productImageFront!,
-                                        type: "front",
-                                        barcode: barcode);
+                                  image: productImageFront!,
+                                  type: "front",
+                                  barcode: barcode,
+                                );
                               }
 
                               if (productImageIngredients == null) {
@@ -405,9 +435,10 @@ class _ProductCreatorState extends State<ProductCreator> {
                               } else {
                                 imageIngredientsUrl =
                                     await _uploadImageToFirebaseStorage(
-                                        image: productImageIngredients!,
-                                        type: "ingredients",
-                                        barcode: barcode);
+                                  image: productImageIngredients!,
+                                  type: "ingredients",
+                                  barcode: barcode,
+                                );
                               }
 
                               if (productImageNutriments == null) {
@@ -418,28 +449,30 @@ class _ProductCreatorState extends State<ProductCreator> {
                               } else {
                                 imageNutrimentsUrl =
                                     await _uploadImageToFirebaseStorage(
-                                        image: productImageNutriments!,
-                                        type: "nutriments",
-                                        barcode: barcode);
+                                  image: productImageNutriments!,
+                                  type: "nutriments",
+                                  barcode: barcode,
+                                );
                               }
 
                               if (_formKey.currentState!.validate() &&
                                   formErrorMessages.isEmpty) {
                                 final product = Product(
-                                    barcode: barcode,
-                                    productName: productName,
-                                    brand: brand,
-                                    images: ProductImages(
-                                        front: imageFrontUrl,
-                                        ingredients: imageIngredientsUrl,
-                                        nutrition: imageNutrimentsUrl),
-                                    ingredients: ingredients,
-                                    nutriments: nutriments,
-                                    allergens: allergens,
-                                    nutriscore: nutriscore == "?"
-                                        ? "unknown"
-                                        : nutriscore,
-                                    tags: tags);
+                                  barcode: barcode,
+                                  productName: productName,
+                                  brand: brand,
+                                  images: ProductImages(
+                                      front: imageFrontUrl,
+                                      ingredients: imageIngredientsUrl,
+                                      nutrition: imageNutrimentsUrl),
+                                  ingredients: ingredients,
+                                  nutriments: nutriments,
+                                  allergens: allergens,
+                                  nutriscore: nutriscore == "?"
+                                      ? "unknown"
+                                      : nutriscore,
+                                  tags: tags,
+                                );
 
                                 // Add Product to Firestore
                                 final response =
@@ -447,12 +480,13 @@ class _ProductCreatorState extends State<ProductCreator> {
                                         .addProduct(product);
                                 if (response == false) {
                                   Fluttertoast.showToast(
-                                      msg: isEditMode
-                                          ? "Nie udało się zapisać produktu"
-                                          : "Nie udało się dodać nowego produktu",
-                                      toastLength: Toast.LENGTH_LONG,
-                                      gravity: ToastGravity.BOTTOM,
-                                      fontSize: 16);
+                                    msg: isEditMode
+                                        ? "Nie udało się zapisać produktu"
+                                        : "Nie udało się dodać nowego produktu",
+                                    toastLength: Toast.LENGTH_LONG,
+                                    gravity: ToastGravity.BOTTOM,
+                                    fontSize: 16,
+                                  );
                                 } else {
                                   setState(() {
                                     isProductAlreadySent = true;
@@ -461,24 +495,26 @@ class _ProductCreatorState extends State<ProductCreator> {
                                   // Add Product to logged user's products list
                                   if (!isEditMode) {
                                     await UserDatabaseService(
-                                            _auth.currentUserUid!)
-                                        .relateUserWithProduct(barcode);
+                                      _auth.currentUserUid!,
+                                    ).relateUserWithProduct(barcode);
                                   }
 
                                   Fluttertoast.showToast(
-                                      msg: isEditMode
-                                          ? "Zapisano produkt"
-                                          : "Pomyślnie dodano nowy produkt",
-                                      toastLength: Toast.LENGTH_SHORT,
-                                      gravity: ToastGravity.BOTTOM,
-                                      fontSize: 16);
+                                    msg: isEditMode
+                                        ? "Zapisano produkt"
+                                        : "Pomyślnie dodano nowy produkt",
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    fontSize: 16,
+                                  );
                                 }
                               } else {
                                 Fluttertoast.showToast(
-                                    msg: "Popraw wszystkie pola formularza",
-                                    toastLength: Toast.LENGTH_LONG,
-                                    gravity: ToastGravity.BOTTOM,
-                                    fontSize: 16);
+                                  msg: "Popraw wszystkie pola formularza",
+                                  toastLength: Toast.LENGTH_LONG,
+                                  gravity: ToastGravity.BOTTOM,
+                                  fontSize: 16,
+                                );
                               }
                             },
                           ),
@@ -528,25 +564,32 @@ class _ProductCreatorState extends State<ProductCreator> {
 
   Future _getImageFromCamera({required String type}) async {
     final pickedImage = await _imagePicker.pickImage(
-        source: ImageSource.camera, imageQuality: 100);
+      source: ImageSource.camera,
+      imageQuality: 100,
+    );
 
     if (pickedImage != null) {
-      await _cropImage(path: pickedImage.path, type: type);
+      await _cropImage(
+        path: pickedImage.path,
+        type: type,
+      );
     }
   }
 
   Future _cropImage({required String path, required String type}) async {
-    CroppedFile? croppedFile =
-        await ImageCropper().cropImage(sourcePath: path, uiSettings: [
-      AndroidUiSettings(
-        toolbarTitle: "Przytnij zdjęcie",
-        toolbarColor: white,
-        toolbarWidgetColor: green,
-        backgroundColor: white,
-        activeControlsWidgetColor: green,
-        lockAspectRatio: false,
-      )
-    ]);
+    CroppedFile? croppedFile = await ImageCropper().cropImage(
+      sourcePath: path,
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: "Przytnij zdjęcie",
+          toolbarColor: white,
+          toolbarWidgetColor: green,
+          backgroundColor: white,
+          activeControlsWidgetColor: green,
+          lockAspectRatio: false,
+        )
+      ],
+    );
 
     setState(() {
       if (croppedFile != null) {
@@ -572,24 +615,31 @@ class _ProductCreatorState extends State<ProductCreator> {
 
   Future _readTextFromImage() async {
     final pickedImage = await _imagePicker.pickImage(
-        source: ImageSource.camera, imageQuality: 100);
+      source: ImageSource.camera,
+      imageQuality: 100,
+    );
 
     if (pickedImage != null) {
-      CroppedFile? croppedFile = await ImageCropper()
-          .cropImage(sourcePath: pickedImage.path, uiSettings: [
-        AndroidUiSettings(
-          toolbarTitle: "Przytnij zdjęcie",
-          toolbarColor: green,
-          toolbarWidgetColor: white,
-          lockAspectRatio: false,
-        )
-      ]);
+      CroppedFile? croppedFile = await ImageCropper().cropImage(
+        sourcePath: pickedImage.path,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: "Przytnij zdjęcie",
+            toolbarColor: green,
+            toolbarWidgetColor: white,
+            lockAspectRatio: false,
+          )
+        ],
+      );
 
       if (croppedFile != null) {
         final textRecognizer =
             TextRecognizer(script: TextRecognitionScript.latin);
-        final recognizedText = await textRecognizer
-            .processImage(InputImage.fromFile(File(croppedFile.path)));
+        final recognizedText = await textRecognizer.processImage(
+          InputImage.fromFile(
+            File(croppedFile.path),
+          ),
+        );
 
         setState(() {
           productImageIngredients = File(croppedFile.path);
@@ -627,104 +677,109 @@ class _ProductCreatorState extends State<ProductCreator> {
   }
 
   Widget _renderTiles() {
-    return Column(children: [
-      Row(
-        children: [
-          // Barcode Scanner
-          Expanded(
-            flex: 1,
-            child: ProductCreatorImageInputTile(
-              icon: Icons.barcode_reader,
-              text: "Zeskanuj kod kreskowy",
-              position: TilePosition.left,
-              onPressed: () async {
-                await _getImageFromCamera(type: "barcode");
-                if (productImageBarcode != null) {
-                  String? scanResult;
-
-                  try {
-                    scanResult = await BarcodeFinder.scanFile(
-                        path: productImageBarcode!.path,
-                        formats: [BarcodeFormat.EAN_8, BarcodeFormat.EAN_13]);
-                  } on Exception {
-                    scanResult = null;
-                  }
-
-                  setState(() {
-                    if (scanResult != null) {
-                      barcode = scanResult;
-                    }
-                  });
-                }
-              },
-            ),
-          ),
-
-          // Product Front Image
-          Expanded(
-            flex: 1,
-            child: ProductCreatorImageInputTile(
-                icon: Icons.lunch_dining,
-                text: "Dodaj zdjęcie przodu produktu",
-                position: TilePosition.right,
-                onPressed: () async {
-                  if (productImageFront != null) {
-                    setState(() {
-                      productImageFront = null;
-                    });
-                  } else {
-                    await _getImageFromCamera(type: "front");
-                  }
-                },
-                image: productImageFront,
-                deleteText: "Usuń zdjęcie przodu produktu"),
-          )
-        ],
-      ),
-      Row(
-        children: [
-          // Product Ingredients Image
-          Expanded(
-            flex: 1,
-            child: ProductCreatorImageInputTile(
-                icon: Icons.format_list_bulleted,
-                text: "Dodaj zdjęcie składu produktu",
-                position: TilePosition.left,
-                onPressed: () async {
-                  if (productImageIngredients == null) {
-                    await _readTextFromImage();
-                    await _extractAllergensFromIngredients(ingredients);
-                  } else {
-                    setState(() {
-                      productImageIngredients = null;
-                    });
-                  }
-                },
-                image: productImageIngredients,
-                deleteText: "Usuń zdjęcie składu produktu"),
-          ),
-
-          // Product Nutriments Image
-          Expanded(
+    return Column(
+      children: [
+        Row(
+          children: [
+            // Barcode Scanner
+            Expanded(
               flex: 1,
               child: ProductCreatorImageInputTile(
-                  icon: Icons.fastfood,
-                  text: "Dodaj zdjęcie wart. odżywczych",
+                icon: Icons.barcode_reader,
+                text: "Zeskanuj kod kreskowy",
+                position: TilePosition.left,
+                onPressed: () async {
+                  await _getImageFromCamera(type: "barcode");
+                  if (productImageBarcode != null) {
+                    String? scanResult;
+
+                    try {
+                      scanResult = await BarcodeFinder.scanFile(
+                        path: productImageBarcode!.path,
+                        formats: [BarcodeFormat.EAN_8, BarcodeFormat.EAN_13],
+                      );
+                    } on Exception {
+                      scanResult = null;
+                    }
+
+                    setState(() {
+                      if (scanResult != null) {
+                        barcode = scanResult;
+                      }
+                    });
+                  }
+                },
+              ),
+            ),
+
+            // Product Front Image
+            Expanded(
+              flex: 1,
+              child: ProductCreatorImageInputTile(
+                  icon: Icons.lunch_dining,
+                  text: "Dodaj zdjęcie przodu produktu",
                   position: TilePosition.right,
                   onPressed: () async {
-                    if (productImageNutriments == null) {
-                      await _getImageFromCamera(type: "nutriments");
+                    if (productImageFront != null) {
+                      setState(() {
+                        productImageFront = null;
+                      });
+                    } else {
+                      await _getImageFromCamera(type: "front");
+                    }
+                  },
+                  image: productImageFront,
+                  deleteText: "Usuń zdjęcie przodu produktu"),
+            )
+          ],
+        ),
+        Row(
+          children: [
+            // Product Ingredients Image
+            Expanded(
+              flex: 1,
+              child: ProductCreatorImageInputTile(
+                  icon: Icons.format_list_bulleted,
+                  text: "Dodaj zdjęcie składu produktu",
+                  position: TilePosition.left,
+                  onPressed: () async {
+                    if (productImageIngredients == null) {
+                      await _readTextFromImage();
+                      await _extractAllergensFromIngredients(ingredients);
                     } else {
                       setState(() {
-                        productImageNutriments = null;
+                        productImageIngredients = null;
                       });
                     }
                   },
-                  image: productImageNutriments,
-                  deleteText: "Usuń zdjęcie wart. odżywczych"))
-        ],
-      )
-    ]);
+                  image: productImageIngredients,
+                  deleteText: "Usuń zdjęcie składu produktu"),
+            ),
+
+            // Product Nutriments Image
+            Expanded(
+              flex: 1,
+              child: ProductCreatorImageInputTile(
+                icon: Icons.fastfood,
+                text: "Dodaj zdjęcie wart. odżywczych",
+                position: TilePosition.right,
+                onPressed: () async {
+                  if (productImageNutriments == null) {
+                    await _getImageFromCamera(type: "nutriments");
+                  } else {
+                    setState(() {
+                      productImageNutriments = null;
+                    });
+                  }
+                },
+                image: productImageNutriments,
+                deleteText: "Usuń zdjęcie wart. odżywczych",
+              ),
+            )
+          ],
+        )
+      ],
+    );
   }
 
   Widget _renderNutritionTable() {
@@ -736,499 +791,530 @@ class _ProductCreatorState extends State<ProductCreator> {
       },
       children: [
         // Header
-        TableRow(children: [
-          Container(),
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 5),
-            child: const Align(
-              alignment: Alignment.center,
-              child: Text("w porcji",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        TableRow(
+          children: [
+            Container(),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: const Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "w porcji",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 5),
-            child: const Align(
-              alignment: Alignment.center,
-              child: Text("w 100 g/ml",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            ),
-          )
-        ]),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: const Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "w 100 g/ml",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            )
+          ],
+        ),
 
         // Energy [kJ]
-        TableRow(children: [
-          const TableCell(
-            verticalAlignment: TableCellVerticalAlignment.middle,
-            child: Padding(
-              padding: EdgeInsets.only(left: 5),
-              child: Text(
-                "energia [kJ]",
-                style: TextStyle(fontSize: 16),
+        TableRow(
+          children: [
+            const TableCell(
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              child: Padding(
+                padding: EdgeInsets.only(left: 5),
+                child: Text(
+                  "energia [kJ]",
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(2.5),
-            child: FormTextField(
-              labelText: "",
-              color: green,
-              obscureText: false,
-              callback: (val) => setState(() {
-                nutriments.energyKJ["value"] = val!.isNotEmpty ? val : "N/A";
-              }),
-              validator: (val) {
-                if (val!.isNotEmpty &&
-                    !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
-                  return "Tylko liczby";
-                } else {
-                  return null;
-                }
-              },
-              value: (isEditMode && nutriments.energyKJ["value"] != "N/A")
-                  ? nutriments.energyKJ["value"]
-                  : "",
+            Padding(
+              padding: const EdgeInsets.all(2.5),
+              child: FormTextField(
+                labelText: "",
+                color: green,
+                obscureText: false,
+                callback: (val) => setState(() {
+                  nutriments.energyKJ["value"] = val!.isNotEmpty ? val : "N/A";
+                }),
+                validator: (val) {
+                  if (val!.isNotEmpty &&
+                      !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
+                    return "Tylko liczby";
+                  } else {
+                    return null;
+                  }
+                },
+                value: (isEditMode && nutriments.energyKJ["value"] != "N/A")
+                    ? nutriments.energyKJ["value"]
+                    : "",
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(2.5),
-            child: FormTextField(
-              labelText: "",
-              color: green,
-              obscureText: false,
-              callback: (val) => setState(() {
-                nutriments.energyKJ["value_100g"] =
-                    val!.isNotEmpty ? val : "N/A";
-              }),
-              validator: (val) {
-                if (val!.isNotEmpty &&
-                    !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
-                  return "Tylko liczby";
-                } else {
-                  return null;
-                }
-              },
-              value: (isEditMode && nutriments.energyKJ["value_100g"] != "N/A")
-                  ? nutriments.energyKJ["value_100g"]
-                  : "",
-            ),
-          )
-        ]),
+            Padding(
+              padding: const EdgeInsets.all(2.5),
+              child: FormTextField(
+                labelText: "",
+                color: green,
+                obscureText: false,
+                callback: (val) => setState(() {
+                  nutriments.energyKJ["value_100g"] =
+                      val!.isNotEmpty ? val : "N/A";
+                }),
+                validator: (val) {
+                  if (val!.isNotEmpty &&
+                      !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
+                    return "Tylko liczby";
+                  } else {
+                    return null;
+                  }
+                },
+                value:
+                    (isEditMode && nutriments.energyKJ["value_100g"] != "N/A")
+                        ? nutriments.energyKJ["value_100g"]
+                        : "",
+              ),
+            )
+          ],
+        ),
 
         // Energy [kcal]
-        TableRow(decoration: const BoxDecoration(color: greyBg), children: [
-          const TableCell(
-            verticalAlignment: TableCellVerticalAlignment.middle,
-            child: Padding(
-              padding: EdgeInsets.only(left: 5),
-              child: Text(
-                "energia [kcal]",
-                style: TextStyle(fontSize: 16),
+        TableRow(
+          decoration: const BoxDecoration(color: greyBg),
+          children: [
+            const TableCell(
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              child: Padding(
+                padding: EdgeInsets.only(left: 5),
+                child: Text(
+                  "energia [kcal]",
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(2.5),
-            child: FormTextField(
-              callback: (val) => setState(() {
-                nutriments.energyKcal["value"] = val!.isNotEmpty ? val : "N/A";
-              }),
-              labelText: "",
-              color: green,
-              obscureText: false,
-              validator: (val) {
-                if (val!.isNotEmpty &&
-                    !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
-                  return "Tylko liczby";
-                } else {
-                  return null;
-                }
-              },
-              value: (isEditMode && nutriments.energyKcal["value"] != "N/A")
-                  ? nutriments.energyKcal["value"]
-                  : "",
+            Padding(
+              padding: const EdgeInsets.all(2.5),
+              child: FormTextField(
+                callback: (val) => setState(() {
+                  nutriments.energyKcal["value"] =
+                      val!.isNotEmpty ? val : "N/A";
+                }),
+                labelText: "",
+                color: green,
+                obscureText: false,
+                validator: (val) {
+                  if (val!.isNotEmpty &&
+                      !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
+                    return "Tylko liczby";
+                  } else {
+                    return null;
+                  }
+                },
+                value: (isEditMode && nutriments.energyKcal["value"] != "N/A")
+                    ? nutriments.energyKcal["value"]
+                    : "",
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(2.5),
-            child: FormTextField(
-              callback: (val) => setState(() {
-                nutriments.energyKcal["value_100g"] =
-                    val!.isNotEmpty ? val : "N/A";
-              }),
-              labelText: "",
-              color: green,
-              obscureText: false,
-              validator: (val) {
-                if (val!.isNotEmpty &&
-                    !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
-                  return "Tylko liczby";
-                } else {
-                  return null;
-                }
-              },
-              value:
-                  (isEditMode && nutriments.energyKcal["value_100g"] != "N/A")
-                      ? nutriments.energyKcal["value_100g"]
-                      : "",
-            ),
-          )
-        ]),
+            Padding(
+              padding: const EdgeInsets.all(2.5),
+              child: FormTextField(
+                callback: (val) => setState(() {
+                  nutriments.energyKcal["value_100g"] =
+                      val!.isNotEmpty ? val : "N/A";
+                }),
+                labelText: "",
+                color: green,
+                obscureText: false,
+                validator: (val) {
+                  if (val!.isNotEmpty &&
+                      !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
+                    return "Tylko liczby";
+                  } else {
+                    return null;
+                  }
+                },
+                value:
+                    (isEditMode && nutriments.energyKcal["value_100g"] != "N/A")
+                        ? nutriments.energyKcal["value_100g"]
+                        : "",
+              ),
+            )
+          ],
+        ),
 
         // Fat
-        TableRow(children: [
-          const TableCell(
-            verticalAlignment: TableCellVerticalAlignment.middle,
-            child: Padding(
-              padding: EdgeInsets.only(left: 5),
-              child: Text(
-                "tłuszcz",
-                style: TextStyle(fontSize: 16),
+        TableRow(
+          children: [
+            const TableCell(
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              child: Padding(
+                padding: EdgeInsets.only(left: 5),
+                child: Text(
+                  "tłuszcz",
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(2.5),
-            child: FormTextField(
-              callback: (val) => setState(() {
-                nutriments.fat["value"] = val!.isNotEmpty ? val : "N/A";
-              }),
-              labelText: "",
-              color: green,
-              obscureText: false,
-              validator: (val) {
-                if (val!.isNotEmpty &&
-                    !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
-                  return "Tylko liczby";
-                } else {
-                  return null;
-                }
-              },
-              value: (isEditMode && nutriments.fat["value"] != "N/A")
-                  ? nutriments.fat["value"]
-                  : "",
+            Padding(
+              padding: const EdgeInsets.all(2.5),
+              child: FormTextField(
+                callback: (val) => setState(() {
+                  nutriments.fat["value"] = val!.isNotEmpty ? val : "N/A";
+                }),
+                labelText: "",
+                color: green,
+                obscureText: false,
+                validator: (val) {
+                  if (val!.isNotEmpty &&
+                      !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
+                    return "Tylko liczby";
+                  } else {
+                    return null;
+                  }
+                },
+                value: (isEditMode && nutriments.fat["value"] != "N/A")
+                    ? nutriments.fat["value"]
+                    : "",
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(2.5),
-            child: FormTextField(
-              callback: (val) => setState(() {
-                nutriments.fat["value_100g"] = val!.isNotEmpty ? val : "N/A";
-              }),
-              labelText: "",
-              color: green,
-              obscureText: false,
-              validator: (val) {
-                if (val!.isNotEmpty &&
-                    !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
-                  return "Tylko liczby";
-                } else {
-                  return null;
-                }
-              },
-              value: (isEditMode && nutriments.fat["value_100g"] != "N/A")
-                  ? nutriments.fat["value_100g"]
-                  : "",
-            ),
-          )
-        ]),
+            Padding(
+              padding: const EdgeInsets.all(2.5),
+              child: FormTextField(
+                callback: (val) => setState(() {
+                  nutriments.fat["value_100g"] = val!.isNotEmpty ? val : "N/A";
+                }),
+                labelText: "",
+                color: green,
+                obscureText: false,
+                validator: (val) {
+                  if (val!.isNotEmpty &&
+                      !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
+                    return "Tylko liczby";
+                  } else {
+                    return null;
+                  }
+                },
+                value: (isEditMode && nutriments.fat["value_100g"] != "N/A")
+                    ? nutriments.fat["value_100g"]
+                    : "",
+              ),
+            )
+          ],
+        ),
 
         // Saturated Fat
-        TableRow(decoration: const BoxDecoration(color: greyBg), children: [
-          const TableCell(
-            verticalAlignment: TableCellVerticalAlignment.middle,
-            child: Padding(
-              padding: EdgeInsets.only(left: 5),
-              child: Text(
-                "kwasy nasycone",
-                style: TextStyle(fontSize: 16),
+        TableRow(
+          decoration: const BoxDecoration(color: greyBg),
+          children: [
+            const TableCell(
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              child: Padding(
+                padding: EdgeInsets.only(left: 5),
+                child: Text(
+                  "kwasy nasycone",
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(2.5),
-            child: FormTextField(
-              callback: (val) => setState(() {
-                nutriments.saturatedFat["value"] =
-                    val!.isNotEmpty ? val : "N/A";
-              }),
-              labelText: "",
-              color: green,
-              obscureText: false,
-              validator: (val) {
-                if (val!.isNotEmpty &&
-                    !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
-                  return "Tylko liczby";
-                } else {
-                  return null;
-                }
-              },
-              value: (isEditMode && nutriments.saturatedFat["value"] != "N/A")
-                  ? nutriments.saturatedFat["value"]
-                  : "",
+            Padding(
+              padding: const EdgeInsets.all(2.5),
+              child: FormTextField(
+                callback: (val) => setState(() {
+                  nutriments.saturatedFat["value"] =
+                      val!.isNotEmpty ? val : "N/A";
+                }),
+                labelText: "",
+                color: green,
+                obscureText: false,
+                validator: (val) {
+                  if (val!.isNotEmpty &&
+                      !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
+                    return "Tylko liczby";
+                  } else {
+                    return null;
+                  }
+                },
+                value: (isEditMode && nutriments.saturatedFat["value"] != "N/A")
+                    ? nutriments.saturatedFat["value"]
+                    : "",
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(2.5),
-            child: FormTextField(
-              callback: (val) => setState(() {
-                nutriments.saturatedFat["value_100g"] =
-                    val!.isNotEmpty ? val : "N/A";
-              }),
-              labelText: "",
-              color: green,
-              obscureText: false,
-              validator: (val) {
-                if (val!.isNotEmpty &&
-                    !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
-                  return "Tylko liczby";
-                } else {
-                  return null;
-                }
-              },
-              value:
-                  (isEditMode && nutriments.saturatedFat["value_100g"] != "N/A")
-                      ? nutriments.saturatedFat["value_100g"]
-                      : "",
-            ),
-          )
-        ]),
+            Padding(
+              padding: const EdgeInsets.all(2.5),
+              child: FormTextField(
+                callback: (val) => setState(() {
+                  nutriments.saturatedFat["value_100g"] =
+                      val!.isNotEmpty ? val : "N/A";
+                }),
+                labelText: "",
+                color: green,
+                obscureText: false,
+                validator: (val) {
+                  if (val!.isNotEmpty &&
+                      !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
+                    return "Tylko liczby";
+                  } else {
+                    return null;
+                  }
+                },
+                value: (isEditMode &&
+                        nutriments.saturatedFat["value_100g"] != "N/A")
+                    ? nutriments.saturatedFat["value_100g"]
+                    : "",
+              ),
+            )
+          ],
+        ),
 
         // Carbohydrates
-        TableRow(children: [
-          const TableCell(
-            verticalAlignment: TableCellVerticalAlignment.middle,
-            child: Padding(
-              padding: EdgeInsets.only(left: 5),
-              child: Text(
-                "węglowodany",
-                style: TextStyle(fontSize: 16),
+        TableRow(
+          children: [
+            const TableCell(
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              child: Padding(
+                padding: EdgeInsets.only(left: 5),
+                child: Text(
+                  "węglowodany",
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(2.5),
-            child: FormTextField(
-              callback: (val) => setState(() {
-                nutriments.carbohydrates["value"] =
-                    val!.isNotEmpty ? val : "N/A";
-              }),
-              labelText: "",
-              color: green,
-              obscureText: false,
-              validator: (val) {
-                if (val!.isNotEmpty &&
-                    !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
-                  return "Tylko liczby";
-                } else {
-                  return null;
-                }
-              },
-              value: (isEditMode && nutriments.carbohydrates["value"] != "N/A")
-                  ? nutriments.carbohydrates["value"]
-                  : "",
+            Padding(
+              padding: const EdgeInsets.all(2.5),
+              child: FormTextField(
+                callback: (val) => setState(() {
+                  nutriments.carbohydrates["value"] =
+                      val!.isNotEmpty ? val : "N/A";
+                }),
+                labelText: "",
+                color: green,
+                obscureText: false,
+                validator: (val) {
+                  if (val!.isNotEmpty &&
+                      !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
+                    return "Tylko liczby";
+                  } else {
+                    return null;
+                  }
+                },
+                value:
+                    (isEditMode && nutriments.carbohydrates["value"] != "N/A")
+                        ? nutriments.carbohydrates["value"]
+                        : "",
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(2.5),
-            child: FormTextField(
-              callback: (val) => setState(() {
-                nutriments.carbohydrates["value_100g"] =
-                    val!.isNotEmpty ? val : "N/A";
-              }),
-              labelText: "",
-              color: green,
-              obscureText: false,
-              validator: (val) {
-                if (val!.isNotEmpty &&
-                    !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
-                  return "Tylko liczby";
-                } else {
-                  return null;
-                }
-              },
-              value: (isEditMode &&
-                      nutriments.carbohydrates["value_100g"] != "N/A")
-                  ? nutriments.carbohydrates["value_100g"]
-                  : "",
-            ),
-          )
-        ]),
+            Padding(
+              padding: const EdgeInsets.all(2.5),
+              child: FormTextField(
+                callback: (val) => setState(() {
+                  nutriments.carbohydrates["value_100g"] =
+                      val!.isNotEmpty ? val : "N/A";
+                }),
+                labelText: "",
+                color: green,
+                obscureText: false,
+                validator: (val) {
+                  if (val!.isNotEmpty &&
+                      !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
+                    return "Tylko liczby";
+                  } else {
+                    return null;
+                  }
+                },
+                value: (isEditMode &&
+                        nutriments.carbohydrates["value_100g"] != "N/A")
+                    ? nutriments.carbohydrates["value_100g"]
+                    : "",
+              ),
+            )
+          ],
+        ),
 
         // Sugars
-        TableRow(decoration: const BoxDecoration(color: greyBg), children: [
-          const TableCell(
-            verticalAlignment: TableCellVerticalAlignment.middle,
-            child: Padding(
-              padding: EdgeInsets.only(left: 5),
-              child: Text(
-                "cukry",
-                style: TextStyle(fontSize: 16),
+        TableRow(
+          decoration: const BoxDecoration(color: greyBg),
+          children: [
+            const TableCell(
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              child: Padding(
+                padding: EdgeInsets.only(left: 5),
+                child: Text(
+                  "cukry",
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(2.5),
-            child: FormTextField(
-              callback: (val) => setState(() {
-                nutriments.sugars["value"] = val!.isNotEmpty ? val : "N/A";
-              }),
-              labelText: "",
-              color: green,
-              obscureText: false,
-              validator: (val) {
-                if (val!.isNotEmpty &&
-                    !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
-                  return "Tylko liczby";
-                } else {
-                  return null;
-                }
-              },
-              value: (isEditMode && nutriments.sugars["value"] != "N/A")
-                  ? nutriments.sugars["value"]
-                  : "",
+            Padding(
+              padding: const EdgeInsets.all(2.5),
+              child: FormTextField(
+                callback: (val) => setState(() {
+                  nutriments.sugars["value"] = val!.isNotEmpty ? val : "N/A";
+                }),
+                labelText: "",
+                color: green,
+                obscureText: false,
+                validator: (val) {
+                  if (val!.isNotEmpty &&
+                      !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
+                    return "Tylko liczby";
+                  } else {
+                    return null;
+                  }
+                },
+                value: (isEditMode && nutriments.sugars["value"] != "N/A")
+                    ? nutriments.sugars["value"]
+                    : "",
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(2.5),
-            child: FormTextField(
-              callback: (val) => setState(() {
-                nutriments.sugars["value_100g"] = val!.isNotEmpty ? val : "N/A";
-              }),
-              labelText: "",
-              color: green,
-              obscureText: false,
-              validator: (val) {
-                if (val!.isNotEmpty &&
-                    !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
-                  return "Tylko liczby";
-                } else {
-                  return null;
-                }
-              },
-              value: (isEditMode && nutriments.sugars["value_100g"] != "N/A")
-                  ? nutriments.sugars["value_100g"]
-                  : "",
-            ),
-          )
-        ]),
+            Padding(
+              padding: const EdgeInsets.all(2.5),
+              child: FormTextField(
+                callback: (val) => setState(() {
+                  nutriments.sugars["value_100g"] =
+                      val!.isNotEmpty ? val : "N/A";
+                }),
+                labelText: "",
+                color: green,
+                obscureText: false,
+                validator: (val) {
+                  if (val!.isNotEmpty &&
+                      !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
+                    return "Tylko liczby";
+                  } else {
+                    return null;
+                  }
+                },
+                value: (isEditMode && nutriments.sugars["value_100g"] != "N/A")
+                    ? nutriments.sugars["value_100g"]
+                    : "",
+              ),
+            )
+          ],
+        ),
 
         // Proteins
-        TableRow(children: [
-          const TableCell(
-            verticalAlignment: TableCellVerticalAlignment.middle,
-            child: Padding(
-              padding: EdgeInsets.only(left: 5),
-              child: Text(
-                "białko",
-                style: TextStyle(fontSize: 16),
+        TableRow(
+          children: [
+            const TableCell(
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              child: Padding(
+                padding: EdgeInsets.only(left: 5),
+                child: Text(
+                  "białko",
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(2.5),
-            child: FormTextField(
-              callback: (val) => setState(() {
-                nutriments.proteins["value"] = val!.isNotEmpty ? val : "N/A";
-              }),
-              labelText: "",
-              color: green,
-              obscureText: false,
-              validator: (val) {
-                if (val!.isNotEmpty &&
-                    !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
-                  return "Tylko liczby";
-                } else {
-                  return null;
-                }
-              },
-              value: (isEditMode && nutriments.proteins["value"] != "N/A")
-                  ? nutriments.proteins["value"]
-                  : "",
+            Padding(
+              padding: const EdgeInsets.all(2.5),
+              child: FormTextField(
+                callback: (val) => setState(() {
+                  nutriments.proteins["value"] = val!.isNotEmpty ? val : "N/A";
+                }),
+                labelText: "",
+                color: green,
+                obscureText: false,
+                validator: (val) {
+                  if (val!.isNotEmpty &&
+                      !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
+                    return "Tylko liczby";
+                  } else {
+                    return null;
+                  }
+                },
+                value: (isEditMode && nutriments.proteins["value"] != "N/A")
+                    ? nutriments.proteins["value"]
+                    : "",
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(2.5),
-            child: FormTextField(
-              callback: (val) => setState(() {
-                nutriments.proteins["value_100g"] =
-                    val!.isNotEmpty ? val : "N/A";
-              }),
-              labelText: "",
-              color: green,
-              obscureText: false,
-              validator: (val) {
-                if (val!.isNotEmpty &&
-                    !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
-                  return "Tylko liczby";
-                } else {
-                  return null;
-                }
-              },
-              value: (isEditMode && nutriments.proteins["value_100g"] != "N/A")
-                  ? nutriments.proteins["value_100g"]
-                  : "",
-            ),
-          )
-        ]),
+            Padding(
+              padding: const EdgeInsets.all(2.5),
+              child: FormTextField(
+                callback: (val) => setState(() {
+                  nutriments.proteins["value_100g"] =
+                      val!.isNotEmpty ? val : "N/A";
+                }),
+                labelText: "",
+                color: green,
+                obscureText: false,
+                validator: (val) {
+                  if (val!.isNotEmpty &&
+                      !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
+                    return "Tylko liczby";
+                  } else {
+                    return null;
+                  }
+                },
+                value:
+                    (isEditMode && nutriments.proteins["value_100g"] != "N/A")
+                        ? nutriments.proteins["value_100g"]
+                        : "",
+              ),
+            )
+          ],
+        ),
 
         // Salt
-        TableRow(decoration: const BoxDecoration(color: greyBg), children: [
-          const TableCell(
-            verticalAlignment: TableCellVerticalAlignment.middle,
-            child: Padding(
-              padding: EdgeInsets.only(left: 5),
-              child: Text(
-                "sól",
-                style: TextStyle(fontSize: 16),
+        TableRow(
+          decoration: const BoxDecoration(color: greyBg),
+          children: [
+            const TableCell(
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              child: Padding(
+                padding: EdgeInsets.only(left: 5),
+                child: Text(
+                  "sól",
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(2.5),
-            child: FormTextField(
-              callback: (val) => setState(() {
-                nutriments.salt["value"] = val!.isNotEmpty ? val : "N/A";
-              }),
-              labelText: "",
-              color: green,
-              obscureText: false,
-              validator: (val) {
-                if (val!.isNotEmpty &&
-                    !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
-                  return "Tylko liczby";
-                } else {
-                  return null;
-                }
-              },
-              value: (isEditMode && nutriments.salt["value"] != "N/A")
-                  ? nutriments.salt["value"]
-                  : "",
+            Padding(
+              padding: const EdgeInsets.all(2.5),
+              child: FormTextField(
+                callback: (val) => setState(() {
+                  nutriments.salt["value"] = val!.isNotEmpty ? val : "N/A";
+                }),
+                labelText: "",
+                color: green,
+                obscureText: false,
+                validator: (val) {
+                  if (val!.isNotEmpty &&
+                      !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
+                    return "Tylko liczby";
+                  } else {
+                    return null;
+                  }
+                },
+                value: (isEditMode && nutriments.salt["value"] != "N/A")
+                    ? nutriments.salt["value"]
+                    : "",
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(2.5),
-            child: FormTextField(
-              callback: (val) => setState(() {
-                nutriments.salt["value_100g"] = val!.isNotEmpty ? val : "N/A";
-              }),
-              labelText: "",
-              color: green,
-              obscureText: false,
-              validator: (val) {
-                if (val!.isNotEmpty &&
-                    !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
-                  return "Tylko liczby";
-                } else {
-                  return null;
-                }
-              },
-              value: (isEditMode && nutriments.salt["value_100g"] != "N/A")
-                  ? nutriments.salt["value_100g"]
-                  : "",
-            ),
-          )
-        ])
+            Padding(
+              padding: const EdgeInsets.all(2.5),
+              child: FormTextField(
+                callback: (val) => setState(() {
+                  nutriments.salt["value_100g"] = val!.isNotEmpty ? val : "N/A";
+                }),
+                labelText: "",
+                color: green,
+                obscureText: false,
+                validator: (val) {
+                  if (val!.isNotEmpty &&
+                      !RegExp(r"([0-9]*[.])?[0-9]+").hasMatch(val)) {
+                    return "Tylko liczby";
+                  } else {
+                    return null;
+                  }
+                },
+                value: (isEditMode && nutriments.salt["value_100g"] != "N/A")
+                    ? nutriments.salt["value_100g"]
+                    : "",
+              ),
+            )
+          ],
+        )
       ],
     );
   }
@@ -1238,103 +1324,119 @@ class _ProductCreatorState extends State<ProductCreator> {
       columnWidths: const {0: FlexColumnWidth(2), 1: FlexColumnWidth(1)},
       children: [
         // Palm Oil
-        TableRow(children: [
-          const TableCell(
-            verticalAlignment: TableCellVerticalAlignment.middle,
-            child: Text(
-              "Czy produkt zawiera olej palmowy?",
-              style: TextStyle(fontSize: 16),
+        TableRow(
+          children: [
+            const TableCell(
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              child: Text(
+                "Czy produkt zawiera olej palmowy?",
+                style: TextStyle(fontSize: 16),
+              ),
             ),
-          ),
-          TableCell(
+            TableCell(
               verticalAlignment: TableCellVerticalAlignment.middle,
               child: DropdownButton(
-                  value: tags[0]["status"],
-                  items: const [
-                    DropdownMenuItem(value: "positive", child: Text("Tak")),
-                    DropdownMenuItem(value: "negative", child: Text("Nie")),
-                    DropdownMenuItem(value: "unknown", child: Text("Nie wiem"))
-                  ],
-                  isExpanded: true,
-                  borderRadius: BorderRadius.circular(10),
-                  onChanged: (val) {
-                    setState(() => tags[0]["status"] = val ?? "unknown");
-                  }))
-        ]),
+                value: tags[0]["status"],
+                items: const [
+                  DropdownMenuItem(value: "positive", child: Text("Tak")),
+                  DropdownMenuItem(value: "negative", child: Text("Nie")),
+                  DropdownMenuItem(value: "unknown", child: Text("Nie wiem"))
+                ],
+                isExpanded: true,
+                borderRadius: BorderRadius.circular(10),
+                onChanged: (val) {
+                  setState(() => tags[0]["status"] = val ?? "unknown");
+                },
+              ),
+            )
+          ],
+        ),
 
         // Vegetarian
-        TableRow(children: [
-          const TableCell(
-            verticalAlignment: TableCellVerticalAlignment.middle,
-            child: Text(
-              "Czy produkt jest wegetariański?",
-              style: TextStyle(fontSize: 16),
+        TableRow(
+          children: [
+            const TableCell(
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              child: Text(
+                "Czy produkt jest wegetariański?",
+                style: TextStyle(fontSize: 16),
+              ),
             ),
-          ),
-          TableCell(
+            TableCell(
               verticalAlignment: TableCellVerticalAlignment.middle,
               child: DropdownButton(
-                  value: tags[1]["status"],
-                  items: const [
-                    DropdownMenuItem(value: "positive", child: Text("Tak")),
-                    DropdownMenuItem(value: "negative", child: Text("Nie")),
-                    DropdownMenuItem(
-                        value: "maybe", child: Text("Może nie być")),
-                    DropdownMenuItem(value: "unknown", child: Text("Nie wiem"))
-                  ],
-                  isExpanded: true,
-                  borderRadius: BorderRadius.circular(10),
-                  onChanged: (val) {
-                    setState(() => tags[1]["status"] = val ?? "unknown");
-                  }))
-        ]),
+                value: tags[1]["status"],
+                items: const [
+                  DropdownMenuItem(value: "positive", child: Text("Tak")),
+                  DropdownMenuItem(value: "negative", child: Text("Nie")),
+                  DropdownMenuItem(value: "maybe", child: Text("Może nie być")),
+                  DropdownMenuItem(value: "unknown", child: Text("Nie wiem"))
+                ],
+                isExpanded: true,
+                borderRadius: BorderRadius.circular(10),
+                onChanged: (val) {
+                  setState(() => tags[1]["status"] = val ?? "unknown");
+                },
+              ),
+            )
+          ],
+        ),
 
         // Vegan
-        TableRow(children: [
-          const TableCell(
-            verticalAlignment: TableCellVerticalAlignment.middle,
-            child: Text(
-              "Czy produkt jest wegański?",
-              style: TextStyle(fontSize: 16),
+        TableRow(
+          children: [
+            const TableCell(
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              child: Text(
+                "Czy produkt jest wegański?",
+                style: TextStyle(fontSize: 16),
+              ),
             ),
-          ),
-          TableCell(
+            TableCell(
               verticalAlignment: TableCellVerticalAlignment.middle,
               child: DropdownButton(
-                  value: tags[2]["status"],
-                  items: const [
-                    DropdownMenuItem(value: "positive", child: Text("Tak")),
-                    DropdownMenuItem(value: "negative", child: Text("Nie")),
-                    DropdownMenuItem(
-                        value: "maybe", child: Text("Może nie być")),
-                    DropdownMenuItem(value: "unknown", child: Text("Nie wiem"))
-                  ],
-                  isExpanded: true,
-                  borderRadius: BorderRadius.circular(10),
-                  onChanged: (val) {
-                    setState(() => tags[2]["status"] = val ?? "unknown");
-                  }))
-        ])
+                value: tags[2]["status"],
+                items: const [
+                  DropdownMenuItem(value: "positive", child: Text("Tak")),
+                  DropdownMenuItem(value: "negative", child: Text("Nie")),
+                  DropdownMenuItem(value: "maybe", child: Text("Może nie być")),
+                  DropdownMenuItem(value: "unknown", child: Text("Nie wiem"))
+                ],
+                isExpanded: true,
+                borderRadius: BorderRadius.circular(10),
+                onChanged: (val) {
+                  setState(() => tags[2]["status"] = val ?? "unknown");
+                },
+              ),
+            )
+          ],
+        )
       ],
     );
   }
 
   Widget _renderFormErrors() {
     return Column(
-        children: formErrorMessages
-            .map((e) =>
-                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  const Icon(Icons.error_outline, color: red),
-                  const SizedBox(width: 5),
-                  Text(e, style: const TextStyle(color: red))
-                ]))
-            .toList());
+      children: formErrorMessages
+          .map(
+            (e) => Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, color: red),
+                const SizedBox(width: 5),
+                Text(e, style: const TextStyle(color: red))
+              ],
+            ),
+          )
+          .toList(),
+    );
   }
 
-  Future _uploadImageToFirebaseStorage(
-      {required File image,
-      required String type,
-      required String barcode}) async {
+  Future _uploadImageToFirebaseStorage({
+    required File image,
+    required String type,
+    required String barcode,
+  }) async {
     final fileName = "$barcode-$type.jpg";
     final destination = "products/$fileName";
 

@@ -26,24 +26,21 @@ class ProductNotFound extends StatelessWidget {
                   color: orange,
                 ),
                 const SizedBox(height: 15),
-                const Text("Nie znaleziono produktu",
-                    style:
-                        TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+                const Text(
+                  "Nie znaleziono produktu",
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 30),
                 const Text(
                   "Upewnij się, czy poprawnie odczytano kod kreskowy skanowanego produktu",
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 20),
                 const Text(
                   "Jeśli produkt nie istnieje w naszej bazie, możesz go dodać w łatwy i wygodny sposób!",
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 50),
                 if (isUserLoggedIn)
@@ -55,13 +52,14 @@ class ProductNotFound extends StatelessWidget {
                           Navigator.of(context).pushNamed("/product/add")),
                 const SizedBox(height: 10),
                 HorizontalButton(
-                    icon: Icons.home,
-                    label: "Wróć na stronę główną",
-                    color: orange,
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, "/");
-                    })
+                  icon: Icons.home,
+                  label: "Wróć na stronę główną",
+                  color: orange,
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, "/");
+                  },
+                )
               ],
             ),
           ),

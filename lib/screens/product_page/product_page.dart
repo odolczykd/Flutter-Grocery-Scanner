@@ -8,6 +8,7 @@ import 'package:grocery_scanner/screens/product_page/shared/product_tags.dart';
 import 'package:grocery_scanner/services/auth_service.dart';
 import 'package:grocery_scanner/services/user_database_service.dart';
 import 'package:grocery_scanner/shared/colors.dart';
+import 'package:grocery_scanner/shared/hive_boxes.dart';
 import 'package:grocery_scanner/shared/label_row.dart';
 
 const nutriscoreGrades = {"A", "B", "C", "D", "E"};
@@ -26,13 +27,17 @@ class _ProductPageState extends State<ProductPage> {
   Set<String> userRestrictions = {};
 
   bool isUserLoggedIn = false;
-  bool isProductBelongToUser = false;
+  bool canUserEditProduct = false;
 
   @override
   void initState() {
     super.initState();
+
+    // Save Product to Local Storage
+    saveProductLocally(widget.product);
+
     isUserLoggedIn = _auth.currentUserUid != null;
-    _checkIfProductBelongsToUser();
+    _checkIfUserCanEditProduct();
     if (isUserLoggedIn) _addProductToRecentlyScanned();
   }
 
@@ -48,46 +53,50 @@ class _ProductPageState extends State<ProductPage> {
             GestureDetector(
               onTap: () async {
                 await showDialog(
-                    context: context,
-                    builder: (_) => FullScreenImage(productImageUrl));
+                  context: context,
+                  builder: (_) => FullScreenImage(productImageUrl),
+                );
               },
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 height: 300,
                 decoration: BoxDecoration(
-                    image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(productImageUrl))),
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: NetworkImage(productImageUrl),
+                  ),
+                ),
                 child: OverflowBox(
                   maxWidth: MediaQuery.of(context).size.width,
                   maxHeight: 300,
                   child: SafeArea(
-                      child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Row(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _renderReturnButton(),
+                              if (isUserLoggedIn && canUserEditProduct)
+                                _renderEditButton()
+                            ],
+                          ),
+                        ),
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            _renderReturnButton(),
-                            if (isUserLoggedIn && isProductBelongToUser)
-                              _renderEditButton()
+                            isUserLoggedIn
+                                ? _renderPinButton()
+                                : const SizedBox(width: 0),
+                            _renderNutriscoreButton()
                           ],
                         ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          isUserLoggedIn
-                              ? _renderPinButton()
-                              : const SizedBox(width: 0),
-                          _renderNutriscoreButton()
-                        ],
-                      ),
-                    ],
-                  )),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -104,7 +113,9 @@ class _ProductPageState extends State<ProductPage> {
                     Text(
                       widget.product.productName,
                       style: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.bold),
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
 
                     // Brand
@@ -127,9 +138,10 @@ class _ProductPageState extends State<ProductPage> {
                       secondaryIcon: Icons.image_outlined,
                       onTap: () async {
                         await showDialog(
-                            context: context,
-                            builder: (_) => FullScreenImage(
-                                widget.product.images.ingredients));
+                          context: context,
+                          builder: (_) => FullScreenImage(
+                              widget.product.images.ingredients),
+                        );
                       },
                     ),
                     Text(widget.product.ingredients),
@@ -154,9 +166,10 @@ class _ProductPageState extends State<ProductPage> {
                       secondaryIcon: Icons.photo_outlined,
                       onTap: () async {
                         await showDialog(
-                            context: context,
-                            builder: (_) => FullScreenImage(
-                                widget.product.images.nutrition));
+                          context: context,
+                          builder: (_) =>
+                              FullScreenImage(widget.product.images.nutrition),
+                        );
                       },
                     ),
                     const SizedBox(height: 5),
@@ -183,12 +196,12 @@ class _ProductPageState extends State<ProductPage> {
     );
   }
 
-  Future _checkIfProductBelongsToUser() async {
+  Future _checkIfUserCanEditProduct() async {
     bool checkResult = isUserLoggedIn
         ? await UserDatabaseService(_auth.currentUserUid!)
-            .checkIfProductBelongsToUser(widget.product)
+            .checkIfUserCanEditProduct()
         : false;
-    setState(() => isProductBelongToUser = checkResult);
+    setState(() => canUserEditProduct = checkResult);
   }
 
   Future _addProductToRecentlyScanned() async =>
@@ -203,47 +216,58 @@ class _ProductPageState extends State<ProductPage> {
         style: TextButton.styleFrom(
             padding: EdgeInsets.zero, alignment: Alignment.topLeft),
         child: Container(
-            decoration: const BoxDecoration(
-                color: blackOpacity,
-                borderRadius: BorderRadius.all(Radius.circular(30))),
-            child: const Padding(
-              padding: EdgeInsets.all(5),
-              child: Icon(
-                Icons.arrow_back,
-                size: 30,
-                color: white,
-              ),
-            )),
+          decoration: const BoxDecoration(
+            color: blackOpacity,
+            borderRadius: BorderRadius.all(
+              Radius.circular(30),
+            ),
+          ),
+          child: const Padding(
+            padding: EdgeInsets.all(5),
+            child: Icon(
+              Icons.arrow_back,
+              size: 30,
+              color: white,
+            ),
+          ),
+        ),
       );
 
   Widget _renderEditButton() {
     return FutureBuilder(
       future: UserDatabaseService(_auth.currentUserUid!)
-          .checkIfProductBelongsToUser(widget.product),
+          .checkIfUserCanEditProduct(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const SizedBox(width: 0);
         } else {
           return TextButton(
             onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
+              Navigator.of(context).push(
+                MaterialPageRoute(
                   builder: (context) =>
-                      ProductCreator(productToEdit: widget.product)));
+                      ProductCreator(productToEdit: widget.product),
+                ),
+              );
             },
             style: TextButton.styleFrom(
                 padding: EdgeInsets.zero, alignment: Alignment.topRight),
             child: Container(
-                decoration: const BoxDecoration(
-                    color: blackOpacity,
-                    borderRadius: BorderRadius.all(Radius.circular(30))),
-                child: const Padding(
-                  padding: EdgeInsets.all(7),
-                  child: Icon(
-                    Icons.edit,
-                    size: 25,
-                    color: white,
-                  ),
-                )),
+              decoration: const BoxDecoration(
+                color: blackOpacity,
+                borderRadius: BorderRadius.all(
+                  Radius.circular(30),
+                ),
+              ),
+              child: const Padding(
+                padding: EdgeInsets.all(7),
+                child: Icon(
+                  Icons.edit,
+                  size: 25,
+                  color: white,
+                ),
+              ),
+            ),
           );
         }
       },
@@ -252,83 +276,91 @@ class _ProductPageState extends State<ProductPage> {
 
   Widget _renderPinButton() {
     return FutureBuilder(
-        future: UserDatabaseService(_auth.currentUserUid!)
-            .checkIfProductIsPinned(widget.product),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            // Do not display button
-            return const SizedBox(width: 0);
-          } else {
-            bool isProductAlreadyPinned = snapshot.data!;
+      future: UserDatabaseService(_auth.currentUserUid!)
+          .checkIfProductIsPinned(widget.product),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          // Do not display button
+          return const SizedBox(width: 0);
+        } else {
+          bool isProductAlreadyPinned = snapshot.data!;
 
-            return TextButton(
-              onPressed: () async {
-                if (isProductAlreadyPinned) {
-                  var result = await UserDatabaseService(_auth.currentUserUid!)
-                      .pinProduct(widget.product, "unpin");
-                  if (result != null) {
-                    setState(() => isProductAlreadyPinned = false);
-                    Fluttertoast.showToast(
-                        msg: "Odpięto produkt",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM,
-                        fontSize: 16);
-                  } else {
-                    Fluttertoast.showToast(
-                        msg: "Nie udało się odpiąć produktu",
-                        toastLength: Toast.LENGTH_LONG,
-                        gravity: ToastGravity.BOTTOM,
-                        fontSize: 16);
-                  }
+          return TextButton(
+            onPressed: () async {
+              if (isProductAlreadyPinned) {
+                var result = await UserDatabaseService(_auth.currentUserUid!)
+                    .pinProduct(widget.product, "unpin");
+                if (result != null) {
+                  setState(() => isProductAlreadyPinned = false);
+                  Fluttertoast.showToast(
+                    msg: "Odpięto produkt",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    fontSize: 16,
+                  );
                 } else {
-                  var result = await UserDatabaseService(_auth.currentUserUid!)
-                      .pinProduct(widget.product);
-                  if (result != null) {
-                    setState(() => isProductAlreadyPinned = true);
-                    Fluttertoast.showToast(
-                        msg: "Przypięto produkt",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM,
-                        fontSize: 16);
-                  } else {
-                    Fluttertoast.showToast(
-                        msg: "Nie udało się przypiąć produktu",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM,
-                        fontSize: 16);
-                  }
+                  Fluttertoast.showToast(
+                    msg: "Nie udało się odpiąć produktu",
+                    toastLength: Toast.LENGTH_LONG,
+                    gravity: ToastGravity.BOTTOM,
+                    fontSize: 16,
+                  );
                 }
-              },
-              style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero, alignment: Alignment.bottomLeft),
-              child: Container(
-                decoration: const BoxDecoration(
-                    color: blackOpacity,
-                    borderRadius:
-                        BorderRadius.only(topRight: Radius.circular(10))),
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Row(
-                    children: [
-                      Icon(
-                        isProductAlreadyPinned ? Icons.delete : Icons.push_pin,
-                        color: white,
-                      ),
-                      const SizedBox(width: 5),
-                      Text(
-                        isProductAlreadyPinned ? "Odepnij" : "Przypnij",
-                        style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: white),
-                      )
-                    ],
-                  ),
+              } else {
+                var result = await UserDatabaseService(_auth.currentUserUid!)
+                    .pinProduct(widget.product);
+                if (result != null) {
+                  setState(() => isProductAlreadyPinned = true);
+                  Fluttertoast.showToast(
+                    msg: "Przypięto produkt",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    fontSize: 16,
+                  );
+                } else {
+                  Fluttertoast.showToast(
+                    msg: "Nie udało się przypiąć produktu",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    fontSize: 16,
+                  );
+                }
+              }
+            },
+            style: TextButton.styleFrom(
+                padding: EdgeInsets.zero, alignment: Alignment.bottomLeft),
+            child: Container(
+              decoration: const BoxDecoration(
+                color: blackOpacity,
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(10),
                 ),
               ),
-            );
-          }
-        });
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  children: [
+                    Icon(
+                      isProductAlreadyPinned ? Icons.delete : Icons.push_pin,
+                      color: white,
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      isProductAlreadyPinned ? "Odepnij" : "Przypnij",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: white,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+      },
+    );
   }
 
   Widget _renderNutriscoreButton() {
@@ -338,33 +370,42 @@ class _ProductPageState extends State<ProductPage> {
     } else {
       return TextButton(
         onPressed: () => showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-                  title: const Text("Wskaźnik Nutri-Score",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  content: const ProductNutriscoreDialogContent(),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: TextButton.styleFrom(foregroundColor: black),
-                      child: const Text("OK"),
-                    )
-                  ],
-                )),
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text(
+              "Wskaźnik Nutri-Score",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            content: const ProductNutriscoreDialogContent(),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                style: TextButton.styleFrom(foregroundColor: black),
+                child: const Text("OK"),
+              )
+            ],
+          ),
+        ),
         style: TextButton.styleFrom(
-            padding: EdgeInsets.zero, alignment: Alignment.bottomRight),
+          padding: EdgeInsets.zero,
+          alignment: Alignment.bottomRight,
+        ),
         child: Container(
           decoration: BoxDecoration(
-              color: nutriscoreColor(widget.product.nutriscore),
-              borderRadius:
-                  const BorderRadius.only(topLeft: Radius.circular(10))),
+            color: nutriscoreColor(widget.product.nutriscore),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(10),
+            ),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(15),
             child: Text(
               " ${widget.product.nutriscore.toUpperCase()} ",
               style: const TextStyle(
-                  fontSize: 26, fontWeight: FontWeight.bold, color: white),
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+                color: white,
+              ),
             ),
           ),
         ),
@@ -382,16 +423,18 @@ class _ProductPageState extends State<ProductPage> {
 
     return Column(
       children: widget.product.allergens
-          .map((e) => Row(
-                children: [
-                  const SizedBox(width: 5),
-                  const Icon(
-                    Icons.navigate_next,
-                    color: green,
-                  ),
-                  Text(_allergenLabels[e]!)
-                ],
-              ))
+          .map(
+            (e) => Row(
+              children: [
+                const SizedBox(width: 5),
+                const Icon(
+                  Icons.navigate_next,
+                  color: green,
+                ),
+                Text(_allergenLabels[e]!)
+              ],
+            ),
+          )
           .toList(),
     );
   }
@@ -419,7 +462,7 @@ class _ProductPageState extends State<ProductPage> {
 
     // Preferences
     for (String pref in userPreferences) {
-      Map<String, dynamic> productTag =
+      Map<dynamic, dynamic> productTag =
           widget.product.tags.firstWhere((element) => element["name"] == pref);
 
       if (pref == "palm_oil_free") {
@@ -449,82 +492,105 @@ class _ProductPageState extends State<ProductPage> {
           padding: const EdgeInsets.all(5),
           decoration: isProper
               ? const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                  color: green)
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                  color: green,
+                )
               : const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                  color: red),
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                  color: red,
+                ),
           child: Row(
             children: [
-              (isProper
+              isProper
                   ? const Icon(Icons.check_circle_outlined, color: white)
                   : const Icon(
                       Icons.cancel_outlined,
                       color: white,
-                    )),
-              const SizedBox(
-                width: 5,
-              ),
-              (isProper
+                    ),
+              const SizedBox(width: 5),
+              isProper
                   ? const Text(
                       "Produkt jest dla Ciebie odpowiedni",
                       style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          color: white),
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                        color: white,
+                      ),
                     )
-                  : const Text("Ten produkt nie jest dla Ciebie!",
+                  : const Text(
+                      "Ten produkt nie jest dla Ciebie!",
                       style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          color: white)))
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                        color: white,
+                      ),
+                    )
             ],
           ),
         ),
         if (isProper == false && detectedRestrictions.isNotEmpty)
           const SizedBox(height: 10),
         if (isProper == false && detectedRestrictions.isNotEmpty)
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text(
-              "Produkt zawiera wskazane przez Ciebie ograniczenia:",
-              style: TextStyle(fontWeight: FontWeight.bold, color: red),
-            ),
-            const SizedBox(height: 5),
-            Column(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Produkt zawiera wskazane przez Ciebie ograniczenia:",
+                style: TextStyle(fontWeight: FontWeight.bold, color: red),
+              ),
+              const SizedBox(height: 5),
+              Column(
                 children: detectedRestrictions
-                    .map((restr) => Row(
-                          children: [
-                            const Icon(
-                              Icons.navigate_next,
-                              color: red,
-                            ),
-                            Text(restr, style: const TextStyle(color: red))
-                          ],
-                        ))
-                    .toList()),
-          ]),
+                    .map(
+                      (restr) => Row(
+                        children: [
+                          const Icon(
+                            Icons.navigate_next,
+                            color: red,
+                          ),
+                          Text(restr, style: const TextStyle(color: red))
+                        ],
+                      ),
+                    )
+                    .toList(),
+              ),
+            ],
+          ),
         if (isProper == false && detectedPreferences.isNotEmpty)
           const SizedBox(height: 10),
         if (isProper == false && detectedPreferences.isNotEmpty)
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text(
-              "Produkt nie spełnia wskazanych przez Ciebie wymagań:",
-              style: TextStyle(fontWeight: FontWeight.bold, color: red),
-            ),
-            const SizedBox(height: 5),
-            Column(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Produkt nie spełnia wskazanych przez Ciebie wymagań:",
+                style: TextStyle(fontWeight: FontWeight.bold, color: red),
+              ),
+              const SizedBox(height: 5),
+              Column(
                 children: detectedPreferences
-                    .map((restr) => Row(
-                          children: [
-                            const Icon(
-                              Icons.navigate_next,
-                              color: red,
-                            ),
-                            Text(restr, style: const TextStyle(color: red))
-                          ],
-                        ))
-                    .toList()),
-          ]),
+                    .map(
+                      (restr) => Row(
+                        children: [
+                          const Icon(
+                            Icons.navigate_next,
+                            color: red,
+                          ),
+                          Text(
+                            restr,
+                            style: const TextStyle(color: red),
+                          )
+                        ],
+                      ),
+                    )
+                    .toList(),
+              ),
+            ],
+          ),
       ],
     );
   }

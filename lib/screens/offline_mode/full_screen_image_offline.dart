@@ -1,8 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 
-class FullScreenImage extends StatelessWidget {
-  final String imageUrl;
-  const FullScreenImage(this.imageUrl, {super.key});
+class FullScreenImageOffline extends StatelessWidget {
+  final List<int> image;
+  const FullScreenImageOffline(this.image, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +17,9 @@ class FullScreenImage extends StatelessWidget {
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: NetworkImage(imageUrl),
+              image: MemoryImage(
+                Uint8List.fromList(image),
+              ),
             ),
           ),
         ),

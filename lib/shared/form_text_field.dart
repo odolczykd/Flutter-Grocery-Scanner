@@ -64,8 +64,9 @@ class _FormTextFieldState extends State<FormTextField> {
           borderRadius: BorderRadius.circular(10),
         ),
         focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: widget.color, width: 2),
-            borderRadius: BorderRadius.circular(10)),
+          borderSide: BorderSide(color: widget.color, width: 2),
+          borderRadius: BorderRadius.circular(10),
+        ),
         focusColor: widget.color,
       ),
       onChanged: (val) =>

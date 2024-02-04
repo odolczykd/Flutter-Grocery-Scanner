@@ -28,16 +28,15 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return const Loading();
-    } else {
-      return Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              // Email Address
-              const SizedBox(height: 20),
-              FormTextField(
+    return isLoading
+        ? const Loading()
+        : Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                // Email Address
+                const SizedBox(height: 20),
+                FormTextField(
                   callback: (val) => setState(() => email = val),
                   labelText: "Adres e-mail",
                   color: green,
@@ -50,69 +49,74 @@ class _LoginState extends State<Login> {
                     } else {
                       return null;
                     }
-                  }),
+                  },
+                ),
 
-              // Password
-              const SizedBox(height: 10),
-              FormTextField(
-                callback: (val) => setState(() => password = val),
-                labelText: "Hasło",
-                color: green,
-                obscureText: true,
-                validator: (val) => val!.isEmpty ? "Wprowadź hasło" : null,
-              ),
+                // Password
+                const SizedBox(height: 10),
+                FormTextField(
+                  callback: (val) => setState(() => password = val),
+                  labelText: "Hasło",
+                  color: green,
+                  obscureText: true,
+                  validator: (val) => val!.isEmpty ? "Wprowadź hasło" : null,
+                ),
 
-              // Form Errors
-              const SizedBox(height: 10),
-              Text(
-                formErrorMessage,
-                style: const TextStyle(color: red, fontSize: 16),
-              ),
+                // Form Errors
+                const SizedBox(height: 10),
+                Text(
+                  formErrorMessage,
+                  style: const TextStyle(color: red, fontSize: 16),
+                ),
 
-              // Login Button
-              const SizedBox(height: 10),
-              HorizontalFilledButton(
-                label: "Zaloguj się",
-                color: green,
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    setState(() => isLoading = true);
-                    dynamic result = await _auth.signIn(email, password);
+                // Login Button
+                const SizedBox(height: 10),
+                HorizontalFilledButton(
+                  label: "Zaloguj się",
+                  color: green,
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      setState(() => isLoading = true);
+                      dynamic result = await _auth.signIn(email, password);
 
-                    if (result == "user-not-found" ||
-                        result == "invalid-email" ||
-                        result == "wrong-password") {
-                      setState(() {
-                        formErrorMessage = "Błędny adres e-mail lub hasło";
-                        isLoading = false;
-                      });
-                    }
+                      if (result == "user-not-found" ||
+                          result == "invalid-email" ||
+                          result == "wrong-password") {
+                        setState(
+                          () {
+                            formErrorMessage = "Błędny adres e-mail lub hasło";
+                            isLoading = false;
+                          },
+                        );
+                      }
 
-                    if (result == null) {
-                      Fluttertoast.showToast(
+                      if (result == null) {
+                        Fluttertoast.showToast(
                           msg: "Coś poszło nie tak... Spróbuj ponownie później",
                           toastLength: Toast.LENGTH_LONG,
                           gravity: ToastGravity.BOTTOM,
-                          fontSize: 16);
+                          fontSize: 16,
+                        );
+                      }
                     }
-                  }
-                },
-              ),
+                  },
+                ),
 
-              // Quick Scan Mode Button
-              const SizedBox(height: 30),
-              const Divider(
-                color: greyButton,
-                thickness: 3,
-              ),
-              const SizedBox(height: 30),
-              HorizontalButton(
+                // Quick Scan Mode Button
+                const SizedBox(height: 30),
+                const Divider(
+                  color: greyButton,
+                  thickness: 3,
+                ),
+                const SizedBox(height: 30),
+                HorizontalButton(
                   icon: Icons.barcode_reader,
                   label: "Tryb szybkiego skanowania",
                   color: green,
-                  onPressed: () => Navigator.of(context).pushNamed("/scanner"))
-            ],
-          ));
-    }
+                  onPressed: () => Navigator.of(context).pushNamed("/scanner"),
+                )
+              ],
+            ),
+          );
   }
 }

@@ -7,6 +7,7 @@ import 'package:grocery_scanner/services/open_food_facts_service.dart';
 import 'package:grocery_scanner/services/product_database_service.dart';
 import 'package:grocery_scanner/services/deepl_translator_service.dart';
 import 'package:grocery_scanner/shared/error_page.dart';
+import 'package:grocery_scanner/shared/hive_boxes.dart';
 import 'package:grocery_scanner/shared/loading.dart';
 
 class ProductFetcherApi extends StatefulWidget {
@@ -102,15 +103,19 @@ class _ProductFetcherApiState extends State<ProductFetcherApi> {
         }
 
         Product translatedProduct = Product(
-            barcode: product.barcode,
-            productName: product.productName,
-            brand: product.brand,
-            images: product.images,
-            ingredients: productIngredientsTranslation ?? "",
-            nutriments: product.nutriments,
-            allergens: allergens,
-            nutriscore: product.nutriscore,
-            tags: product.tags);
+          barcode: product.barcode,
+          productName: product.productName,
+          brand: product.brand,
+          images: product.images,
+          ingredients: productIngredientsTranslation ?? "",
+          nutriments: product.nutriments,
+          allergens: allergens,
+          nutriscore: product.nutriscore,
+          tags: product.tags,
+        );
+
+        // Save Product to Local Storage
+        saveProductLocally(translatedProduct);
 
         // Add Product to Local Database
         try {

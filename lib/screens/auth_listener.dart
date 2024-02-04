@@ -11,10 +11,6 @@ class AuthListener extends StatelessWidget {
   Widget build(BuildContext context) {
     // Render either Auth or Home Screen based on received Provider
     final user = Provider.of<User?>(context);
-    if (user == null) {
-      return const Auth();
-    } else {
-      return const Home();
-    }
+    return user == null ? const Auth() : const Home();
   }
 }

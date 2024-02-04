@@ -3,17 +3,18 @@ import 'package:grocery_scanner/models/product.dart';
 import 'package:grocery_scanner/screens/product_page/product_page.dart';
 import 'package:grocery_scanner/screens/product_page/product_fetcher_api.dart';
 import 'package:grocery_scanner/services/product_database_service.dart';
+import 'package:grocery_scanner/shared/hive_boxes.dart';
 import 'package:grocery_scanner/shared/loading.dart';
 
-class ProductFetcherLocal extends StatefulWidget {
+class ProductFetcherDatabase extends StatefulWidget {
   final String? barcode;
-  const ProductFetcherLocal(this.barcode, {super.key});
+  const ProductFetcherDatabase(this.barcode, {super.key});
 
   @override
-  State<ProductFetcherLocal> createState() => _ProductFetcherLocalState();
+  State<ProductFetcherDatabase> createState() => _ProductFetcherDatabaseState();
 }
 
-class _ProductFetcherLocalState extends State<ProductFetcherLocal> {
+class _ProductFetcherDatabaseState extends State<ProductFetcherDatabase> {
   late Future<Product?> productFuture;
 
   @override
@@ -36,6 +37,10 @@ class _ProductFetcherLocalState extends State<ProductFetcherLocal> {
         }
         if (snapshot.hasData) {
           final product = snapshot.data!;
+
+          // Save Product to Local Storage
+          saveProductLocally(product);
+
           return ProductPage(product);
         } else {
           return ProductFetcherApi(widget.barcode);

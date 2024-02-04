@@ -8,32 +8,43 @@ const DEEPL_API_URL = "https://api-free.deepl.com/v2/translate";
 class DeepLTranslatorService {
   static Future<TranslationResult> translate(String sourceText) async {
     if (sourceText.isEmpty) {
-      return TranslationResult(text: "", detectedSourceLang: "N/A");
+      return TranslationResult(
+        text: "",
+        detectedSourceLang: "N/A",
+      );
     }
 
-    final uri = Uri.parse(DEEPL_API_URL);
-
-    final response = await http.post(uri,
-        headers: <String, String>{
-          "Content-Type": "application/json",
-          "Authorization": "DeepL-Auth-Key $deepL_apiKey"
-        },
-        body: jsonEncode(<String, dynamic>{
+    final response = await http.post(
+      Uri.parse(DEEPL_API_URL),
+      headers: <String, String>{
+        "Content-Type": "application/json",
+        "Authorization": "DeepL-Auth-Key $deepL_apiKey"
+      },
+      body: jsonEncode(
+        <String, dynamic>{
           "text": [sourceText],
           "target_lang": "PL"
-        }));
+        },
+      ),
+    );
 
     if (response.statusCode == 200) {
       var decodedTranslation =
           json.decode(utf8.decode(response.bodyBytes))["translations"][0];
       if ("PL"
           .compareIgnoreCase(decodedTranslation["detected_source_language"])) {
-        return TranslationResult(text: sourceText, detectedSourceLang: "PL");
+        return TranslationResult(
+          text: sourceText,
+          detectedSourceLang: "PL",
+        );
       } else {
         return TranslationResult.fromJson(decodedTranslation);
       }
     } else {
-      return TranslationResult(text: sourceText, detectedSourceLang: "N/A");
+      return TranslationResult(
+        text: sourceText,
+        detectedSourceLang: "N/A",
+      );
     }
   }
 }

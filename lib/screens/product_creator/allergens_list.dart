@@ -46,69 +46,79 @@ class _ProductCreatorAllergensListState
   @override
   Widget build(BuildContext context) {
     return Column(
-        children: _createAllergensListWidget() +
-            [
-              if (allergenSelect != null) allergenSelect!,
-              addNewAllergenButton
-            ]);
+      children: _createAllergensListWidget() +
+          [
+            if (allergenSelect != null) allergenSelect!,
+            addNewAllergenButton,
+          ],
+    );
   }
 
   Set<String> _createAllergensList() =>
       widget.allergens.map((e) => e as String).toSet();
 
   List<Widget> _createAllergensListWidget() => allergensList
-      .map((e) => Row(children: [
-            const SizedBox(width: 5),
-            const Icon(
-              Icons.navigate_next,
-              color: green,
-            ),
-            Text(allergenLabels[e]!),
-            const Spacer(),
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  allergensList.remove(e);
-                  unusedAllergens.add(e);
-                  widget.callback(allergensList);
-                });
-              },
-              child: const Icon(
-                Icons.delete,
-                color: green,
-              ),
-            )
-          ]) as Widget)
+      .map((e) => Row(
+                children: [
+                  const SizedBox(width: 5),
+                  const Icon(
+                    Icons.navigate_next,
+                    color: green,
+                  ),
+                  Text(allergenLabels[e]!),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () {
+                      setState(
+                        () {
+                          allergensList.remove(e);
+                          unusedAllergens.add(e);
+                          widget.callback(allergensList);
+                        },
+                      );
+                    },
+                    child: const Icon(
+                      Icons.delete,
+                      color: green,
+                    ),
+                  )
+                ],
+              )
+          // as Widget
+          )
       .toList();
 
   Widget _createAllergenSelect() {
     List<DropdownMenuItem<String>> dropwdownItems = unusedAllergens
         .where((element) => !allergensList.contains(element))
-        .map(
-            (e) => DropdownMenuItem(value: e, child: Text(allergenLabels[e]!)))
+        .map((e) => DropdownMenuItem(value: e, child: Text(allergenLabels[e]!)))
         .toList();
 
     return DropdownButton(
-        hint: const Text("Wybierz alergen z listy..."),
-        style: const TextStyle(color: black, fontSize: 14),
-        items: dropwdownItems,
-        onChanged: (value) {
-          setState(() {
+      hint: const Text("Wybierz alergen z listy..."),
+      style: const TextStyle(color: black, fontSize: 14),
+      items: dropwdownItems,
+      onChanged: (value) {
+        setState(
+          () {
             allergensList.add(value!);
             unusedAllergens.remove(value);
             allergenSelect = null;
             widget.callback(allergensList);
-          });
-        });
+          },
+        );
+      },
+    );
   }
 
   Widget _createAddNewAllergenButton() => TransparentHorizontalButton(
-      icon: Icons.add,
-      label: "Dodaj alergen",
-      color: green,
-      onPressed: () {
-        setState(() => allergenSelect = _createAllergenSelect());
-      });
+        icon: Icons.add,
+        label: "Dodaj alergen",
+        color: green,
+        onPressed: () {
+          setState(() => allergenSelect = _createAllergenSelect());
+        },
+      );
 }
 
 Map<String, String> allergenLabels = {

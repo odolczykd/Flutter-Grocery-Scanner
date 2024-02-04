@@ -1,5 +1,8 @@
 import 'package:grocery_scanner/models/product_images.dart';
 import 'package:grocery_scanner/models/product_nutriments.dart';
+import 'package:hive/hive.dart';
+
+part 'product.g.dart';
 
 class Product {
   final String barcode;
@@ -12,16 +15,17 @@ class Product {
   final String nutriscore;
   final List tags;
 
-  Product(
-      {required this.barcode,
-      required this.productName,
-      required this.brand,
-      required this.images,
-      required this.ingredients,
-      required this.nutriments,
-      required this.allergens,
-      required this.nutriscore,
-      required this.tags});
+  Product({
+    required this.barcode,
+    required this.productName,
+    required this.brand,
+    required this.images,
+    required this.ingredients,
+    required this.nutriments,
+    required this.allergens,
+    required this.nutriscore,
+    required this.tags,
+  });
 
   Map<String, dynamic> toJson() => {
         "barcode": barcode,
@@ -73,6 +77,48 @@ class Product {
       };
 }
 
+@HiveType(typeId: 0)
+class ProductOffline {
+  @HiveField(0)
+  final String barcode;
+
+  @HiveField(1)
+  final String productName;
+
+  @HiveField(2)
+  final String brand;
+
+  @HiveField(3)
+  final ProductOfflineImages images;
+
+  @HiveField(4)
+  final String ingredients;
+
+  @HiveField(5)
+  final ProductNutriments nutriments;
+
+  @HiveField(6)
+  final Set allergens;
+
+  @HiveField(7)
+  final String nutriscore;
+
+  @HiveField(8)
+  final List tags;
+
+  ProductOffline({
+    required this.barcode,
+    required this.productName,
+    required this.brand,
+    required this.images,
+    required this.ingredients,
+    required this.nutriments,
+    required this.allergens,
+    required this.nutriscore,
+    required this.tags,
+  });
+}
+
 class ProductResponse {
   final String barcode;
   final String productName;
@@ -84,31 +130,33 @@ class ProductResponse {
   final String nutriscore;
   final List tags;
 
-  ProductResponse(
-      {required this.barcode,
-      required this.productName,
-      required this.brand,
-      required this.images,
-      required this.ingredients,
-      required this.nutriments,
-      required this.allergens,
-      required this.nutriscore,
-      required this.tags});
+  ProductResponse({
+    required this.barcode,
+    required this.productName,
+    required this.brand,
+    required this.images,
+    required this.ingredients,
+    required this.nutriments,
+    required this.allergens,
+    required this.nutriscore,
+    required this.tags,
+  });
 
   factory ProductResponse.fromJson(Map<String, dynamic> json) {
     return ProductResponse(
-        barcode: json["code"],
-        productName: _getFirstNonEmptyValue(json, r"^product_name_", "N/A"),
-        brand: _getFirstNonEmptyValue(json, r"^brand", "N/A"),
-        images: ProductImages(
-            front: json["image_front_url"] ?? "",
-            ingredients: json["image_ingredients_url"] ?? "",
-            nutrition: json["image_nutrition_url"] ?? ""),
-        ingredients: _getFirstNonEmptyValue(json, r"^ingredients_text"),
-        allergens: _getFirstNonEmptyValue(json, r"^allergens"),
-        nutriments: ProductNutriments.fromJson(json["nutriments"]),
-        nutriscore: json["nutriscore_grade"] ?? "unknown",
-        tags: _extractTags(json["ingredients_analysis_tags"] ?? []));
+      barcode: json["code"],
+      productName: _getFirstNonEmptyValue(json, r"^product_name_", "N/A"),
+      brand: _getFirstNonEmptyValue(json, r"^brand", "N/A"),
+      images: ProductImages(
+          front: json["image_front_url"] ?? "",
+          ingredients: json["image_ingredients_url"] ?? "",
+          nutrition: json["image_nutrition_url"] ?? ""),
+      ingredients: _getFirstNonEmptyValue(json, r"^ingredients_text"),
+      allergens: _getFirstNonEmptyValue(json, r"^allergens"),
+      nutriments: ProductNutriments.fromJson(json["nutriments"]),
+      nutriscore: json["nutriscore_grade"] ?? "unknown",
+      tags: _extractTags(json["ingredients_analysis_tags"] ?? []),
+    );
   }
 }
 

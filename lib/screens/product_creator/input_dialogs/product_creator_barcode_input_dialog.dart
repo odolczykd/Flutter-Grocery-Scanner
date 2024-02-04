@@ -28,8 +28,13 @@ class _ProductCreatorBarcodeInputDialogState
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Edytuj kod kreskowy",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+      title: const Text(
+        "Edytuj kod kreskowy",
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       content: IntrinsicHeight(
         child: SizedBox(
           width: MediaQuery.of(context).size.width,
@@ -42,24 +47,14 @@ class _ProductCreatorBarcodeInputDialogState
                 obscureText: false,
                 callback: (val) => input = val,
                 validator: (val) => null,
-                // validator: (val) {
-                //   if (val!.isEmpty) {
-                //     return "To pole nie może być puste";
-                //   } else if (!RegExp(r"^[0-9]+$")
-                //       .hasMatch(val)) {
-                //     return "Kod kreskowy może zawierać wyłącznie cyfry";
-                //   } else if (!(val.length == 8 ||
-                //       val.length == 13)) {
-                //     return "Kod kreskowy musi mieć 8 lub 13 cyfr";
-                //   } else {
-                //     return null;
-                //   }
-                // },
                 value: widget.initValue,
               ),
               const SizedBox(height: 10),
               if (validatorMsg.isNotEmpty)
-                Text(validatorMsg, style: const TextStyle(color: red))
+                Text(
+                  validatorMsg,
+                  style: const TextStyle(color: red),
+                )
             ],
           ),
         ),
@@ -77,7 +72,6 @@ class _ProductCreatorBarcodeInputDialogState
               setState(
                   () => validatorMsg = "Kod kreskowy musi mieć 8 lub 13 cyfr");
             } else {
-              // setState(() => barcode = input);
               widget.setValue(input);
               Navigator.pop(context);
             }

@@ -61,8 +61,13 @@ class _ProfileRestrictionsInputDialogState
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Edytuj ograniczenia i uczulenia",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+      title: const Text(
+        "Edytuj ograniczenia i uczulenia",
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       content: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,28 +76,36 @@ class _ProfileRestrictionsInputDialogState
                 children: allergenKeys
                     .asMap()
                     .entries
-                    .map((entry) => CheckboxListTile(
+                    .map(
+                      (entry) => CheckboxListTile(
                         title: Text(allergenNames[entry.key]),
                         value: checkedAllergens.contains(entry.value),
                         activeColor: green,
                         onChanged: (value) {
                           if (value!) {
-                            setState(() =>
-                                checkedAllergens.add(allergenKeys[entry.key]));
+                            setState(
+                              () =>
+                                  checkedAllergens.add(allergenKeys[entry.key]),
+                            );
                           } else {
-                            setState(() => checkedAllergens
-                                .remove(allergenKeys[entry.key]));
+                            setState(
+                              () => checkedAllergens
+                                  .remove(allergenKeys[entry.key]),
+                            );
                           }
-                        }))
+                        },
+                      ),
+                    )
                     .toList()),
           ],
         ),
       ),
       actions: [
         TextButton(
-            onPressed: () => Navigator.pop(context),
-            style: TextButton.styleFrom(foregroundColor: black),
-            child: const Text("ANULUJ")),
+          onPressed: () => Navigator.pop(context),
+          style: TextButton.styleFrom(foregroundColor: black),
+          child: const Text("ANULUJ"),
+        ),
         TextButton(
           onPressed: () {
             widget.setValue(checkedAllergens);

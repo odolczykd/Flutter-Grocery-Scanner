@@ -31,21 +31,25 @@ class PreferencesList extends StatelessWidget {
       return Align(
         alignment: Alignment.centerLeft,
         child: Wrap(
-            children: list
-                .map((pref) => Container(
-                      margin: const EdgeInsets.all(5),
-                      padding: const EdgeInsets.all(7),
-                      decoration: BoxDecoration(
-                        border: Border.all(width: 2, color: green),
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(20)),
-                      ),
-                      child: Text(
-                        _mapPreferencesCode(pref),
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ))
-                .toList()),
+          children: list
+              .map(
+                (pref) => Container(
+                  margin: const EdgeInsets.all(5),
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 2, color: green),
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(20),
+                    ),
+                  ),
+                  child: Text(
+                    _mapPreferencesCode(pref),
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+              )
+              .toList(),
+        ),
       );
     }
   }

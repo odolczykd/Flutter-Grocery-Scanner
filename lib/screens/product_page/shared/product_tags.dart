@@ -8,28 +8,42 @@ class ProductTags extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      // Palm Oil
-      Row(children: [
-        _pickIcon(tags[0]["status"]!),
-        const SizedBox(width: 5),
-        Text(_decodeStatus(tags[0]["name"]!, tags[0]["status"]!))
-      ]),
+    return Column(
+      children: [
+        // Palm Oil
+        Row(
+          children: [
+            _pickIcon(tags[0]["status"]!),
+            const SizedBox(width: 5),
+            Text(
+              _decodeStatus(tags[0]["name"]!, tags[0]["status"]!),
+            )
+          ],
+        ),
 
-      // Vegetarian
-      Row(children: [
-        _pickIcon(tags[1]["status"]!),
-        const SizedBox(width: 5),
-        Text(_decodeStatus(tags[1]["name"]!, tags[1]["status"]!))
-      ]),
+        // Vegetarian
+        Row(
+          children: [
+            _pickIcon(tags[1]["status"]!),
+            const SizedBox(width: 5),
+            Text(
+              _decodeStatus(tags[1]["name"]!, tags[1]["status"]!),
+            )
+          ],
+        ),
 
-      // Vegan
-      Row(children: [
-        _pickIcon(tags[2]["status"]!),
-        const SizedBox(width: 5),
-        Text(_decodeStatus(tags[2]["name"]!, tags[2]["status"]!))
-      ])
-    ]);
+        // Vegan
+        Row(
+          children: [
+            _pickIcon(tags[2]["status"]!),
+            const SizedBox(width: 5),
+            Text(
+              _decodeStatus(tags[2]["name"]!, tags[2]["status"]!),
+            )
+          ],
+        )
+      ],
+    );
   }
 }
 

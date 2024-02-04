@@ -26,44 +26,55 @@ class ProductDatabaseService {
       if (!product.exists) return null;
 
       return Product(
-          barcode: product.get("barcode"),
-          productName: product.get("product_name"),
-          brand: product.get("brand"),
-          images: ProductImages(
-              front: product.get("images")["front"],
-              ingredients: product.get("images")["ingredients"],
-              nutrition: product.get("images")["nutrition"]),
-          ingredients: product.get("ingredients"),
-          nutriments: ProductNutriments(energyKJ: {
+        barcode: product.get("barcode"),
+        productName: product.get("product_name"),
+        brand: product.get("brand"),
+        images: ProductImages(
+          front: product.get("images")["front"],
+          ingredients: product.get("images")["ingredients"],
+          nutrition: product.get("images")["nutrition"],
+        ),
+        ingredients: product.get("ingredients"),
+        nutriments: ProductNutriments(
+          energyKJ: {
             "value": product.get("nutriments")["energy_KJ"]["value"],
             "value_100g": product.get("nutriments")["energy_KJ"]["value_100g"]
-          }, energyKcal: {
+          },
+          energyKcal: {
             "value": product.get("nutriments")["energy_kcal"]["value"],
             "value_100g": product.get("nutriments")["energy_kcal"]["value_100g"]
-          }, fat: {
+          },
+          fat: {
             "value": product.get("nutriments")["fat"]["value"],
             "value_100g": product.get("nutriments")["fat"]["value_100g"]
-          }, saturatedFat: {
+          },
+          saturatedFat: {
             "value": product.get("nutriments")["saturated_fat"]["value"],
             "value_100g": product.get("nutriments")["saturated_fat"]
                 ["value_100g"]
-          }, carbohydrates: {
+          },
+          carbohydrates: {
             "value": product.get("nutriments")["carbohydrates"]["value"],
             "value_100g": product.get("nutriments")["carbohydrates"]
                 ["value_100g"]
-          }, sugars: {
+          },
+          sugars: {
             "value": product.get("nutriments")["sugars"]["value"],
             "value_100g": product.get("nutriments")["sugars"]["value_100g"]
-          }, proteins: {
+          },
+          proteins: {
             "value": product.get("nutriments")["proteins"]["value"],
             "value_100g": product.get("nutriments")["proteins"]["value_100g"]
-          }, salt: {
+          },
+          salt: {
             "value": product.get("nutriments")["salt"]["value"],
             "value_100g": product.get("nutriments")["salt"]["value_100g"]
-          }),
-          allergens: (product.get("allergens") as List).toSet(),
-          nutriscore: product.get("nutriscore"),
-          tags: product.get("tags"));
+          },
+        ),
+        allergens: (product.get("allergens") as List).toSet(),
+        nutriscore: product.get("nutriscore"),
+        tags: product.get("tags"),
+      );
     } on Exception {
       return null;
     } on Error {

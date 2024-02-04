@@ -11,14 +11,15 @@ class ProductCreatorImageInputTile extends StatelessWidget {
   final File? image;
   final String? deleteText;
 
-  const ProductCreatorImageInputTile(
-      {super.key,
-      required this.icon,
-      required this.text,
-      required this.position,
-      required this.onPressed,
-      this.image,
-      this.deleteText});
+  const ProductCreatorImageInputTile({
+    super.key,
+    required this.icon,
+    required this.text,
+    required this.position,
+    required this.onPressed,
+    this.image,
+    this.deleteText,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,13 +38,16 @@ class ProductCreatorImageInputTile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   color: black,
                   image: DecorationImage(
-                      image: FileImage(image!),
-                      fit: BoxFit.cover,
-                      opacity: 0.7))
+                    image: FileImage(image!),
+                    fit: BoxFit.cover,
+                    opacity: 0.7,
+                  ),
+                )
               : BoxDecoration(
                   border: Border.all(width: 2, color: green),
                   borderRadius: BorderRadius.circular(10),
-                  color: white),
+                  color: white,
+                ),
           child: Padding(
             padding: const EdgeInsets.all(10),
             child: Column(
@@ -67,17 +71,19 @@ class ProductCreatorImageInputTile extends StatelessWidget {
                         text,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
-                            color: green,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16),
+                          color: green,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       )
                     : Text(
                         deleteText!,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
-                            color: white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16),
+                          color: white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       )
               ],
             ),

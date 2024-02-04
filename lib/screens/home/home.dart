@@ -40,23 +40,30 @@ class _HomeState extends State<Home> {
         }
 
         return Scaffold(
-            backgroundColor: greyBg,
-            bottomNavigationBar: BottomNavigationBar(
-              selectedItemColor: green,
-              selectedIconTheme: const IconThemeData(size: 28),
-              selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-              items: const [
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.home), label: "Strona główna"),
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.barcode_reader), label: "Skanuj produkt"),
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.person), label: "Twój profil")
-              ],
-              currentIndex: _selectedIndex,
-              onTap: (value) => setState(() => _selectedIndex = value),
-            ),
-            body: _pages.elementAt(_selectedIndex));
+          backgroundColor: greyBg,
+          bottomNavigationBar: BottomNavigationBar(
+            selectedItemColor: green,
+            selectedIconTheme: const IconThemeData(size: 28),
+            selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: "Strona główna",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.barcode_reader),
+                label: "Skanuj produkt",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: "Twój profil",
+              )
+            ],
+            currentIndex: _selectedIndex,
+            onTap: (value) => setState(() => _selectedIndex = value),
+          ),
+          body: _pages.elementAt(_selectedIndex),
+        );
       },
     );
   }

@@ -24,40 +24,44 @@ class _LoginRegisterState extends State<LoginRegister> {
         child: SafeArea(
           child: Center(
             child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    // Logo
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
-                      child: SvgPicture.asset("assets/svg/logo.svg"),
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  // Logo
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                    child: SvgPicture.asset("assets/svg/logo.svg"),
+                  ),
+
+                  // Login Register Switch
+                  ToggleSwitch(
+                    fontSize: 14,
+                    minWidth: 125,
+                    initialLabelIndex: activeLabelIndex,
+                    cornerRadius: 10,
+                    activeFgColor: white,
+                    inactiveBgColor: grey,
+                    inactiveFgColor: white,
+                    activeBgColors: const [
+                      [green],
+                      [orange]
+                    ],
+                    totalSwitches: 2,
+                    labels: const ["LOGOWANIE", "REJESTRACJA"],
+                    onToggle: (index) => setState(
+                      () {
+                        isLogin = (index == 0);
+                        activeLabelIndex = index!;
+                      },
                     ),
+                  ),
 
-                    // Login Register Switch
-                    ToggleSwitch(
-                        fontSize: 14,
-                        minWidth: 125,
-                        initialLabelIndex: activeLabelIndex,
-                        cornerRadius: 10,
-                        activeFgColor: white,
-                        inactiveBgColor: grey,
-                        inactiveFgColor: white,
-                        activeBgColors: const [
-                          [green],
-                          [orange]
-                        ],
-                        totalSwitches: 2,
-                        labels: const ["LOGOWANIE", "REJESTRACJA"],
-                        onToggle: (index) => setState(() {
-                              isLogin = (index == 0);
-                              activeLabelIndex = index!;
-                            })),
-
-                    const SizedBox(height: 10),
-                    isLogin ? const Login() : const Register()
-                  ],
-                )),
+                  const SizedBox(height: 10),
+                  isLogin ? const Login() : const Register()
+                ],
+              ),
+            ),
           ),
         ),
       ),

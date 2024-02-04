@@ -29,38 +29,52 @@ class _ProfilePreferencesInputDialogState
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Edytuj ograniczenia i uczulenia",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+      title: const Text(
+        "Edytuj ograniczenia i uczulenia",
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       content: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Column(
-                children: preferencesKeys
-                    .asMap()
-                    .entries
-                    .map((entry) => CheckboxListTile(
-                        title: Text(preferencesNames[entry.key]),
-                        value: checkedPreferences.contains(entry.value),
-                        activeColor: green,
-                        onChanged: (value) {
-                          if (value!) {
-                            setState(() => checkedPreferences
-                                .add(preferencesKeys[entry.key]));
-                          } else {
-                            setState(() => checkedPreferences
-                                .remove(preferencesKeys[entry.key]));
-                          }
-                        }))
-                    .toList()),
+              children: preferencesKeys
+                  .asMap()
+                  .entries
+                  .map(
+                    (entry) => CheckboxListTile(
+                      title: Text(preferencesNames[entry.key]),
+                      value: checkedPreferences.contains(entry.value),
+                      activeColor: green,
+                      onChanged: (value) {
+                        if (value!) {
+                          setState(
+                            () => checkedPreferences
+                                .add(preferencesKeys[entry.key]),
+                          );
+                        } else {
+                          setState(
+                            () => checkedPreferences
+                                .remove(preferencesKeys[entry.key]),
+                          );
+                        }
+                      },
+                    ),
+                  )
+                  .toList(),
+            ),
           ],
         ),
       ),
       actions: [
         TextButton(
-            onPressed: () => Navigator.pop(context),
-            style: TextButton.styleFrom(foregroundColor: black),
-            child: const Text("ANULUJ")),
+          onPressed: () => Navigator.pop(context),
+          style: TextButton.styleFrom(foregroundColor: black),
+          child: const Text("ANULUJ"),
+        ),
         TextButton(
           onPressed: () {
             widget.setValue(checkedPreferences);

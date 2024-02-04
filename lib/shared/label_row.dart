@@ -32,7 +32,12 @@ class LabelRow extends StatelessWidget {
           if (isSecondaryIconEnabled) const Spacer(),
           if (isSecondaryIconEnabled)
             GestureDetector(
-                onTap: onTap, child: Icon(secondaryIcon, color: color))
+              onTap: onTap,
+              child: Icon(
+                secondaryIcon,
+                color: color,
+              ),
+            ),
         ],
       ),
     );

@@ -16,10 +16,12 @@ class AuthService {
 
   Future signIn(String email, String password) async {
     try {
-      firebase_auth.UserCredential result = await _auth
-          .signInWithEmailAndPassword(email: email, password: password);
-      firebase_auth.User? user = result.user;
-      return _convertFirebaseUserToCustomUser(user);
+      firebase_auth.UserCredential result =
+          await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return result.user;
     } on firebase_auth.FirebaseAuthException catch (e) {
       return e.code;
     } catch (e) {
@@ -27,15 +29,20 @@ class AuthService {
     }
   }
 
-  Future<User?> register(String username, String displayName, String email,
+  Future register(String username, String displayName, String email,
       String password) async {
     try {
-      firebase_auth.UserCredential result = await _auth
-          .createUserWithEmailAndPassword(email: email, password: password);
+      firebase_auth.UserCredential result =
+          await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
       firebase_auth.User? user = result.user;
-      await UserDatabaseService(user!.uid)
-          .initializeUserData(username: username, displayName: displayName);
-      return _convertFirebaseUserToCustomUser(user);
+      await UserDatabaseService(user!.uid).initializeUserData(
+        username: username,
+        displayName: displayName,
+      );
+      return user;
     } catch (e) {
       return null;
     }
@@ -53,7 +60,9 @@ class AuthService {
     try {
       final user = _auth.currentUser!;
       final credentials = firebase_auth.EmailAuthProvider.credential(
-          email: email, password: password);
+        email: email,
+        password: password,
+      );
       final result = await user.reauthenticateWithCredential(credentials);
 
       await UserDatabaseService(result.user!.uid).deleteDocument();

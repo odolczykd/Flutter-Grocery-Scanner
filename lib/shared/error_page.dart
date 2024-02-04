@@ -20,9 +20,13 @@ class ErrorPage extends StatelessWidget {
                 SvgPicture.asset("assets/svg/chicken-bite.svg",
                     width: 80, height: 80),
                 const SizedBox(height: 15),
-                const Text("Coś poszło nie tak...",
-                    style:
-                        TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+                const Text(
+                  "Coś poszło nie tak...",
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 30),
                 const Text(
                   "Nie udało się poprawnie wczytać tej strony.",
@@ -41,13 +45,14 @@ class ErrorPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 50),
                 HorizontalButton(
-                    icon: Icons.home,
-                    label: "Wróć na stronę główną",
-                    color: orange,
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, "/");
-                    })
+                  icon: Icons.home,
+                  label: "Wróć na stronę główną",
+                  color: orange,
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, "/");
+                  },
+                ),
               ],
             ),
           ),

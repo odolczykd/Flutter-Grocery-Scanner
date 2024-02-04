@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:grocery_scanner/models/product.dart';
 
 const MAX_SIZE_OF_RECENTLY_SCANNED_PRODUCTS_ARRAY = 50;
+const ALLOW_EDIT_DAYS_THRESHOLD = 14;
 
 class UserDatabaseService {
   String uid;
@@ -23,7 +24,7 @@ class UserDatabaseService {
       "recently_scanned_products": [],
       "pinned_products": [],
       "your_products": [],
-      "created_at_timestamp": DateTime.now().millisecondsSinceEpoch
+      "created_at_timestamp": DateTime.now().millisecondsSinceEpoch / 1000
     });
   }
 
@@ -38,6 +39,16 @@ class UserDatabaseService {
     var documentSnapshot = await userCollection.doc(uid).get();
     List<dynamic> yourProducts = documentSnapshot.get("your_products");
     return yourProducts.contains(product.barcode);
+  }
+
+  Future<bool> checkIfUserCanEditProduct() async {
+    var documentSnapshot = await userCollection.doc(uid).get();
+    int createdAtTimestamp = documentSnapshot.get("created_at_timestamp");
+    num difference =
+        (DateTime.now().millisecondsSinceEpoch / 1000) - createdAtTimestamp;
+    int days = (difference / (60 * 60 * 24)).floor();
+
+    return days >= ALLOW_EDIT_DAYS_THRESHOLD;
   }
 
   Future<bool> checkIfProductIsPinned(Product product) async {
@@ -122,37 +133,8 @@ class UserDatabaseService {
     }
   }
 
-  // UserData _userDataFromSnapshot(DocumentSnapshot snapshot) {
-  //   return UserData(
-  //       // uid: uid,
-  //       username: snapshot.get("username"),
-  //       displayName: snapshot.get("display_name"),
-  //       preferences: snapshot.get("preferences"),
-  //       restrictions: snapshot.get("restrictions"),
-  //       yourProducts: snapshot.get("your_products"),
-  //       recentlyScannedProducts: snapshot.get("recently_scanned_products"),
-  //       pinnedProducts: snapshot.get("pinned_products"),
-  //       createdAtTimestamp: snapshot.get("created_at_timestamp"));
-  // }
-
-  // Stream<UserData> get userData {
-  //   return userCollection.doc(uid).snapshots().map(_userDataFromSnapshot);
-  // }
-
   Future<List> getFieldByName(String fieldName) async {
     var documentSnapshot = await userCollection.doc(uid).get();
     return documentSnapshot.get(fieldName);
   }
-
-  // list all usernames in database
-  // List<String> _usernamesFromSnapshot(QuerySnapshot snapshot) {
-  //   return snapshot.docs
-  //       .map((doc) =>
-  //           doc.get("username") == null ? "" : doc.get("username") as String)
-  //       .toList();
-  // }
-
-  // Stream<List<String>> get users {
-  //   return userCollection.snapshots().map(_usernamesFromSnapshot);
-  // }
 }
