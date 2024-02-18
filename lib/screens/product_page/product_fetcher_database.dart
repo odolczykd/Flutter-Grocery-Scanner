@@ -39,7 +39,7 @@ class _ProductFetcherDatabaseState extends State<ProductFetcherDatabase> {
           final product = snapshot.data!;
 
           // Save Product to Local Storage
-          saveProductLocally(product);
+          // saveProductLocally(product);
 
           return ProductPage(product);
         } else {

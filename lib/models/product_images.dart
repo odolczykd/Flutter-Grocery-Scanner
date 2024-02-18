@@ -17,13 +17,13 @@ class ProductImages {
 @HiveType(typeId: 1)
 class ProductOfflineImages {
   @HiveField(0)
-  final List<int> front;
+  final List<int>? front;
 
   @HiveField(1)
-  final List<int> ingredients;
+  final List<int>? ingredients;
 
   @HiveField(2)
-  final List<int> nutrition;
+  final List<int>? nutrition;
 
   ProductOfflineImages({
     required this.front,

@@ -58,34 +58,39 @@ class _ProductCreatorAllergensListState
       widget.allergens.map((e) => e as String).toSet();
 
   List<Widget> _createAllergensListWidget() => allergensList
-      .map((e) => Row(
-                children: [
-                  const SizedBox(width: 5),
-                  const Icon(
-                    Icons.navigate_next,
-                    color: green,
-                  ),
-                  Text(allergenLabels[e]!),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: () {
-                      setState(
-                        () {
-                          allergensList.remove(e);
-                          unusedAllergens.add(e);
-                          widget.callback(allergensList);
-                        },
-                      );
-                    },
-                    child: const Icon(
-                      Icons.delete,
-                      color: green,
-                    ),
-                  )
-                ],
-              )
-          // as Widget
-          )
+      .map(
+        (e) => Row(
+          children: [
+            const SizedBox(width: 5),
+            const Icon(
+              Icons.navigate_next,
+              color: green,
+            ),
+            Expanded(
+              child: Text(
+                allergenLabels[e]!,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 5),
+            GestureDetector(
+              onTap: () {
+                setState(
+                  () {
+                    allergensList.remove(e);
+                    unusedAllergens.add(e);
+                    widget.callback(allergensList);
+                  },
+                );
+              },
+              child: const Icon(
+                Icons.delete,
+                color: green,
+              ),
+            )
+          ],
+        ) as Widget,
+      )
       .toList();
 
   Widget _createAllergenSelect() {
@@ -113,6 +118,7 @@ class _ProductCreatorAllergensListState
 
   Widget _createAddNewAllergenButton() => TransparentHorizontalButton(
         icon: Icons.add,
+        iconSize: 24,
         label: "Dodaj alergen",
         color: green,
         onPressed: () {

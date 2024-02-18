@@ -30,7 +30,7 @@ class _ProfilePreferencesInputDialogState
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text(
-        "Edytuj ograniczenia i uczulenia",
+        "Edytuj preferencje żywieniowe",
         style: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,

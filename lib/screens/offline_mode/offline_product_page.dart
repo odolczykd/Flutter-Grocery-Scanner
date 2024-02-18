@@ -26,7 +26,7 @@ class _OfflineProductPageState extends State<OfflineProductPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<int> productImageBytes = widget.product.images.front;
+    List<int>? productImageBytes = widget.product.images.front;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -35,10 +35,12 @@ class _OfflineProductPageState extends State<OfflineProductPage> {
             // Product Front Image + Buttons
             GestureDetector(
               onTap: () async {
-                await showDialog(
-                  context: context,
-                  builder: (_) => FullScreenImageOffline(productImageBytes),
-                );
+                if (productImageBytes != null) {
+                  await showDialog(
+                    context: context,
+                    builder: (_) => FullScreenImageOffline(productImageBytes),
+                  );
+                }
               },
               child: Container(
                 width: MediaQuery.of(context).size.width,
@@ -46,9 +48,10 @@ class _OfflineProductPageState extends State<OfflineProductPage> {
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     fit: BoxFit.cover,
-                    image: MemoryImage(
-                      Uint8List.fromList(productImageBytes),
-                    ),
+                    image: productImageBytes != null
+                        ? MemoryImage(Uint8List.fromList(productImageBytes))
+                        : const AssetImage("assets/img/no_image.png")
+                            as ImageProvider,
                   ),
                 ),
                 child: OverflowBox(
@@ -111,15 +114,18 @@ class _OfflineProductPageState extends State<OfflineProductPage> {
                       icon: Icons.list_alt,
                       labelText: "Skład produktu",
                       color: green,
-                      isSecondaryIconEnabled: true,
+                      isSecondaryIconEnabled:
+                          widget.product.images.ingredients != null,
                       secondaryIcon: Icons.image_outlined,
                       onTap: () async {
-                        await showDialog(
-                          context: context,
-                          builder: (_) => FullScreenImageOffline(
-                            widget.product.images.ingredients,
-                          ),
-                        );
+                        if (widget.product.images.ingredients != null) {
+                          await showDialog(
+                            context: context,
+                            builder: (_) => FullScreenImageOffline(
+                              widget.product.images.ingredients!,
+                            ),
+                          );
+                        }
                       },
                     ),
                     Text(widget.product.ingredients),
@@ -140,15 +146,18 @@ class _OfflineProductPageState extends State<OfflineProductPage> {
                       icon: Icons.fastfood_outlined,
                       labelText: "Wartości odżywcze",
                       color: green,
-                      isSecondaryIconEnabled: true,
+                      isSecondaryIconEnabled:
+                          widget.product.images.nutrition != null,
                       secondaryIcon: Icons.photo_outlined,
                       onTap: () async {
-                        await showDialog(
-                          context: context,
-                          builder: (_) => FullScreenImageOffline(
-                            widget.product.images.nutrition,
-                          ),
-                        );
+                        if (widget.product.images.nutrition != null) {
+                          await showDialog(
+                            context: context,
+                            builder: (_) => FullScreenImageOffline(
+                              widget.product.images.nutrition!,
+                            ),
+                          );
+                        }
                       },
                     ),
                     const SizedBox(height: 5),
@@ -268,7 +277,12 @@ class _OfflineProductPageState extends State<OfflineProductPage> {
               children: [
                 const SizedBox(width: 5),
                 const Icon(Icons.navigate_next, color: green),
-                Text(_allergenLabels[e]!)
+                Flexible(
+                  child: Text(
+                    _allergenLabels[e]!,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                )
               ],
             ),
           )

@@ -3,6 +3,7 @@ import 'package:grocery_scanner/shared/colors.dart';
 
 class TransparentHorizontalButton extends StatelessWidget {
   final IconData icon;
+  final double iconSize;
   final String label;
   final void Function() onPressed;
   final Color color;
@@ -10,6 +11,7 @@ class TransparentHorizontalButton extends StatelessWidget {
   const TransparentHorizontalButton({
     super.key,
     required this.icon,
+    required this.iconSize,
     required this.label,
     required this.onPressed,
     this.color = black,
@@ -29,6 +31,7 @@ class TransparentHorizontalButton extends StatelessWidget {
       icon: Icon(
         icon,
         color: color,
+        size: iconSize,
       ),
       label: Text(
         label,

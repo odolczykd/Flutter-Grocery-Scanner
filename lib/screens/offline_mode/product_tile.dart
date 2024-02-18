@@ -35,9 +35,10 @@ class ProductTile extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             image: DecorationImage(
-              image: MemoryImage(
-                Uint8List.fromList(product.images.front),
-              ),
+              image: product.images.front != null
+                  ? MemoryImage(Uint8List.fromList(product.images.front!))
+                  : const AssetImage("assets/img/no_image.png")
+                      as ImageProvider,
               fit: BoxFit.cover,
             ),
           ),

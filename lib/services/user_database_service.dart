@@ -57,24 +57,24 @@ class UserDatabaseService {
     return pinnedProducts.contains(product.barcode);
   }
 
-  Future<Product?> pinProduct(Product product, [String mode = "pin"]) async {
+  Future<bool> pinProduct(String productBarcode, [String mode = "pin"]) async {
     try {
       var documentSnapshot = await userCollection.doc(uid).get();
       List<dynamic> pinnedProducts = documentSnapshot.get("pinned_products");
       if (mode == "pin") {
-        pinnedProducts.add(product.barcode);
+        pinnedProducts.add(productBarcode);
       } else if (mode == "unpin") {
-        pinnedProducts.remove(product.barcode);
+        pinnedProducts.remove(productBarcode);
       } else {
-        return null;
+        return false;
       }
 
       await userCollection.doc(uid).update({"pinned_products": pinnedProducts});
-      return product;
+      return true;
     } on Exception {
-      return null;
+      return false;
     } on Error {
-      return null;
+      return false;
     }
   }
 

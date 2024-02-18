@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_cast
+// ignore_for_file: unnecessary_cast, use_build_context_synchronously
 
 import 'dart:io';
 
@@ -11,11 +11,14 @@ import 'package:grocery_scanner/models/product.dart';
 import 'package:grocery_scanner/models/product_images.dart';
 import 'package:grocery_scanner/models/product_nutriments.dart';
 import 'package:grocery_scanner/screens/home/profile/shared/horizontal_button.dart';
+import 'package:grocery_scanner/screens/home/profile/shared/transparent_horizontal_button.dart';
 import 'package:grocery_scanner/screens/product_creator/input_dialogs/product_creator_barcode_input_dialog.dart';
 import 'package:grocery_scanner/screens/product_creator/input_dialogs/product_creator_ingredients_input_dialog.dart';
 import 'package:grocery_scanner/screens/product_creator/product_creator_tile.dart';
 import 'package:grocery_scanner/screens/product_page/dialog_contents/product_nutriscore_dialog_content.dart';
+import 'package:grocery_scanner/screens/product_page/product_page.dart';
 import 'package:grocery_scanner/services/auth_service.dart';
+import 'package:grocery_scanner/services/deepl_translator_service.dart';
 import 'package:grocery_scanner/services/product_database_service.dart';
 import 'package:grocery_scanner/services/user_database_service.dart';
 import 'package:grocery_scanner/shared/colors.dart';
@@ -47,7 +50,7 @@ class _ProductCreatorState extends State<ProductCreator> {
   final _imagePicker = ImagePicker();
 
   bool isEditMode = false;
-  bool isProductAlreadySent = false;
+  bool isSaveButtonLocked = false;
   Set<String> formErrorMessages = {};
 
   File? productImageBarcode;
@@ -235,6 +238,23 @@ class _ProductCreatorState extends State<ProductCreator> {
                                 style: TextStyle(fontStyle: FontStyle.italic),
                               ),
                       ),
+                      TransparentHorizontalButton(
+                        icon: Icons.translate,
+                        iconSize: 20,
+                        label: "Przetłumacz na polski",
+                        color: green,
+                        onPressed: () async {
+                          final ingredientsTranslation =
+                              await DeepLTranslatorService.translate(
+                                  ingredients);
+                          setState(() {
+                            ingredients = ingredientsTranslation.text;
+                          });
+                          _extractAllergensFromIngredients(
+                            ingredientsTranslation.text,
+                          );
+                        },
+                      ),
 
                       // Allergens
                       const SizedBox(height: 10),
@@ -331,7 +351,7 @@ class _ProductCreatorState extends State<ProductCreator> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     nutriscoreTile(e),
-                                    if (nutriscore == e)
+                                    if (e.toLowerCase() == nutriscore.toLowerCase())
                                       const Icon(
                                         Icons.keyboard_arrow_up,
                                         size: 30,
@@ -351,7 +371,7 @@ class _ProductCreatorState extends State<ProductCreator> {
                         color: green,
                         isSecondaryIconEnabled: false,
                       ),
-                      _renderAdditionalInfoCheckboxes(),
+                      _renderAdditionalInfoDropdowns(),
 
                       const SizedBox(height: 10),
                       _renderFormErrors(),
@@ -378,19 +398,21 @@ class _ProductCreatorState extends State<ProductCreator> {
                             icon: isEditMode ? Icons.save : Icons.add,
                             label:
                                 isEditMode ? "Zapisz zmiany" : "Dodaj produkt",
-                            color: isProductAlreadySent
+                            color: isSaveButtonLocked
                                 ? greyButtonFullOpacity
                                 : green,
                             onPressed: () async {
+                              setState(() => isSaveButtonLocked = true);
+
                               // Check if product already exists
                               if (!isEditMode) {
                                 final productChecker =
                                     await ProductDatabaseService(barcode)
                                         .getProduct();
                                 if (productChecker != null) {
-                                  setState(() {
-                                    isProductAlreadySent = true;
-                                  });
+                                  // setState(() {
+                                  //   isSaveButtonLocked = true;
+                                  // });
                                   Fluttertoast.showToast(
                                     msg: "Ten produkt już został dodany",
                                     toastLength: Toast.LENGTH_SHORT,
@@ -400,9 +422,9 @@ class _ProductCreatorState extends State<ProductCreator> {
                                   return;
                                 }
 
-                                if (isProductAlreadySent) {
-                                  return;
-                                }
+                                // if (isSaveButtonLocked) {
+                                //   return;
+                                // }
                               }
 
                               setState(() {
@@ -415,6 +437,7 @@ class _ProductCreatorState extends State<ProductCreator> {
 
                               if (productImageFront == null) {
                                 setState(() {
+                                  isSaveButtonLocked = false;
                                   formErrorMessages
                                       .add("Dodaj zdjęcie przodu produktu");
                                 });
@@ -429,6 +452,7 @@ class _ProductCreatorState extends State<ProductCreator> {
 
                               if (productImageIngredients == null) {
                                 setState(() {
+                                  isSaveButtonLocked = false;
                                   formErrorMessages
                                       .add("Dodaj zdjęcie składu produktu");
                                 });
@@ -443,6 +467,7 @@ class _ProductCreatorState extends State<ProductCreator> {
 
                               if (productImageNutriments == null) {
                                 setState(() {
+                                  isSaveButtonLocked = false;
                                   formErrorMessages
                                       .add("Dodaj zdjęcie wartości odżywczych");
                                 });
@@ -479,6 +504,7 @@ class _ProductCreatorState extends State<ProductCreator> {
                                     await ProductDatabaseService(barcode)
                                         .addProduct(product);
                                 if (response == false) {
+                                  setState(() => isSaveButtonLocked = false);
                                   Fluttertoast.showToast(
                                     msg: isEditMode
                                         ? "Nie udało się zapisać produktu"
@@ -488,9 +514,7 @@ class _ProductCreatorState extends State<ProductCreator> {
                                     fontSize: 16,
                                   );
                                 } else {
-                                  setState(() {
-                                    isProductAlreadySent = true;
-                                  });
+                                  // setState(() => isSaveButtonLocked = true);
 
                                   // Add Product to logged user's products list
                                   if (!isEditMode) {
@@ -507,8 +531,17 @@ class _ProductCreatorState extends State<ProductCreator> {
                                     gravity: ToastGravity.BOTTOM,
                                     fontSize: 16,
                                   );
+
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ProductPage(product),
+                                    ),
+                                  );
                                 }
                               } else {
+                                setState(() => isSaveButtonLocked = false);
                                 Fluttertoast.showToast(
                                   msg: "Popraw wszystkie pola formularza",
                                   toastLength: Toast.LENGTH_LONG,
@@ -532,12 +565,30 @@ class _ProductCreatorState extends State<ProductCreator> {
   }
 
   Future _fetchProductImages() async {
-    final productImageFrontResponse =
-        await http.get(Uri.parse(widget.productToEdit!.images.front));
-    final productImageIngredientsResponse =
-        await http.get(Uri.parse(widget.productToEdit!.images.ingredients));
-    final productImageNutrimentsResponse =
-        await http.get(Uri.parse(widget.productToEdit!.images.nutrition));
+    http.Response? productImageFrontResponse;
+    http.Response? productImageIngredientsResponse;
+    http.Response? productImageNutrimentsResponse;
+
+    try {
+      productImageFrontResponse =
+          await http.get(Uri.parse(widget.productToEdit!.images.front));
+    } catch (e) {
+      productImageFrontResponse = null;
+    }
+
+    try {
+      productImageIngredientsResponse =
+          await http.get(Uri.parse(widget.productToEdit!.images.ingredients));
+    } catch (e) {
+      productImageIngredientsResponse = null;
+    }
+
+    try {
+      productImageNutrimentsResponse =
+          await http.get(Uri.parse(widget.productToEdit!.images.nutrition));
+    } catch (e) {
+      productImageNutrimentsResponse = null;
+    }
 
     final dir = await getApplicationDocumentsDirectory();
 
@@ -548,12 +599,20 @@ class _ProductCreatorState extends State<ProductCreator> {
     File productImageNutrimentsFile =
         File("${dir.path}/temp_${widget.productToEdit!.barcode}_nutrition.jpg");
 
-    await productImageFrontFile
-        .writeAsBytes(productImageFrontResponse.bodyBytes);
-    await productImageIngredientsFile
-        .writeAsBytes(productImageIngredientsResponse.bodyBytes);
-    await productImageNutrimentsFile
-        .writeAsBytes(productImageNutrimentsResponse.bodyBytes);
+    if (productImageFrontResponse != null) {
+      await productImageFrontFile
+          .writeAsBytes(productImageFrontResponse.bodyBytes);
+    }
+
+    if (productImageIngredientsResponse != null) {
+      await productImageIngredientsFile
+          .writeAsBytes(productImageIngredientsResponse.bodyBytes);
+    }
+
+    if (productImageNutrimentsResponse != null) {
+      await productImageNutrimentsFile
+          .writeAsBytes(productImageNutrimentsResponse.bodyBytes);
+    }
 
     setState(() {
       productImageFront = productImageFrontFile;
@@ -636,9 +695,7 @@ class _ProductCreatorState extends State<ProductCreator> {
         final textRecognizer =
             TextRecognizer(script: TextRecognitionScript.latin);
         final recognizedText = await textRecognizer.processImage(
-          InputImage.fromFile(
-            File(croppedFile.path),
-          ),
+          InputImage.fromFile(File(croppedFile.path)),
         );
 
         setState(() {
@@ -652,8 +709,8 @@ class _ProductCreatorState extends State<ProductCreator> {
   }
 
   Future _extractAllergensFromIngredients(String ingredients) async {
-    Set extractedAllergens = {};
-    Set separatedCandidates = {};
+    Set<String> extractedAllergens = {};
+    Set<String> separatedCandidates = {};
 
     final json = await readJsonFile("assets/data/allergens.json");
 
@@ -1319,7 +1376,7 @@ class _ProductCreatorState extends State<ProductCreator> {
     );
   }
 
-  Widget _renderAdditionalInfoCheckboxes() {
+  Widget _renderAdditionalInfoDropdowns() {
     return Table(
       columnWidths: const {0: FlexColumnWidth(2), 1: FlexColumnWidth(1)},
       children: [
@@ -1338,8 +1395,8 @@ class _ProductCreatorState extends State<ProductCreator> {
               child: DropdownButton(
                 value: tags[0]["status"],
                 items: const [
-                  DropdownMenuItem(value: "positive", child: Text("Tak")),
-                  DropdownMenuItem(value: "negative", child: Text("Nie")),
+                  DropdownMenuItem(value: "negative", child: Text("Tak")),
+                  DropdownMenuItem(value: "positive", child: Text("Nie")),
                   DropdownMenuItem(value: "unknown", child: Text("Nie wiem"))
                 ],
                 isExpanded: true,

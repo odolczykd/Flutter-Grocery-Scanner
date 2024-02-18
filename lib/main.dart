@@ -50,6 +50,7 @@ class App extends StatelessWidget {
       value: AuthService().user,
       initialData: null,
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: "Grocery Scanner",
         initialRoute: "/",
         routes: {

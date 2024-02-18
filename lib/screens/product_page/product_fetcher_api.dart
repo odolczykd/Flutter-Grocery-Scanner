@@ -115,7 +115,7 @@ class _ProductFetcherApiState extends State<ProductFetcherApi> {
         );
 
         // Save Product to Local Storage
-        saveProductLocally(translatedProduct);
+        // saveProductLocally(translatedProduct);
 
         // Add Product to Local Database
         try {

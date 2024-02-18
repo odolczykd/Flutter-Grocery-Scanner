@@ -52,10 +52,12 @@ class _ProductPageState extends State<ProductPage> {
             // Product Front Image + Buttons
             GestureDetector(
               onTap: () async {
-                await showDialog(
-                  context: context,
-                  builder: (_) => FullScreenImage(productImageUrl),
-                );
+                if (productImageUrl != "") {
+                  await showDialog(
+                    context: context,
+                    builder: (_) => FullScreenImage(productImageUrl),
+                  );
+                }
               },
               child: Container(
                 width: MediaQuery.of(context).size.width,
@@ -63,7 +65,10 @@ class _ProductPageState extends State<ProductPage> {
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     fit: BoxFit.cover,
-                    image: NetworkImage(productImageUrl),
+                    image: productImageUrl != ""
+                        ? NetworkImage(productImageUrl)
+                        : const AssetImage("assets/img/no_image.png")
+                            as ImageProvider,
                   ),
                 ),
                 child: OverflowBox(
@@ -134,14 +139,17 @@ class _ProductPageState extends State<ProductPage> {
                       icon: Icons.list_alt,
                       labelText: "Skład produktu",
                       color: green,
-                      isSecondaryIconEnabled: true,
+                      isSecondaryIconEnabled:
+                          (widget.product.images.ingredients != ""),
                       secondaryIcon: Icons.image_outlined,
                       onTap: () async {
-                        await showDialog(
-                          context: context,
-                          builder: (_) => FullScreenImage(
-                              widget.product.images.ingredients),
-                        );
+                        if (widget.product.images.ingredients != "") {
+                          await showDialog(
+                            context: context,
+                            builder: (_) => FullScreenImage(
+                                widget.product.images.ingredients),
+                          );
+                        }
                       },
                     ),
                     Text(widget.product.ingredients),
@@ -162,14 +170,17 @@ class _ProductPageState extends State<ProductPage> {
                       icon: Icons.fastfood_outlined,
                       labelText: "Wartości odżywcze",
                       color: green,
-                      isSecondaryIconEnabled: true,
+                      isSecondaryIconEnabled:
+                          (widget.product.images.nutrition != ""),
                       secondaryIcon: Icons.photo_outlined,
                       onTap: () async {
-                        await showDialog(
-                          context: context,
-                          builder: (_) =>
-                              FullScreenImage(widget.product.images.nutrition),
-                        );
+                        if (widget.product.images.nutrition != "") {
+                          await showDialog(
+                            context: context,
+                            builder: (_) => FullScreenImage(
+                                widget.product.images.nutrition),
+                          );
+                        }
                       },
                     ),
                     const SizedBox(height: 5),
@@ -243,6 +254,7 @@ class _ProductPageState extends State<ProductPage> {
         } else {
           return TextButton(
             onPressed: () {
+              Navigator.of(context).pop();
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) =>
@@ -289,8 +301,8 @@ class _ProductPageState extends State<ProductPage> {
             onPressed: () async {
               if (isProductAlreadyPinned) {
                 var result = await UserDatabaseService(_auth.currentUserUid!)
-                    .pinProduct(widget.product, "unpin");
-                if (result != null) {
+                    .pinProduct(widget.product.barcode, "unpin");
+                if (result == true) {
                   setState(() => isProductAlreadyPinned = false);
                   Fluttertoast.showToast(
                     msg: "Odpięto produkt",
@@ -308,8 +320,8 @@ class _ProductPageState extends State<ProductPage> {
                 }
               } else {
                 var result = await UserDatabaseService(_auth.currentUserUid!)
-                    .pinProduct(widget.product);
-                if (result != null) {
+                    .pinProduct(widget.product.barcode);
+                if (result == true) {
                   setState(() => isProductAlreadyPinned = true);
                   Fluttertoast.showToast(
                     msg: "Przypięto produkt",
@@ -431,7 +443,12 @@ class _ProductPageState extends State<ProductPage> {
                   Icons.navigate_next,
                   color: green,
                 ),
-                Text(_allergenLabels[e]!)
+                Flexible(
+                  child: Text(
+                    _allergenLabels[e]!,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                )
               ],
             ),
           )

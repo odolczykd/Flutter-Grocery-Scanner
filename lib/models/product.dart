@@ -145,7 +145,7 @@ class ProductResponse {
   factory ProductResponse.fromJson(Map<String, dynamic> json) {
     return ProductResponse(
       barcode: json["code"],
-      productName: _getFirstNonEmptyValue(json, r"^product_name_", "N/A"),
+      productName: _getFirstNonEmptyValue(json, r"^product_name", "N/A"),
       brand: _getFirstNonEmptyValue(json, r"^brand", "N/A"),
       images: ProductImages(
           front: json["image_front_url"] ?? "",

@@ -15,21 +15,46 @@ Future saveProductLocally(Object product) async {
 
   if (product is Product) {
     if (productLocalStorage.get(product.barcode) == null) {
-      final productImageFrontResponse =
-          await http.get(Uri.parse(product.images.front));
-      final productImageIngredientsResponse =
-          await http.get(Uri.parse(product.images.ingredients));
-      final productImageNutrimentsResponse =
-          await http.get(Uri.parse(product.images.nutrition));
+      // final productImageFrontResponse =
+      //     await http.get(Uri.parse(product.images.front));
+      // final productImageIngredientsResponse =
+      //     await http.get(Uri.parse(product.images.ingredients));
+      // final productImageNutrimentsResponse =
+      //     await http.get(Uri.parse(product.images.nutrition));
+
+      http.Response? productImageFrontResponse;
+      http.Response? productImageIngredientsResponse;
+      http.Response? productImageNutrimentsResponse;
+
+      try {
+        productImageFrontResponse =
+            await http.get(Uri.parse(product.images.front));
+      } catch (e) {
+        productImageFrontResponse = null;
+      }
+
+      try {
+        productImageIngredientsResponse =
+            await http.get(Uri.parse(product.images.ingredients));
+      } catch (e) {
+        productImageIngredientsResponse = null;
+      }
+
+      try {
+        productImageNutrimentsResponse =
+            await http.get(Uri.parse(product.images.nutrition));
+      } catch (e) {
+        productImageNutrimentsResponse = null;
+      }
 
       var productOffline = ProductOffline(
         barcode: product.barcode,
         productName: product.productName,
         brand: product.brand,
         images: ProductOfflineImages(
-          front: productImageFrontResponse.bodyBytes,
-          ingredients: productImageIngredientsResponse.bodyBytes,
-          nutrition: productImageNutrimentsResponse.bodyBytes,
+          front: productImageFrontResponse?.bodyBytes,
+          ingredients: productImageIngredientsResponse?.bodyBytes,
+          nutrition: productImageNutrimentsResponse?.bodyBytes,
         ),
         ingredients: product.ingredients,
         nutriments: product.nutriments,

@@ -17,12 +17,9 @@ class ProductOfflineImagesAdapter extends TypeAdapter<ProductOfflineImages> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ProductOfflineImages(
-      front: (fields[0] as List).cast<int>(),
-      ingredients: (fields[1] as List).cast<int>(),
-      nutrition: (fields[2] as List).cast<int>(),
-      // front: fields[0],
-      // ingredients: fields[1],
-      // nutrition: fields[2],
+      front: (fields[0] as List?)?.cast<int>(),
+      ingredients: (fields[1] as List?)?.cast<int>(),
+      nutrition: (fields[2] as List?)?.cast<int>(),
     );
   }
 
