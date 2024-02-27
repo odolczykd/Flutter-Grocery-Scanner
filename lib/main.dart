@@ -26,10 +26,12 @@ void main() async {
   // Initialize Hive + Register Adapters
   await Hive.initFlutter();
   Hive
+    ..registerAdapter(UserDataAdapter())
     ..registerAdapter(ProductOfflineAdapter())
     ..registerAdapter(ProductOfflineImagesAdapter())
     ..registerAdapter(ProductNutrimentsAdapter());
 
+  userLocalStorage = await Hive.openBox('user');
   productLocalStorage = await Hive.openBox('products');
 
   runApp(const App());

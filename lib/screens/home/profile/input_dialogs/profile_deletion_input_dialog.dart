@@ -1,4 +1,5 @@
-import 'package:email_validator/email_validator.dart';
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_scanner/services/auth_service.dart';
@@ -7,7 +8,8 @@ import 'package:grocery_scanner/shared/colors.dart';
 import 'package:grocery_scanner/shared/form_text_field.dart';
 
 class ProfileDeletionInputDialog extends StatefulWidget {
-  const ProfileDeletionInputDialog({super.key});
+  final String email;
+  const ProfileDeletionInputDialog({super.key, required this.email});
 
   @override
   State<ProfileDeletionInputDialog> createState() =>
@@ -18,9 +20,7 @@ class _ProfileDeletionInputDialogState
     extends State<ProfileDeletionInputDialog> {
   final AuthService _auth = AuthService();
 
-  String email = "";
   String password = "";
-
   String validatorMsg = "";
 
   @override
@@ -42,22 +42,14 @@ class _ProfileDeletionInputDialogState
         child: SizedBox(
           width: MediaQuery.of(context).size.width,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              FormTextField(
-                  callback: (val) => setState(() => email = val),
-                  labelText: "Adres e-mail",
-                  color: green,
-                  obscureText: false,
-                  validator: (val) {
-                    if (val!.isEmpty) {
-                      return "Wprowadź adres e-mail";
-                    } else if (!EmailValidator.validate(val)) {
-                      return "Wprowadź poprawny adres e-mail";
-                    } else {
-                      return null;
-                    }
-                  }),
-              const SizedBox(height: 10),
+              const Text("Aby usunąć konto, wpisz hasło."),
+              const Text(
+                "Pamiętaj, że proces ten jest nieodwracalny! Po kliknięciu przycisku, wszystkie dane zostaną utracone!",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
               FormTextField(
                 callback: (val) => setState(() => password = val),
                 labelText: "Hasło",
@@ -77,9 +69,9 @@ class _ProfileDeletionInputDialogState
         ),
         TextButton(
           onPressed: () async {
-            await UserDatabaseService(_auth.currentUserUid!).deleteDocument();
-            bool result = await _auth.deleteAccount(email, password);
+            bool result = await _auth.deleteAccount(widget.email, password);
             if (result) {
+              await UserDatabaseService(_auth.currentUserUid!).deleteDocument();
               Fluttertoast.showToast(
                 msg: "Konto zostało usunięte",
                 toastLength: Toast.LENGTH_LONG,

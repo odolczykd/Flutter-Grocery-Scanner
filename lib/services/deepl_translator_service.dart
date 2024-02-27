@@ -1,7 +1,8 @@
+// ignore_for_file: constant_identifier_names, unnecessary_this
+
 import 'dart:convert';
 import 'package:grocery_scanner/auth/secrets.dart';
 import 'package:http/http.dart' as http;
-// import 'package:translator/translator.dart';
 
 const DEEPL_API_URL = "https://api-free.deepl.com/v2/translate";
 

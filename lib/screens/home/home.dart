@@ -56,7 +56,7 @@ class _HomeState extends State<Home> {
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.person),
-                label: "Twój profil",
+                label: "Twoje konto",
               )
             ],
             currentIndex: _selectedIndex,

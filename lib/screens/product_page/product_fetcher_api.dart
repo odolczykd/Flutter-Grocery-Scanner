@@ -7,7 +7,6 @@ import 'package:grocery_scanner/services/open_food_facts_service.dart';
 import 'package:grocery_scanner/services/product_database_service.dart';
 import 'package:grocery_scanner/services/deepl_translator_service.dart';
 import 'package:grocery_scanner/shared/error_page.dart';
-import 'package:grocery_scanner/shared/hive_boxes.dart';
 import 'package:grocery_scanner/shared/loading.dart';
 
 class ProductFetcherApi extends StatefulWidget {
@@ -113,9 +112,6 @@ class _ProductFetcherApiState extends State<ProductFetcherApi> {
           nutriscore: product.nutriscore,
           tags: product.tags,
         );
-
-        // Save Product to Local Storage
-        // saveProductLocally(translatedProduct);
 
         // Add Product to Local Database
         try {

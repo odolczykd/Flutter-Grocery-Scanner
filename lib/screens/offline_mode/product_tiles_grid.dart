@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:grocery_scanner/models/product.dart';
+import 'package:grocery_scanner/models/user.dart';
 import 'package:grocery_scanner/screens/offline_mode/product_tile.dart';
 import 'package:grocery_scanner/screens/product_creator/product_creator_tile.dart';
 
 class ProductTilesGrid extends StatelessWidget {
+  final UserData? user;
   final List<ProductOffline> products;
 
-  const ProductTilesGrid({super.key, required this.products});
+  const ProductTilesGrid({
+    super.key,
+    required this.user,
+    required this.products,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +42,7 @@ class ProductTilesGrid extends StatelessWidget {
           Expanded(
             flex: 1,
             child: ProductTile(
+              user: user,
               product: products[i],
               position: TilePosition.left,
             ),
@@ -44,6 +51,7 @@ class ProductTilesGrid extends StatelessWidget {
             Expanded(
               flex: 1,
               child: ProductTile(
+                user: user,
                 product: products[i + 1],
                 position: TilePosition.right,
               ),

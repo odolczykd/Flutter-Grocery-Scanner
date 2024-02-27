@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:grocery_scanner/models/product.dart';
+import 'package:grocery_scanner/models/user.dart';
 import 'package:grocery_scanner/screens/offline_mode/full_screen_image_offline.dart';
 import 'package:grocery_scanner/screens/product_page/dialog_contents/product_nutriscore_dialog_content.dart';
 import 'package:grocery_scanner/screens/product_page/shared/product_tags.dart';
@@ -11,8 +12,13 @@ import 'package:grocery_scanner/shared/label_row.dart';
 const nutriscoreGrades = {"A", "B", "C", "D", "E"};
 
 class OfflineProductPage extends StatefulWidget {
+  final UserData? user;
   final ProductOffline product;
-  const OfflineProductPage(this.product, {super.key});
+  const OfflineProductPage({
+    super.key,
+    required this.user,
+    required this.product,
+  });
 
   @override
   State<OfflineProductPage> createState() => _OfflineProductPageState();
@@ -107,6 +113,10 @@ class _OfflineProductPageState extends State<OfflineProductPage> {
                       widget.product.brand,
                       style: const TextStyle(fontSize: 18),
                     ),
+
+                    // Proper Checker
+                    if (widget.user != null) const SizedBox(height: 20),
+                    if (widget.user != null) _determineIfProductIsProper(),
 
                     // Ingredients
                     const SizedBox(height: 20),
@@ -287,6 +297,171 @@ class _OfflineProductPageState extends State<OfflineProductPage> {
             ),
           )
           .toList(),
+    );
+  }
+
+  Widget _determineIfProductIsProper() {
+    bool isProper = true;
+    Set<String> detectedPreferences = {};
+    Set<String> detectedRestrictions = {};
+
+    Map<String, String> preferencesTranslator = {
+      "palm_oil_free": "produkt zawiera olej palmowy",
+      "vegetarian": "produkt nie jest lub może nie być wegetariański",
+      "vegan": "produkt nie jest lub może nie być wegański"
+    };
+
+    final userRestrictions = widget.user!.restrictions;
+    final userPreferences = widget.user!.preferences;
+
+    // Restrictions
+    for (String restr in userRestrictions) {
+      if (widget.product.allergens.contains(restr)) {
+        isProper = false;
+        detectedRestrictions.add(_allergenLabels[restr]!);
+      }
+    }
+
+    // Preferences
+    for (String pref in userPreferences) {
+      Map<dynamic, dynamic> productTag =
+          widget.product.tags.firstWhere((element) => element["name"] == pref);
+
+      if (pref == "palm_oil_free") {
+        if (productTag["status"] == "negative") {
+          isProper = false;
+          detectedPreferences.add(preferencesTranslator[pref]!);
+        }
+      } else if (pref == "vegetarian") {
+        if (productTag["status"] == "negative" ||
+            productTag["status"] == "maybe") {
+          isProper = false;
+          detectedPreferences.add(preferencesTranslator[pref]!);
+        }
+      } else if (pref == "vegan") {
+        if (productTag["status"] == "negative" ||
+            productTag["status"] == "maybe") {
+          isProper = false;
+          detectedPreferences.add(preferencesTranslator[pref]!);
+        }
+      } else {}
+    }
+
+    return Column(
+      children: [
+        Container(
+          width: MediaQuery.of(context).size.width,
+          padding: const EdgeInsets.all(5),
+          decoration: isProper
+              ? const BoxDecoration(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                  color: green,
+                )
+              : const BoxDecoration(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                  color: red,
+                ),
+          child: Row(
+            children: [
+              isProper
+                  ? const Icon(Icons.check_circle_outlined, color: white)
+                  : const Icon(
+                      Icons.cancel_outlined,
+                      color: white,
+                    ),
+              const SizedBox(width: 5),
+              isProper
+                  ? const Text(
+                      "Produkt jest dla Ciebie odpowiedni",
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                        color: white,
+                      ),
+                    )
+                  : const Text(
+                      "Ten produkt nie jest dla Ciebie!",
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                        color: white,
+                      ),
+                    )
+            ],
+          ),
+        ),
+        if (isProper == false && detectedRestrictions.isNotEmpty)
+          const SizedBox(height: 10),
+        if (isProper == false && detectedRestrictions.isNotEmpty)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Produkt zawiera wskazane przez Ciebie ograniczenia:",
+                style: TextStyle(fontWeight: FontWeight.bold, color: red),
+              ),
+              const SizedBox(height: 5),
+              Column(
+                children: detectedRestrictions
+                    .map(
+                      (restr) => Row(
+                        children: [
+                          const Icon(
+                            Icons.navigate_next,
+                            color: red,
+                          ),
+                          Expanded(
+                              child: Text(
+                            restr,
+                            style: const TextStyle(color: red),
+                            overflow: TextOverflow.ellipsis,
+                          ))
+                        ],
+                      ),
+                    )
+                    .toList(),
+              ),
+            ],
+          ),
+        if (isProper == false && detectedPreferences.isNotEmpty)
+          const SizedBox(height: 10),
+        if (isProper == false && detectedPreferences.isNotEmpty)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Produkt nie spełnia wskazanych przez Ciebie wymagań:",
+                style: TextStyle(fontWeight: FontWeight.bold, color: red),
+              ),
+              const SizedBox(height: 5),
+              Column(
+                children: detectedPreferences
+                    .map(
+                      (restr) => Row(
+                        children: [
+                          const Icon(
+                            Icons.navigate_next,
+                            color: red,
+                          ),
+                          Expanded(
+                            child: Text(
+                              restr,
+                              style: const TextStyle(color: red),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                    .toList(),
+              ),
+            ],
+          ),
+      ],
     );
   }
 }

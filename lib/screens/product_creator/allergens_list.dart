@@ -46,6 +46,7 @@ class _ProductCreatorAllergensListState
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: _createAllergensListWidget() +
           [
             if (allergenSelect != null) allergenSelect!,
@@ -99,20 +100,35 @@ class _ProductCreatorAllergensListState
         .map((e) => DropdownMenuItem(value: e, child: Text(allergenLabels[e]!)))
         .toList();
 
-    return DropdownButton(
-      hint: const Text("Wybierz alergen z listy..."),
-      style: const TextStyle(color: black, fontSize: 14),
-      items: dropwdownItems,
-      onChanged: (value) {
-        setState(
-          () {
-            allergensList.add(value!);
-            unusedAllergens.remove(value);
-            allergenSelect = null;
-            widget.callback(allergensList);
-          },
-        );
-      },
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      child: InputDecorator(
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          contentPadding: EdgeInsets.all(10),
+        ),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton(
+            hint: const Text("Wybierz alergen z listy..."),
+            style: const TextStyle(color: black, fontSize: 13),
+            items: dropwdownItems,
+            isDense: true,
+            isExpanded: true,
+            onChanged: (value) {
+              setState(
+                () {
+                  allergensList.add(value!);
+                  unusedAllergens.remove(value);
+                  allergenSelect = null;
+                  widget.callback(allergensList);
+                },
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 

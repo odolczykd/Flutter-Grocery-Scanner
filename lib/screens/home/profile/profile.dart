@@ -9,7 +9,7 @@ import 'package:grocery_scanner/screens/home/profile/input_dialogs/profile_prefe
 import 'package:grocery_scanner/screens/home/profile/input_dialogs/profile_restrictions_input_dialog.dart';
 import 'package:grocery_scanner/screens/home/profile/shared/horizontal_button.dart';
 import 'package:grocery_scanner/screens/home/profile/shared/preferences_list.dart';
-import 'package:grocery_scanner/screens/product_creator/allergens_list.dart';
+import 'package:grocery_scanner/screens/home/profile/shared/restrictions_list.dart';
 import 'package:grocery_scanner/services/auth_service.dart';
 import 'package:grocery_scanner/services/user_database_service.dart';
 import 'package:grocery_scanner/shared/colors.dart';
@@ -73,7 +73,7 @@ class _ProfileState extends State<Profile> {
                           color: green,
                           size: 60,
                         ),
-                        const SizedBox(width: 15),
+                        const SizedBox(width: 10),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -85,10 +85,10 @@ class _ProfileState extends State<Profile> {
                                   fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              "(${loggedUser.username})",
+                              loggedUser.emailAddress,
                               style: const TextStyle(
                                   color: black,
-                                  fontSize: 20,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold),
                             )
                           ],
@@ -135,7 +135,7 @@ class _ProfileState extends State<Profile> {
                         ),
                       ),
                     ),
-                    _renderRestrictionsList(restrictions),
+                    RestrictionsList(restrictions: restrictions),
 
                     // Preferences
                     const SizedBox(height: 15),
@@ -186,8 +186,9 @@ class _ProfileState extends State<Profile> {
                       isSecondaryIconEnabled: false,
                     ),
                     _renderProfileInfo(
-                      tempDisplayName ?? loggedUser.displayName,
-                      loggedUser.createdAtTimestamp,
+                      displayName: tempDisplayName ?? loggedUser.displayName,
+                      emailAddress: loggedUser.emailAddress,
+                      createdAtTimestamp: loggedUser.createdAtTimestamp,
                     ),
 
                     // Options (delete account + sign out)
@@ -221,8 +222,9 @@ class _ProfileState extends State<Profile> {
                       color: red,
                       onPressed: () => showDialog(
                         context: context,
-                        builder: (context) =>
-                            const ProfileDeletionInputDialog(),
+                        builder: (context) => ProfileDeletionInputDialog(
+                          email: loggedUser.emailAddress,
+                        ),
                       ),
                     ),
                   ],
@@ -247,44 +249,11 @@ class _ProfileState extends State<Profile> {
     });
   }
 
-  Widget _renderRestrictionsList(List restrictions) {
-    if (restrictions.isEmpty) {
-      return Container(
-        margin: const EdgeInsets.only(top: 10, bottom: 15),
-        child: const Column(
-          children: [
-            Text(
-              "Póki co nic tu nie ma...",
-              style: TextStyle(fontSize: 16),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Kliknij "),
-                Icon(Icons.edit, color: green),
-                Text(" po prawej stronie, aby dodać element")
-              ],
-            )
-          ],
-        ),
-      );
-    }
-    return Column(
-      children: restrictions
-          .map(
-            (restr) => Row(
-              children: [
-                const SizedBox(width: 5),
-                const Icon(Icons.navigate_next, color: green),
-                Text(allergenLabels[restr]!),
-              ],
-            ),
-          )
-          .toList(),
-    );
-  }
-
-  Widget _renderProfileInfo(String displayName, int createdAtTimestamp) {
+  Widget _renderProfileInfo({
+    required String displayName,
+    required String emailAddress,
+    required int createdAtTimestamp,
+  }) {
     final date = DateTime.fromMillisecondsSinceEpoch(createdAtTimestamp * 1000);
     final accountCreatedDateFormatted =
         "${date.day}.${date.month}.${date.year}";
@@ -338,6 +307,23 @@ class _ProfileState extends State<Profile> {
               )
             ],
           ),
+          const SizedBox(height: 5),
+          Row(
+            children: [
+              const Text("Adres e-mail: ", style: TextStyle(fontSize: 16)),
+              Expanded(
+                child: Text(
+                  emailAddress,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 5),
           Row(
             children: [
               const Text("Utworzono: ", style: TextStyle(fontSize: 16)),

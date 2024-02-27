@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:grocery_scanner/models/product.dart';
+import 'package:grocery_scanner/models/user.dart';
+import 'package:grocery_scanner/screens/home/profile/shared/preferences_list.dart';
+import 'package:grocery_scanner/screens/home/profile/shared/restrictions_list.dart';
 import 'package:grocery_scanner/screens/offline_mode/description_banner.dart';
 import 'package:grocery_scanner/screens/offline_mode/product_tiles_grid.dart';
 import 'package:grocery_scanner/shared/colors.dart';
@@ -14,11 +17,13 @@ class OfflineModePage extends StatefulWidget {
 }
 
 class _OfflineModePageState extends State<OfflineModePage> {
+  late UserData? loggedUser;
   late List<ProductOffline> products;
 
   @override
   void initState() {
     super.initState();
+    loggedUser = userLocalStorage.getAt(0);
     products = productLocalStorage.values.toList();
   }
 
@@ -81,8 +86,8 @@ class _OfflineModePageState extends State<OfflineModePage> {
                 ),
                 const DescriptionBanner(
                   text:
-                      "Dotyczy to również wszystkich produktów przypiętych przez Ciebie!",
-                  icon: Icons.push_pin,
+                      "Bycie zalogowanym pozwala na informowanie, czy zapisany produkt jest dla Ciebie odpowiedni!",
+                  icon: Icons.no_meals,
                   color: green,
                 ),
                 const DescriptionBanner(
@@ -91,6 +96,34 @@ class _OfflineModePageState extends State<OfflineModePage> {
                   icon: Icons.system_update,
                   color: green,
                 ),
+
+                // Restrictions
+                if (loggedUser != null) const SizedBox(height: 20),
+                if (loggedUser != null)
+                  const LabelRow(
+                    icon: Icons.no_meals,
+                    labelText: "Ograniczenia i uczulenia",
+                    color: green,
+                    isSecondaryIconEnabled: false,
+                  ),
+                if (loggedUser != null)
+                  RestrictionsList(restrictions: loggedUser!.restrictions),
+
+                // Preferences
+                if (loggedUser != null) const SizedBox(height: 20),
+                if (loggedUser != null)
+                  const LabelRow(
+                    icon: Icons.kebab_dining,
+                    labelText: "Twoje preferencje",
+                    color: green,
+                    isSecondaryIconEnabled: false,
+                  ),
+                if (loggedUser != null)
+                  PreferencesList(
+                    list: loggedUser!.preferences,
+                    isOfflineMode: true,
+                  ),
+
                 const SizedBox(height: 20),
                 const LabelRow(
                   icon: Icons.download,
@@ -98,7 +131,7 @@ class _OfflineModePageState extends State<OfflineModePage> {
                   color: green,
                   isSecondaryIconEnabled: false,
                 ),
-                ProductTilesGrid(products: products)
+                ProductTilesGrid(user: loggedUser, products: products)
               ],
             ),
           ),

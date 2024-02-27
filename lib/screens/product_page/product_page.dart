@@ -1,3 +1,5 @@
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_scanner/models/product.dart';
@@ -244,136 +246,132 @@ class _ProductPageState extends State<ProductPage> {
         ),
       );
 
-  Widget _renderEditButton() {
-    return FutureBuilder(
-      future: UserDatabaseService(_auth.currentUserUid!)
-          .checkIfUserCanEditProduct(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const SizedBox(width: 0);
-        } else {
-          return TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) =>
-                      ProductCreator(productToEdit: widget.product),
+  Widget _renderEditButton() => FutureBuilder(
+        future: UserDatabaseService(_auth.currentUserUid!)
+            .checkIfUserCanEditProduct(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const SizedBox(width: 0);
+          } else {
+            return TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        ProductCreator(productToEdit: widget.product),
+                  ),
+                );
+              },
+              style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero, alignment: Alignment.topRight),
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: blackOpacity,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(30),
+                  ),
                 ),
-              );
-            },
-            style: TextButton.styleFrom(
-                padding: EdgeInsets.zero, alignment: Alignment.topRight),
-            child: Container(
-              decoration: const BoxDecoration(
-                color: blackOpacity,
-                borderRadius: BorderRadius.all(
-                  Radius.circular(30),
+                child: const Padding(
+                  padding: EdgeInsets.all(7),
+                  child: Icon(
+                    Icons.edit,
+                    size: 25,
+                    color: white,
+                  ),
                 ),
               ),
-              child: const Padding(
-                padding: EdgeInsets.all(7),
-                child: Icon(
-                  Icons.edit,
-                  size: 25,
-                  color: white,
-                ),
-              ),
-            ),
-          );
-        }
-      },
-    );
-  }
+            );
+          }
+        },
+      );
 
-  Widget _renderPinButton() {
-    return FutureBuilder(
-      future: UserDatabaseService(_auth.currentUserUid!)
-          .checkIfProductIsPinned(widget.product),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          // Do not display button
-          return const SizedBox(width: 0);
-        } else {
-          bool isProductAlreadyPinned = snapshot.data!;
+  Widget _renderPinButton() => FutureBuilder(
+        future: UserDatabaseService(_auth.currentUserUid!)
+            .checkIfProductIsPinned(widget.product),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            // Do not display button
+            return const SizedBox(width: 0);
+          } else {
+            bool isProductAlreadyPinned = snapshot.data!;
 
-          return TextButton(
-            onPressed: () async {
-              if (isProductAlreadyPinned) {
-                var result = await UserDatabaseService(_auth.currentUserUid!)
-                    .pinProduct(widget.product.barcode, "unpin");
-                if (result == true) {
-                  setState(() => isProductAlreadyPinned = false);
-                  Fluttertoast.showToast(
-                    msg: "Odpięto produkt",
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    fontSize: 16,
-                  );
+            return TextButton(
+              onPressed: () async {
+                if (isProductAlreadyPinned) {
+                  var result = await UserDatabaseService(_auth.currentUserUid!)
+                      .pinProduct(widget.product.barcode, "unpin");
+                  if (result == true) {
+                    setState(() => isProductAlreadyPinned = false);
+                    Fluttertoast.showToast(
+                      msg: "Odpięto produkt",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                      fontSize: 16,
+                    );
+                  } else {
+                    Fluttertoast.showToast(
+                      msg: "Nie udało się odpiąć produktu",
+                      toastLength: Toast.LENGTH_LONG,
+                      gravity: ToastGravity.BOTTOM,
+                      fontSize: 16,
+                    );
+                  }
                 } else {
-                  Fluttertoast.showToast(
-                    msg: "Nie udało się odpiąć produktu",
-                    toastLength: Toast.LENGTH_LONG,
-                    gravity: ToastGravity.BOTTOM,
-                    fontSize: 16,
-                  );
+                  var result = await UserDatabaseService(_auth.currentUserUid!)
+                      .pinProduct(widget.product.barcode);
+                  if (result == true) {
+                    setState(() => isProductAlreadyPinned = true);
+                    Fluttertoast.showToast(
+                      msg: "Przypięto produkt",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                      fontSize: 16,
+                    );
+                  } else {
+                    Fluttertoast.showToast(
+                      msg: "Nie udało się przypiąć produktu",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                      fontSize: 16,
+                    );
+                  }
                 }
-              } else {
-                var result = await UserDatabaseService(_auth.currentUserUid!)
-                    .pinProduct(widget.product.barcode);
-                if (result == true) {
-                  setState(() => isProductAlreadyPinned = true);
-                  Fluttertoast.showToast(
-                    msg: "Przypięto produkt",
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    fontSize: 16,
-                  );
-                } else {
-                  Fluttertoast.showToast(
-                    msg: "Nie udało się przypiąć produktu",
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    fontSize: 16,
-                  );
-                }
-              }
-            },
-            style: TextButton.styleFrom(
-                padding: EdgeInsets.zero, alignment: Alignment.bottomLeft),
-            child: Container(
-              decoration: const BoxDecoration(
-                color: blackOpacity,
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(10),
+              },
+              style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero, alignment: Alignment.bottomLeft),
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: blackOpacity,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(10),
+                  ),
                 ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Row(
-                  children: [
-                    Icon(
-                      isProductAlreadyPinned ? Icons.delete : Icons.push_pin,
-                      color: white,
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      isProductAlreadyPinned ? "Odepnij" : "Przypnij",
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    children: [
+                      Icon(
+                        isProductAlreadyPinned ? Icons.delete : Icons.push_pin,
                         color: white,
                       ),
-                    )
-                  ],
+                      const SizedBox(width: 5),
+                      Text(
+                        isProductAlreadyPinned ? "Odepnij" : "Przypnij",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: white,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
-        }
-      },
-    );
-  }
+            );
+          }
+        },
+      );
 
   Widget _renderNutriscoreButton() {
     if (!nutriscoreGrades.contains(widget.product.nutriscore.toUpperCase())) {
@@ -569,7 +567,13 @@ class _ProductPageState extends State<ProductPage> {
                             Icons.navigate_next,
                             color: red,
                           ),
-                          Text(restr, style: const TextStyle(color: red))
+                          Expanded(
+                            child: Text(
+                              restr,
+                              style: const TextStyle(color: red),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                         ],
                       ),
                     )

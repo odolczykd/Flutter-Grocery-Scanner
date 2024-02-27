@@ -83,15 +83,11 @@ class _ProfileRestrictionsInputDialogState
                         activeColor: green,
                         onChanged: (value) {
                           if (value!) {
-                            setState(
-                              () =>
-                                  checkedAllergens.add(allergenKeys[entry.key]),
-                            );
+                            setState(() =>
+                                checkedAllergens.add(allergenKeys[entry.key]));
                           } else {
-                            setState(
-                              () => checkedAllergens
-                                  .remove(allergenKeys[entry.key]),
-                            );
+                            setState(() => checkedAllergens
+                                .remove(allergenKeys[entry.key]));
                           }
                         },
                       ),

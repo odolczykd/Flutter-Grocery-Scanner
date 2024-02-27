@@ -2,16 +2,19 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:grocery_scanner/models/product.dart';
+import 'package:grocery_scanner/models/user.dart';
 import 'package:grocery_scanner/screens/offline_mode/offline_product_page.dart';
 import 'package:grocery_scanner/screens/product_creator/product_creator_tile.dart';
 import 'package:grocery_scanner/shared/colors.dart';
 
 class ProductTile extends StatelessWidget {
+  final UserData? user;
   final ProductOffline product;
   final TilePosition position;
 
   const ProductTile({
     super.key,
+    required this.user,
     required this.product,
     required this.position,
   });
@@ -22,7 +25,10 @@ class ProductTile extends StatelessWidget {
       style: TextButton.styleFrom(padding: EdgeInsets.zero),
       onPressed: () => Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => OfflineProductPage(product),
+          builder: (context) => OfflineProductPage(
+            user: user,
+            product: product,
+          ),
         ),
       ),
       child: Padding(

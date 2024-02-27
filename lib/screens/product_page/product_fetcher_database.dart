@@ -3,7 +3,6 @@ import 'package:grocery_scanner/models/product.dart';
 import 'package:grocery_scanner/screens/product_page/product_page.dart';
 import 'package:grocery_scanner/screens/product_page/product_fetcher_api.dart';
 import 'package:grocery_scanner/services/product_database_service.dart';
-import 'package:grocery_scanner/shared/hive_boxes.dart';
 import 'package:grocery_scanner/shared/loading.dart';
 
 class ProductFetcherDatabase extends StatefulWidget {
@@ -37,9 +36,6 @@ class _ProductFetcherDatabaseState extends State<ProductFetcherDatabase> {
         }
         if (snapshot.hasData) {
           final product = snapshot.data!;
-
-          // Save Product to Local Storage
-          // saveProductLocally(product);
 
           return ProductPage(product);
         } else {

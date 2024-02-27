@@ -129,21 +129,21 @@ class ProductNutriments {
 
   Widget renderTable() {
     var nutriments = [
-      if (_areBothPresent(energyKJ)) ("energia [KJ]", energyKJ),
-      if (_areBothPresent(energyKcal)) ("energia [kcal]", energyKcal),
-      if (_areBothPresent(fat)) ("tłuszcz", fat),
-      if (_areBothPresent(saturatedFat)) ("kwasy nasycone", saturatedFat),
-      if (_areBothPresent(carbohydrates)) ("węglowodany", carbohydrates),
-      if (_areBothPresent(sugars)) ("cukry", sugars),
-      if (_areBothPresent(proteins)) ("białko", proteins),
-      if ((_areBothPresent(salt))) ("sól", salt)
+      ("energia [KJ]", energyKJ),
+      ("energia [kcal]", energyKcal),
+      ("tłuszcz", fat),
+      ("kwasy nasycone", saturatedFat),
+      ("węglowodany", carbohydrates),
+      ("cukry", sugars),
+      ("białko", proteins),
+      ("sól", salt)
     ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          "Tabela może zawierać wartości przybliżone.",
+          "Tabela może zawierać wartości przybliżone",
           style: TextStyle(
             fontSize: 15,
             fontStyle: FontStyle.italic,
@@ -252,9 +252,6 @@ class ProductNutriments {
     );
   }
 }
-
-bool _areBothPresent(Map<String, dynamic> nutriment) =>
-    nutriment["value"] != "N/A" || nutriment["value_100g"] != "N/A";
 
 extension Precision on num {
   String toPrecision(int n) {

@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_scanner/screens/home/profile/shared/horizontal_filled_button.dart';
@@ -19,7 +18,6 @@ class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
 
   // Form Field Values
-  String username = "";
   String displayName = "";
   String email = "";
   String password = "";
@@ -34,27 +32,6 @@ class _RegisterState extends State<Register> {
       key: _formKey,
       child: Column(
         children: [
-          // Username
-          const SizedBox(height: 20),
-          FormTextField(
-            callback: (val) => setState(() => username = val),
-            labelText: "Nazwa użytkownika",
-            color: orange,
-            obscureText: false,
-            validator: (val) {
-              if (val!.isEmpty) {
-                return "Nazwa użytkownika nie może być pusta";
-              } else if (val.length > 24) {
-                return "Nazwa użytkownika może mieć maksymalnie 24 znaki";
-              } else if (RegExp(r'[!@#<>?":`~;[\]\\|=+)(*&^%-]+')
-                  .hasMatch(val)) {
-                return "Dopuszczalne znaki to litery, cyfry oraz symbol _";
-              } else {
-                return null;
-              }
-            },
-          ),
-
           // Display Name
           const SizedBox(height: 10),
           FormTextField(
@@ -83,8 +60,8 @@ class _RegisterState extends State<Register> {
             validator: (val) {
               if (!EmailValidator.validate(val!)) {
                 return "Wprowadź poprawny adres e-mail";
-              } else if (val.length > 24) {
-                return "Adres e-mail może mieć maksymalnie 24 znaki";
+              } else if (val.length > 36) {
+                return "Adres e-mail może mieć maksymalnie 36 znaków";
               } else {
                 return null;
               }
@@ -142,23 +119,9 @@ class _RegisterState extends State<Register> {
             label: "Załóż konto",
             color: orange,
             onPressed: () async {
-              bool isUsernameOccupied =
-                  await _checkIfUsernameIsOccupied(username);
-
-              if (isUsernameOccupied) {
-                setState(
-                    () => formErrorMessage = "Nazwa użytkownika jest zajęta");
-                return;
-              }
-
               // Form Validation
               if (_formKey.currentState!.validate()) {
-                var result = await _auth.register(
-                  username,
-                  displayName,
-                  email,
-                  password,
-                );
+                var result = await _auth.register(displayName, email, password);
 
                 if (result == null) {
                   Fluttertoast.showToast(
@@ -181,17 +144,5 @@ class _RegisterState extends State<Register> {
         ],
       ),
     );
-  }
-
-  Future<bool> _checkIfUsernameIsOccupied(String username) async {
-    try {
-      final querySnapshot =
-          await FirebaseFirestore.instance.collection("users").get();
-      final allUsernames =
-          querySnapshot.docs.map((doc) => doc.get("username")).toList();
-      return allUsernames.contains(username);
-    } catch (e) {
-      return false;
-    }
   }
 }

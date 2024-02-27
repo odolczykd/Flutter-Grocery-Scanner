@@ -1,8 +1,10 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:grocery_scanner/screens/auth/password_recovery_dialog.dart';
 import 'package:grocery_scanner/screens/home/profile/shared/horizontal_button.dart';
 import 'package:grocery_scanner/screens/home/profile/shared/horizontal_filled_button.dart';
+import 'package:grocery_scanner/screens/home/profile/shared/transparent_horizontal_button.dart';
 import 'package:grocery_scanner/shared/form_text_field.dart';
 import 'package:grocery_scanner/services/auth_service.dart';
 import 'package:grocery_scanner/shared/colors.dart';
@@ -100,6 +102,18 @@ class _LoginState extends State<Login> {
                       }
                     }
                   },
+                ),
+
+                // Paasword Recovery Button
+                TransparentHorizontalButton(
+                  icon: Icons.password,
+                  iconSize: 24,
+                  label: "Nie pamiętasz hasła?",
+                  color: green,
+                  onPressed: () => showDialog(
+                    context: context,
+                    builder: (context) => const PasswordRecoveryDialog(),
+                  ),
                 ),
 
                 // Quick Scan Mode Button

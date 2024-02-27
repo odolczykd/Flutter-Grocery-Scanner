@@ -7,6 +7,7 @@ import 'package:grocery_scanner/services/auth_service.dart';
 import 'package:grocery_scanner/services/product_database_service.dart';
 import 'package:grocery_scanner/shared/colors.dart';
 import 'package:grocery_scanner/shared/error_page.dart';
+import 'package:grocery_scanner/shared/hive_boxes.dart';
 import 'package:provider/provider.dart';
 import 'package:grocery_scanner/models/user.dart';
 import 'package:grocery_scanner/services/user_database_service.dart';
@@ -53,6 +54,9 @@ class _MainPageState extends State<MainPage> {
         Map<String, dynamic> userSnapshotData =
             snapshot.data!.data() as Map<String, dynamic>;
         UserData loggedUser = UserData.fromJson(userSnapshotData);
+
+        // Save User Locally
+        saveUserLocally(loggedUser);
 
         return SingleChildScrollView(
           child: Padding(

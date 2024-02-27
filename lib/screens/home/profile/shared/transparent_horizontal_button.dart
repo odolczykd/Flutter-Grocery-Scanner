@@ -19,23 +19,26 @@ class TransparentHorizontalButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton.icon(
-      style: ElevatedButton.styleFrom(
-          alignment: Alignment.centerRight,
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          minimumSize: const Size.fromHeight(40),
-          padding: const EdgeInsets.all(0),
-          foregroundColor: green),
-      onPressed: onPressed,
-      icon: Icon(
-        icon,
-        color: color,
-        size: iconSize,
-      ),
-      label: Text(
-        label,
-        style: const TextStyle(fontSize: 16),
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      child: ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+            alignment: Alignment.centerRight,
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            minimumSize: const Size.fromHeight(40),
+            padding: const EdgeInsets.all(0),
+            foregroundColor: green),
+        onPressed: onPressed,
+        icon: Icon(
+          icon,
+          color: color,
+          size: iconSize,
+        ),
+        label: Text(
+          label,
+          style: const TextStyle(fontSize: 16),
+        ),
       ),
     );
   }

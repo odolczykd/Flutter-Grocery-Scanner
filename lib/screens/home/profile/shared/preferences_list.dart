@@ -3,28 +3,39 @@ import 'package:grocery_scanner/shared/colors.dart';
 
 class PreferencesList extends StatelessWidget {
   final List<dynamic> list;
-  const PreferencesList({super.key, required this.list});
+  final bool isOfflineMode;
+  const PreferencesList({
+    super.key,
+    required this.list,
+    this.isOfflineMode = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     if (list.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 5),
-        child: Column(
-          children: [
-            Text(
-              "Póki co nic tu nie ma...",
-              style: TextStyle(fontSize: 16),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Kliknij "),
-                Icon(Icons.edit, color: green),
-                Text(" po prawej stronie, aby dodać element")
-              ],
-            )
-          ],
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5),
+        child: Center(
+          child: Column(
+            children: [
+              if (isOfflineMode)
+                const Text("Nie wskazano żadnych preferencji żywieniowych")
+              else
+                const Text(
+                  "Póki co nic tu nie ma...",
+                  style: TextStyle(fontSize: 16),
+                ),
+              if (!isOfflineMode)
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Kliknij "),
+                    Icon(Icons.edit, color: green),
+                    Text(" po prawej stronie, aby dodać element")
+                  ],
+                )
+            ],
+          ),
         ),
       );
     } else {

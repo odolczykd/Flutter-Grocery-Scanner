@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:grocery_scanner/models/product.dart';
 
@@ -8,23 +10,23 @@ class UserDatabaseService {
   String uid;
   UserDatabaseService(this.uid);
 
-  // Users Collection
-
   final CollectionReference userCollection =
       FirebaseFirestore.instance.collection("users");
 
-  Future initializeUserData(
-      {required String username, required String displayName}) async {
-    // TODO: Fix situation: uid = null
+  Future initializeUserData({
+    required String emailAddress,
+    required String displayName,
+  }) async {
     return await userCollection.doc(uid).set({
-      "username": username,
+      "email_address": emailAddress,
       "display_name": displayName,
       "preferences": [],
       "restrictions": [],
       "recently_scanned_products": [],
       "pinned_products": [],
       "your_products": [],
-      "created_at_timestamp": DateTime.now().millisecondsSinceEpoch / 1000
+      "created_at_timestamp":
+          (DateTime.now().millisecondsSinceEpoch / 1000).round()
     });
   }
 

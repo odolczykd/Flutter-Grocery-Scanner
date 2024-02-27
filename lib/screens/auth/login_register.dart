@@ -30,7 +30,7 @@ class _LoginRegisterState extends State<LoginRegister> {
                 children: [
                   // Logo
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
                     child: SvgPicture.asset("assets/svg/logo.svg"),
                   ),
 

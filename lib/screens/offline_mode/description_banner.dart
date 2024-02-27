@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
 
-enum DescriptionPosition {
-  left,
-  right,
-}
-
 class DescriptionBanner extends StatelessWidget {
   final String text;
   final IconData icon;
@@ -38,3 +33,5 @@ class DescriptionBanner extends StatelessWidget {
     );
   }
 }
+
+enum DescriptionPosition { left, right }

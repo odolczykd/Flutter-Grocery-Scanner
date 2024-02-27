@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:grocery_scanner/models/user.dart';
 import 'package:grocery_scanner/services/user_database_service.dart';
+import 'package:grocery_scanner/shared/hive_boxes.dart';
 
 class AuthService {
   final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;
@@ -29,8 +30,7 @@ class AuthService {
     }
   }
 
-  Future register(String username, String displayName, String email,
-      String password) async {
+  Future register(String displayName, String email, String password) async {
     try {
       firebase_auth.UserCredential result =
           await _auth.createUserWithEmailAndPassword(
@@ -39,7 +39,7 @@ class AuthService {
       );
       firebase_auth.User? user = result.user;
       await UserDatabaseService(user!.uid).initializeUserData(
-        username: username,
+        emailAddress: email,
         displayName: displayName,
       );
       return user;
@@ -48,9 +48,21 @@ class AuthService {
     }
   }
 
+  Future<bool> sendPasswordResetEmail(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      return true;
+    } on firebase_auth.FirebaseAuthException {
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future signOut() async {
     try {
-      return await _auth.signOut();
+      await _auth.signOut();
+      await userLocalStorage.clear();
     } catch (e) {
       return null;
     }
@@ -67,6 +79,7 @@ class AuthService {
 
       await UserDatabaseService(result.user!.uid).deleteDocument();
       await result.user!.delete();
+      await userLocalStorage.clear();
 
       return true;
     } catch (e) {

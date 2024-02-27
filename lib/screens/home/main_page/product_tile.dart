@@ -21,7 +21,12 @@ class ProductTile extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             image: DecorationImage(
-                image: NetworkImage(product.images.front), fit: BoxFit.cover),
+              image: product.images.front != ""
+                  ? NetworkImage(product.images.front)
+                  : const AssetImage("assets/img/no_image.png")
+                      as ImageProvider,
+              fit: BoxFit.cover,
+            ),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
