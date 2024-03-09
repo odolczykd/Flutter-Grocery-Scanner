@@ -256,7 +256,7 @@ class _ProfileState extends State<Profile> {
   }) {
     final date = DateTime.fromMillisecondsSinceEpoch(createdAtTimestamp * 1000);
     final accountCreatedDateFormatted =
-        "${date.day}.${date.month}.${date.year}";
+        "${date.day.toString().padLeft(2, "0")}.${date.month.toString().padLeft(2, "0")}.${date.year}";
     final elapsedTimeFromAccountCreationFormatted =
         _formatElapsedTimeFromAccountCreation(createdAtTimestamp);
 

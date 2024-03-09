@@ -414,12 +414,12 @@ class _ProductCreatorState extends State<ProductCreator> {
                             },
                           ),
 
-                          // Add Product Button
+                          // Add / Edit Product Button
                           const SizedBox(width: 10),
                           HorizontalButton(
                             icon: isEditMode ? Icons.save : Icons.add,
-                            label:
-                                isEditMode ? "Zapisz zmiany" : "Dodaj produkt",
+                            label: _renderAddEditButtonLabel(
+                                isSaveButtonLocked, isEditMode),
                             color: isSaveButtonLocked
                                 ? greyButtonFullOpacity
                                 : green,
@@ -1124,4 +1124,12 @@ class _ProductCreatorState extends State<ProductCreator> {
       return "";
     }
   }
+}
+
+String _renderAddEditButtonLabel(bool isSaveButtonLocked, bool isEditMode) {
+  if (isEditMode && isSaveButtonLocked) return "Zapisywanie produktu...";
+  if (!isEditMode && isSaveButtonLocked) return "Dodawanie produktu...";
+  if (isEditMode && !isSaveButtonLocked) return "Zapisz zmiany";
+  if (!isEditMode && !isSaveButtonLocked) return "Dodaj produkt";
+  return "";
 }

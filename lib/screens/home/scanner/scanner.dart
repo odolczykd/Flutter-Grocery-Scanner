@@ -16,7 +16,6 @@ class _ScannerState extends State<Scanner> {
         controller: MobileScannerController(
           facing: CameraFacing.back,
           torchEnabled: false,
-          // returnImage: true,
           detectionSpeed: DetectionSpeed.normal,
         ),
         onDetect: (capture) {

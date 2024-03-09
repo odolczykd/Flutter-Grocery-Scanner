@@ -1,4 +1,4 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers
+// ignore_for_file: no_leading_underscores_for_local_identifiers, empty_catches
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
