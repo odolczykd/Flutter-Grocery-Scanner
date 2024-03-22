@@ -669,7 +669,7 @@ class _ProductCreatorState extends State<ProductCreator> {
   Future _getImageFromCamera({required String type}) async {
     final pickedImage = await _imagePicker.pickImage(
       source: ImageSource.camera,
-      imageQuality: 100,
+      imageQuality: 95,
     );
 
     if (pickedImage != null) {
@@ -737,7 +737,7 @@ class _ProductCreatorState extends State<ProductCreator> {
   Future _readTextFromImage() async {
     final pickedImage = await _imagePicker.pickImage(
       source: ImageSource.camera,
-      imageQuality: 100,
+      imageQuality: 95,
     );
 
     if (pickedImage != null) {

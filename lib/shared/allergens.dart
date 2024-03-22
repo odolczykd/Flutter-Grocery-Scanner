@@ -48,7 +48,6 @@ Map<String, dynamic> allergensKeywordsFile = {
   "peanuts": {
     "label": "orzeszki ziemne (arachidowe) i produkty pochodne",
     "keywords": [
-      "orzeszki ziemne",
       "ziemne",
       "ziemn",
       "orzeszk",
