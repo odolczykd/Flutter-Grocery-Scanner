@@ -82,12 +82,16 @@ class ProductFetcherApi extends StatelessWidget {
   }
 
   Future<String> _translateProductIngredients(String ingredients) async {
+    final ingredientsCleared = ingredients
+        .replaceAll(RegExp(r'_'), '')
+        .replaceAll(RegExp(r'<\/?span( class=".*")?>'), '');
+
     final translationResult =
-        await DeepLTranslatorService.translate(ingredients);
+        await DeepLTranslatorService.translate(ingredientsCleared);
     if (!translationResult.detectedSourceLang.compareIgnoreCase("PL")) {
       return translationResult.text;
     } else {
-      return ingredients;
+      return ingredientsCleared;
     }
   }
 
