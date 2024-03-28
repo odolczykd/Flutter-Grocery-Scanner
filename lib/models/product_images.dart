@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:hive/hive.dart';
 
 part 'product_images.g.dart';
@@ -17,13 +19,13 @@ class ProductImages {
 @HiveType(typeId: 1)
 class ProductOfflineImages {
   @HiveField(0)
-  final List<int>? front;
+  final Uint8List? front;
 
   @HiveField(1)
-  final List<int>? ingredients;
+  final Uint8List? ingredients;
 
   @HiveField(2)
-  final List<int>? nutrition;
+  final Uint8List? nutrition;
 
   ProductOfflineImages({
     required this.front,

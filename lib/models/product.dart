@@ -164,15 +164,10 @@ class ProductResponse {
 
 String _getFirstNonEmptyValue(Map<String, dynamic> json, String pattern,
     [String emptyValue = ""]) {
-  List<String> filteredEntries = json.entries
+  return json.entries
       .where((entry) => RegExp(pattern).hasMatch(entry.key))
       .map((element) => element.value.toString())
-      .toList();
-
-  for (String entry in filteredEntries) {
-    if (entry != "") return entry;
-  }
-  return emptyValue;
+      .firstWhere((element) => element.isNotEmpty, orElse: () => emptyValue);
 }
 
 List _extractTags(List rawTags) {
