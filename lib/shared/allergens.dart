@@ -4,16 +4,16 @@ Map<String, dynamic> allergensKeywordsFile = {
     "keywords": [
       "gluten",
       "zboż",
-      "pszen",
+      "pszenn",
       "pszenic",
       "orkisz",
-      "khorasan",
-      "żyto",
-      "żyt",
+      "khorasan\$",
+      "żyto\$",
+      "żytn",
       "jęczmie",
-      "owies",
-      "ows",
-      "kamut",
+      "owies\$",
+      "owsian",
+      "kamut\$",
     ]
   },
   "shellfish": {
@@ -32,24 +32,24 @@ Map<String, dynamic> allergensKeywordsFile = {
   "eggs": {
     "label": "jaja i produkty pochodne",
     "keywords": [
-      "jaja",
+      "jaja\$",
       "jaj",
     ]
   },
   "fish": {
     "label": "ryby i produkty pochodne",
     "keywords": [
-      "ryby",
-      "ryb",
-      "worcestershire",
-      "miso",
+      "ryby\$",
+      "ryb\$",
+      "worcestershire\$",
+      "miso\$",
     ]
   },
   "peanuts": {
     "label": "orzeszki ziemne (arachidowe) i produkty pochodne",
     "keywords": [
-      "ziemne",
-      "ziemn",
+      "ziemne\$",
+      "ziemny",
       "orzeszk",
       "arachidow",
     ]
@@ -57,13 +57,13 @@ Map<String, dynamic> allergensKeywordsFile = {
   "soya": {
     "label": "soja i produkty pochodne",
     "keywords": [
-      "soja",
+      "soja\$",
       "soj",
-      "edamame",
-      "miso",
-      "białka sojowe",
+      "edamame\$",
+      "miso\$",
+      "białka sojowe\$",
       "sojow",
-      "tofu",
+      "tofu\$",
     ]
   },
   "milk": {
@@ -81,22 +81,21 @@ Map<String, dynamic> allergensKeywordsFile = {
     "label": "orzechy i produkty pochodne",
     "keywords": [
       "orzech",
+      "orzechy",
       "migdał",
       "Amygdalus communis",
       "laskow",
       "Corylus avellana",
-      "włosk",
       "Juglans regia",
-      "nerkowiec",
+      "nerkowiec\$",
       "nerkowc",
       "Anacardium occidentale",
-      "pekan",
+      "pekan\$",
       "Carya illinoinensis",
-      "brazyliski",
       "Bertholletia excelsa",
       "pistacj",
       "Pistacia vera",
-      "makadamia",
+      "makadamia\$",
       "Queensland",
       "Macadamia ternifolia",
       "marcepan",
@@ -113,7 +112,7 @@ Map<String, dynamic> allergensKeywordsFile = {
     "keywords": [
       "gorczyc",
       "musztard",
-      "curry",
+      "curry\$",
     ]
   },
   "sesame_seeds": {
@@ -135,7 +134,7 @@ Map<String, dynamic> allergensKeywordsFile = {
   "lupin": {
     "label": "łubin i produkty pochodne",
     "keywords": [
-      "łubin",
+      "łubin\$",
     ]
   },
   "molluscs": {
@@ -144,7 +143,7 @@ Map<String, dynamic> allergensKeywordsFile = {
       "mięczak",
       "ślimak",
       "małż",
-      "omułek",
+      "omułek\$",
       "omułk",
       "ostryg",
       "kalmar",
