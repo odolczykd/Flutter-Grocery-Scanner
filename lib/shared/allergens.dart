@@ -25,8 +25,9 @@ Map<String, dynamic> allergensKeywordsFile = {
       "langust",
       "krewetk",
       "krewet",
-      "rak",
-      "kryl",
+      "rak\$",
+      "raki\$",
+      "kryl\$",
     ]
   },
   "eggs": {
